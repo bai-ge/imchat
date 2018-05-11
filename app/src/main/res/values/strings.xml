@@ -1,0 +1,34 @@
+<resources>
+    <string name="app_name">IM Chat</string>
+    <string name="copyright">Copyright © 2018 Baige.All rights reserved.</string>
+    <string name="navigation_settings">设置</string>
+    <string name="navigation_personal_settings">个人设置</string>
+    <string name="navigation_about">关于</string>
+    <string name="navigation_home">主页</string>
+    <string name="navigation_logout">注销</string>
+    <string name="navigation_return">退出</string>
+
+
+
+
+    <string name="tab_one">Fish</string>
+    <string name="tab_two">Fly</string>
+    <string name="tab_three">Bird</string>
+    <string name="tab_four">Coffee</string>
+
+    <string name="tab_message">消息</string>
+    <string name="tab_friends">好友</string>
+    <string name="tab_file">文件</string>
+    <string name="tab_person">个人</string>
+
+    <string name="user_name">昵称</string>
+    <string name="email">email@163.com</string>
+    <string name="chat_message">这是一条很长很长的消息这是一条很长很长的消息这是一条很长很长的消息这是一条很长很长的消息这是一条很长很长的消息</string>
+    <string name="network">离线</string>
+    <string name="input_hint">input</string>
+    <string name="inform">This is an inform</string>
+
+    <string name="input_type_digits">123456789qwertyuiopasdfghjklzxcvbnm</string>
+    <string name="null_info">这里什么都没有</string>
+
+</resources>

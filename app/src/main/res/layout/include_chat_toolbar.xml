@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <!--标题栏-->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="@color/colorPrimaryDark">
+        <!--返回按钮-->
+        <Button
+            android:id="@+id/btn_toolbar_back"
+            android:layout_width="40dp"
+            android:layout_height="50dp"
+            android:background="@drawable/ic_back"
+
+            android:layout_marginLeft="10dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp" />
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:orientation="vertical"
+            android:layout_margin="5dp"
+            android:gravity="center">
+            <!--用户名称-->
+            <TextView
+                android:id="@+id/txt__toolbar_user_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:textSize="16sp"
+                android:textColor="@color/white"
+                android:text="@string/user_name"/>
+            <!--用户状态-->
+            <TextView
+                android:id="@+id/txt__toolbar_network"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"
+                android:textColor="@color/white"
+                android:text="@string/network"/>
+        </LinearLayout>
+        <Button
+            android:id="@+id/btn__toolbar_user"
+            android:layout_width="40dp"
+            android:layout_height="45dp"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_margin="10dp"
+            android:background="@drawable/ic_user"/>
+        <Button
+            android:id="@+id/btn__toolbar_phone"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/ic_phone"
+            android:layout_toLeftOf="@id/btn__toolbar_user"
+            android:layout_toStartOf="@id/btn__toolbar_user"
+            android:layout_margin="10dp"/>
+    </RelativeLayout>
+</LinearLayout>

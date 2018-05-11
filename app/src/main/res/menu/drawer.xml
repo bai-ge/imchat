@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.baige.imchat.MainActivity">
+
+    <group android:checkableBehavior="single">
+        <group android:id="@+id/grp1" >
+            <item
+                android:id="@+id/navigation_menu_home"
+                android:icon="@drawable/ic_home"
+                android:title="@string/navigation_home"/>
+            <item
+                android:id="@+id/navigation_personal_setting"
+                android:icon="@drawable/ic_personal_settings"
+                android:title="@string/navigation_personal_settings"/>
+
+            <item
+                android:id="@+id/navigation_menu_setting"
+                android:icon="@drawable/ic_setting"
+                android:title="@string/navigation_settings"/>
+            <item
+                android:id="@+id/navigation_menu_info"
+                android:icon="@drawable/ic_info"
+                android:title="@string/navigation_about"/>
+        </group>
+
+        <group android:id="@+id/grp2" >
+            <item
+                android:id="@+id/navigation_menu_logout"
+                android:icon="@drawable/ic_logout"
+                android:title="@string/navigation_logout"/>
+            <item
+                android:id="@+id/navigation_menu_exit"
+                android:icon="@drawable/ic_exit"
+                android:title="@string/navigation_return"/>
+        </group>
+    </group>
+</menu>

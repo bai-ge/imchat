@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="com.baige.imchat">
+
+    <!--外存储写权限 -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+
+    <!--外存储读权限 -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+
+    <!--连接网络权限 -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+
+    <!--读取网络信息状态 -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+
+    <!--获取当前wifi状态 -->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+
+    <!--允许程序改变网络连接状态 -->
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"/>
+
+    <!--允许挂载和反挂载文件系统可移动存储-->
+    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
+
+    <!--修改音频配置权限-->
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+
+    <!--获取手机录音机使用权限，听写、识别、语义理解需要用到此权限 -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+
+    <!--如需使用人脸识别，还要添加：摄相头权限，拍照需要用到 -->
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <!--唤醒手机-->
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+
+    <application
+        android:name="com.baige.BaseApplication"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+
+        <!--windowSoftInputMode="adjustPan|stateHidden 跟软键盘的弹出有关，https://blog.csdn.net/xww810319/article/details/17397429-->
+        <activity android:name=".MainActivity"
+                  android:windowSoftInputMode="adjustPan|stateHidden">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+        <activity android:name="com.baige.filelist.FileListActivity">
+        </activity>
+        <activity android:name="com.baige.telephone.PhoneActivity">
+        </activity>
+
+        <activity android:name="com.baige.login.LoginActivity"/>
+        <activity android:name="com.baige.register.RegisterActivity"/>
+        <activity android:name="com.baige.chat.ChatActivity"/>
+        //保活机制
+        <service
+            android:name="com.baige.service.DaemonService"
+            android:process=":daemon"
+            android:exported="true" >
+        </service>
+
+        <service
+            android:name="com.baige.service.DaemonService$DaemonInnerService"
+            android:enabled="true"
+            android:exported="false"
+            android:process=":daemon"/>
+
+        <receiver
+            android:name="com.baige.broadcast.WakeReceiver"
+            android:enabled="true"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.baige.imchat.GRAY_WAKE"/>
+            </intent-filter>
+        </receiver>
+
+        <service
+            android:name="com.baige.broadcast.WakeReceiver$WakeNotifyService"
+            android:enabled="true"
+            android:exported="false"/>
+
+        <service
+            android:name="com.baige.broadcast.WakeReceiver$WakeGrayInnerService"
+            android:enabled="true"
+            android:exported="false"/>
+    </application>
+
+</manifest>

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <HorizontalScrollView
+        android:id="@+id/top_navigation_scroll"
+        android:layout_width="match_parent"
+        android:layout_height="35dp"
+        android:layout_gravity="top"
+        android:background="@drawable/img_top_navi_bg"
+        android:scrollbars="none">
+        <LinearLayout
+            android:id="@+id/linear_top_navigation"
+            android:layout_width="wrap_content"
+            android:layout_height="35dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="0dp"
+            android:paddingLeft="8dp">
+
+        </LinearLayout>
+    </HorizontalScrollView>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:id="@+id/layout_null"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@drawable/icon_fm_null"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/fab_margin"
+                android:layout_gravity="center"
+                android:textColor="@color/grass_primary"
+                android:text="@string/null_info"/>
+        </LinearLayout>
+        <ListView
+            android:id="@+id/list_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/bottom_toolbar">
+        </ListView>
+
+
+        <com.baige.view.FileListBottomToolBar
+            android:id="@+id/bottom_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true" >
+        </com.baige.view.FileListBottomToolBar>
+
+        <com.baige.view.FileListBottomOperatorMenu
+            android:id="@+id/bottom_operator_menu"
+            android:layout_width="match_parent"
+            android:layout_height="231dp"
+            android:layout_gravity="bottom" >
+        </com.baige.view.FileListBottomOperatorMenu>
+
+        <com.baige.view.BottomChooseBar
+            android:id="@+id/bottom_choose_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom" >
+        </com.baige.view.BottomChooseBar>
+
+    </RelativeLayout>
+
+</LinearLayout>
