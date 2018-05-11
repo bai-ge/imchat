@@ -1,11 +1,16 @@
 package com.baige.imchat;
 
+import com.baige.BaseActivity;
+import com.baige.BaseApplication;
 import com.baige.callback.HttpBaseCallback;
+import com.baige.data.entity.FileInfo;
 import com.baige.data.entity.User;
 import com.baige.data.source.Repository;
 import com.baige.data.source.cache.CacheRepository;
 import com.baige.util.Tools;
 import com.baige.util.UploadUtil;
+
+import java.io.File;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -68,9 +73,11 @@ public class MainPresenter implements MainContract.Presenter {
     }
 
     @Override
-    public void upload(String file) {
-        mFragment.showTip("开始上传文件"+file);
-        mRepository.uploadFile(CacheRepository.getInstance().who(), file, new HttpBaseCallback(){
+    public void changeImg(String fileName) {
+        mFragment.showTip("开始上传文件"+fileName);
+        User user = CacheRepository.getInstance().who();
+        File file = new File(fileName);
+        mRepository.changeHeadImg(user.getId(), user.getVerification(), file, new HttpBaseCallback(){
             @Override
             public void success() {
                 super.success();
@@ -88,5 +95,18 @@ public class MainPresenter implements MainContract.Presenter {
                 mFragment.showTip(text);
             }
         });
+    }
+
+    @Override
+    public void downloadImg(String imgName) {
+        if(!Tools.isEmpty(imgName)){
+            mRepository.downloadImg(imgName, new HttpBaseCallback(){
+                @Override
+                public void downloadFinish(String fileName) {
+                    super.downloadFinish(fileName);
+                    mFragment.showUserImg(fileName);
+                }
+            });
+        }
     }
 }

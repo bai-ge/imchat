@@ -6,6 +6,9 @@ import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 
 import com.baige.BaseActivity;
@@ -14,6 +17,7 @@ import com.baige.data.source.cache.CacheRepository;
 import com.baige.data.source.local.LocalRepository;
 import com.baige.login.LoginActivity;
 import com.baige.util.ActivityUtils;
+import com.baige.view.CircleImageView;
 
 public class MainActivity extends BaseActivity {
 
@@ -23,17 +27,20 @@ public class MainActivity extends BaseActivity {
 
     private NavigationView mNavigationView;
 
+    private MainFragment mainFragment;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.act_main);
-        initView();
 
-        MainFragment mainFragment = (MainFragment) getSupportFragmentManager().findFragmentById(R.id.content_frame);
+
+         mainFragment = (MainFragment) getSupportFragmentManager().findFragmentById(R.id.content_frame);
         if (mainFragment == null) {
             mainFragment = MainFragment.newInstance();
             ActivityUtils.addFragmentToActivity(getSupportFragmentManager(), mainFragment, R.id.content_frame);
         }
+        initView();
         MainPresenter mainPresenter = new MainPresenter(Repository.getInstance(LocalRepository.getInstance(getApplicationContext())), mainFragment);
     }
 
@@ -45,14 +52,16 @@ public class MainActivity extends BaseActivity {
     }
 
     private void setupDrawerContent(NavigationView navigationView) {
-//        ImageView headImg = (ImageView) mNavigationView.getHeaderView(0).findViewById(R.id.head_img);
-//        headImg.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Intent intent = new Intent(MainActivity.this, EditUserActivity.class);
-//                startActivity(intent);
-//            }
-//        });
+        CircleImageView headImg = mNavigationView.getHeaderView(0).findViewById(R.id.img_user);
+        TextView textView = mNavigationView.getHeaderView(0).findViewById(R.id.txt_user_name);
+        mainFragment.setDrawerUserImg(headImg);
+        mainFragment.setDrawerUserName(textView);
+        headImg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
         NavigationView.OnNavigationItemSelectedListener listener = new NavigationView.OnNavigationItemSelectedListener() {
                     Intent intent;
                     @Override

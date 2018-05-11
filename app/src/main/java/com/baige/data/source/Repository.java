@@ -10,9 +10,11 @@ import com.baige.data.source.local.LocalRepository;
 import com.baige.data.source.remote.RemoteRepository;
 import com.baige.data.source.remote.ServerHelper;
 
+import java.io.File;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import static com.google.common.base.Preconditions.checkElementIndex;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
@@ -122,6 +124,60 @@ public class Repository implements DataSource, ServerHelper{
             });
         }else{
             callback.fail();
+        }
+    }
+
+    @Override
+    public void changeHeadImg(final int id, final String verification, final File headImg, final HttpBaseCallback callback) {
+        checkNotNull(verification);
+        checkNotNull(headImg);
+        checkNotNull(callback);
+        callback.setResponseBinder(mSimpleResponseBinder);
+        if (fixedThreadPool != null) {
+            fixedThreadPool.submit(new Runnable() {
+                @Override
+                public void run() {
+                    mRemoteRepository.changeHeadImg(id, verification, headImg, callback);
+                }
+            });
+        }else{
+            callback.fail();
+        }
+    }
+
+    @Override
+    public void downloadFile(final String url, final String path, final String fileName, final HttpBaseCallback callback) {
+        checkNotNull(url);
+        checkNotNull(path);
+        checkNotNull(fileName);
+        checkNotNull(callback);
+        callback.setResponseBinder(mSimpleResponseBinder);
+        if (fixedThreadPool != null) {
+            fixedThreadPool.submit(new Runnable() {
+                @Override
+                public void run() {
+                    mRemoteRepository.downloadFile(url, path, fileName, callback);
+                }
+            });
+        }else{
+            callback.fail(fileName);
+        }
+    }
+
+    @Override
+    public void downloadImg(final String imgName, final HttpBaseCallback callback) {
+        checkNotNull(imgName);
+        checkNotNull(callback);
+        callback.setResponseBinder(mSimpleResponseBinder);
+        if (fixedThreadPool != null) {
+            fixedThreadPool.submit(new Runnable() {
+                @Override
+                public void run() {
+                    mRemoteRepository.downloadImg(imgName, callback);
+                }
+            });
+        }else{
+            callback.fail(imgName);
         }
     }
 }

@@ -10,7 +10,7 @@ import java.util.List;
  * Created by baige on 2018/5/10.
  */
 
-public class HttpBaseCallback extends BaseCallback implements ServerHelper.PrimaryCallback, ServerHelper.CodeCallback, ServerHelper.ComplexCallback {
+public class HttpBaseCallback extends BaseCallback implements ServerHelper.PrimaryCallback, ServerHelper.CodeCallback, ServerHelper.ComplexCallback, ServerHelper.FileCallback{
 
     private AbstractResponseBinder mResponseBinder;
 
@@ -102,6 +102,31 @@ public class HttpBaseCallback extends BaseCallback implements ServerHelper.Prima
 
     @Override
     public void loadUsers(List<User> list) {
+
+    }
+
+    @Override
+    public void progress(String fileName, long finishSize, long totalSize) {
+
+    }
+
+    @Override
+    public void uploadFinish(String fileName) {
+
+    }
+
+    @Override
+    public void downloadFinish(String fileName) {
+
+    }
+
+    @Override
+    public void error(String fileName, Exception e) {
+
+    }
+
+    @Override
+    public void fail(String fileName) {
 
     }
 }

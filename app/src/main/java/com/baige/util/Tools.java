@@ -130,7 +130,6 @@ public class Tools {
         }
 
         return Math.round(size * 100.0 / SIZE_GB) / 100.0 + "G";
-
     }
 
     public static String getDurationToString(long time) {

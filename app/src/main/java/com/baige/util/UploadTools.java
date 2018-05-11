@@ -35,12 +35,31 @@ public class UploadTools {
      * @param RequestURL 请求的rul
      * @return 返回响应的内容
      */
-    public static String uploadFile(File file, String RequestURL) {
+    public static String uploadFile(File file, String RequestURL, String key) {
+        Log.d(TAG, "文件大小："+file.length());
         String result = null;
-        String BOUNDARY = UUID.randomUUID().toString();// 边界标识 随机生成
-        String PREFIX = "--", LINE_END = "\r\n";
+        String BOUNDARY = UUID.randomUUID().toString().replace("-", "");// 边界标识 随机生成
+        String PREFIX = "--";
+        String LINE_END = "\r\n";
         String CONTENT_TYPE = "multipart/form-data";// 内容类型
         try {
+            StringBuffer sb = new StringBuffer();
+            sb.append(PREFIX);
+            sb.append(BOUNDARY);
+            sb.append(LINE_END);
+            /**
+             * 这里重点注意： name里面的值为服务端需要key 只有这个key 才可以得到对应的文件
+             * filename是文件的名字，包含后缀名的 比如:abc.png
+             */
+            sb.append("Content-Disposition: form-data; name=\""+key+"\"; filename=\""
+                    + file.getName() + "\"" + LINE_END);
+            sb.append("Content-Type: image/jpeg"+ LINE_END);
+            sb.append(LINE_END);
+            StringBuffer endData = new StringBuffer();
+            endData.append(LINE_END + PREFIX + BOUNDARY + PREFIX + LINE_END);
+            Log.d(TAG, sb.toString());
+            long leng = file.length() + sb.length() + endData.length();
+            Log.d(TAG, "数据大小："+ leng);
             URL url = new URL(RequestURL);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setReadTimeout(TIME_OUT);
@@ -49,26 +68,25 @@ public class UploadTools {
             conn.setDoOutput(true);// 允许输出流
             conn.setUseCaches(false);// 不允许使用缓存
             conn.setRequestMethod("POST");// 请求方式
+
+
+            conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; WOW64; rv:55.0) Gecko/20100101 Firefox/55.0");
+            conn.setRequestProperty("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
+            conn.setRequestProperty("Accept-Language", "zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3");
+            conn.setRequestProperty("Accept-Encoding", "gzip, deflate");
             conn.setRequestProperty("Charset", CHARSET);// 设置编码
             conn.setRequestProperty("connection", "keep-alive");
-            conn.setRequestProperty("Content-Type", CONTENT_TYPE + ";boundary=" + BOUNDARY);
+            conn.setRequestProperty("Content-Type", CONTENT_TYPE + "; boundary=" + BOUNDARY);
+            conn.setRequestProperty("Content-Length", String.valueOf(leng));
+            //conn.setRequestProperty("Cookie", "JSESSIONID=4DBE1F5261FB58F96F44B197CE197B0C");
+            conn.setRequestProperty("Upgrade-Insecure-Requests", String.valueOf(1));
+
             if (file != null) {
                 /**
                  * 当文件不为空，把文件包装并且上传
                  */
                 DataOutputStream dos = new DataOutputStream(conn.getOutputStream());
-                StringBuffer sb = new StringBuffer();
-                sb.append(PREFIX);
-                sb.append(BOUNDARY);
-                sb.append(LINE_END);
-                /**
-                 * 这里重点注意： name里面的值为服务端需要key 只有这个key 才可以得到对应的文件
-                 * filename是文件的名字，包含后缀名的 比如:abc.png
-                 */
-                sb.append("Content-Disposition: form-data; name=\"uploadfile\"; filename=\""
-                        + file.getName() + "\"" + LINE_END);
-                sb.append("Content-Type: application/octet-stream; charset=" + CHARSET + LINE_END);
-                sb.append(LINE_END);
+
                 dos.write(sb.toString().getBytes());
                 InputStream is = new FileInputStream(file);
                 byte[] bytes = new byte[1024];
@@ -77,9 +95,9 @@ public class UploadTools {
                     dos.write(bytes, 0, len);
                 }
                 is.close();
-                dos.write(LINE_END.getBytes());
-                byte[] end_data = (PREFIX + BOUNDARY + PREFIX + LINE_END).getBytes();
-                dos.write(end_data);
+//                dos.write(LINE_END.getBytes());
+//                byte[] end_data = (LINE_END + PREFIX + BOUNDARY + PREFIX + LINE_END).getBytes();
+                dos.write(endData.toString().getBytes());
                 dos.flush();
                 /**
                  * 获取响应码 200=成功 当响应成功，获取响应的流
@@ -134,7 +152,8 @@ public class UploadTools {
         conn.setRequestMethod("POST");
         conn.setRequestProperty("connection", "keep-alive");
         conn.setRequestProperty("Charsert", "UTF-8");
-        conn.setRequestProperty("Content-Type", MULTIPART_FROM_DATA + ";boundary=" + BOUNDARY);
+        conn.setRequestProperty("Content-Type", MULTIPART_FROM_DATA + "; boundary=" + BOUNDARY);
+        conn.setRequestProperty("User-Agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.");
         // 首先组拼文本类型的参数
         StringBuilder sb = new StringBuilder();
         for (Map.Entry<String, String> entry : params.entrySet()) {
@@ -211,7 +230,7 @@ public class UploadTools {
             conn.setRequestProperty("Charset", CHARSET); // 设置编码
             conn.setRequestProperty("connection", "keep-alive");
             conn.setRequestProperty("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1)");
-            conn.setRequestProperty("Content-Type", CONTENT_TYPE + ";boundary=" + BOUNDARY);
+            conn.setRequestProperty("Content-Type", CONTENT_TYPE + "; boundary=" + BOUNDARY);
 
             /**
              * 当文件不为空，把文件包装并且上传

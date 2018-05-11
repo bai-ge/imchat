@@ -5,6 +5,7 @@ package com.baige.data.source.remote;
 import com.baige.callback.HttpBaseCallback;
 import com.baige.data.entity.User;
 
+import java.io.File;
 import java.util.List;
 
 
@@ -59,6 +60,14 @@ public interface ServerHelper {
         void loadUsers(List<User> list);
 
     }
+    interface FileCallback{
+        void progress(String fileName, long finishSize, long totalSize);
+        void uploadFinish(String fileName);
+        void downloadFinish(String fileName);
+        void error(String fileName, Exception e);
+        void fail(String fileName);
+    }
+    
 
     void login(User user, HttpBaseCallback callback);
 
@@ -67,5 +76,11 @@ public interface ServerHelper {
     void updateAlias(int id, String verification, String alias, HttpBaseCallback callback);
 
     void uploadFile(User user, String file, HttpBaseCallback callback);
+
+    void changeHeadImg(int id, String verification, File headImg, HttpBaseCallback callback);
+
+    void downloadFile(String url, String path, String fileName, HttpBaseCallback callback);
+
+    void downloadImg(String imgName, HttpBaseCallback callback);
 
 }

@@ -14,7 +14,9 @@ public interface MainContract {
     interface Presenter extends BasePresenter {
         void updateAlias(String text);
 
-        void upload(String file);
+        void changeImg(String file);
+
+        void downloadImg(String imgName);
 
     }
 

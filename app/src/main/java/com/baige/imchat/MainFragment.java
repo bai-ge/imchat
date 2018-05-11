@@ -29,6 +29,7 @@ import android.widget.Toast;
 import com.ashokvarma.bottomnavigation.BadgeItem;
 import com.ashokvarma.bottomnavigation.BottomNavigationBar;
 import com.ashokvarma.bottomnavigation.BottomNavigationItem;
+import com.baige.BaseApplication;
 import com.baige.adapter.LastChatMsgAdapter;
 import com.baige.adapter.UserAdapter;
 import com.baige.chat.ChatActivity;
@@ -46,6 +47,7 @@ import com.lzy.imagepicker.bean.ImageItem;
 import com.lzy.imagepicker.ui.ImageGridActivity;
 import com.lzy.imagepicker.view.CropImageView;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,7 +65,7 @@ public class MainFragment extends Fragment implements MainContract.View, BottomN
 
     private MainContract.Presenter mPresenter;
 
-    private CircleImageView mHeadImg;
+    private CircleImageView mTitleHeadImg;
 
     private Button mBtnMenu;
 
@@ -76,6 +78,15 @@ public class MainFragment extends Fragment implements MainContract.View, BottomN
     private List<View> mViewList = new ArrayList<>();
 
     //组件
+    /*主界面 抽屉*/
+    private CircleImageView mDrawerUserImg;
+
+    private TextView mDrawerUserName;
+
+
+
+
+
     /*消息*/
     private ListView mLastChatListView;
 
@@ -137,10 +148,7 @@ public class MainFragment extends Fragment implements MainContract.View, BottomN
 //        mImagePicker.setOutPutY(1000);//保存文件的高度。单位像素
     }
 
-    @Override
-    public void setPresenter(MainContract.Presenter presenter) {
-        mPresenter = presenter;
-    }
+
 
     @Nullable
     @Override
@@ -180,7 +188,7 @@ public class MainFragment extends Fragment implements MainContract.View, BottomN
 
 
     private void initView(View root) {
-        mHeadImg = root.findViewById(R.id.user_img);
+        mTitleHeadImg = root.findViewById(R.id.user_img);
         mBtnMenu = root.findViewById(R.id.title_menu);
         mViewPager = root.findViewById(R.id.view_pager);
         mBottomNavigationBar = root.findViewById(R.id.bottom_navigation_bar);
@@ -414,7 +422,7 @@ public class MainFragment extends Fragment implements MainContract.View, BottomN
             if (bitmap != null) {
                 showUserImg(bitmap);
             }
-            mPresenter.upload(images.get(0).path);
+            mPresenter.changeImg(images.get(0).path);
             // mImagePicker.getImageLoader().displayImage(getActivity(), images.get(0).path, mCircleImageView, size / 4, size / 4);
             Log.d(TAG, "img path =" + images.get(0).path);
         } else {
@@ -481,8 +489,15 @@ public class MainFragment extends Fragment implements MainContract.View, BottomN
 
     @Override
     public void showUserImg(String imgName) {
-//        Bitmap bitmap = ImageLoader.decodeSampledBitmapFromResource(imgName, )
-
+        if(!Tools.isEquals(mCircleImageView.getTag(), imgName)){
+            Bitmap bitmap = ImageLoader.decodeSampledBitmapFromResource(BaseApplication.headImgPath + File.separator + imgName, mCircleImageView.getWidth());
+            if(bitmap == null){
+                mPresenter.downloadImg(imgName);
+            }else{
+                mCircleImageView.setTag(imgName);
+                showUserImg(bitmap);
+            }
+        }
     }
 
     @Override
@@ -494,25 +509,32 @@ public class MainFragment extends Fragment implements MainContract.View, BottomN
                     if (mCircleImageView != null) {
                         mCircleImageView.setImageBitmap(img);
                     }
-                    if (mHeadImg != null) {
-                        mHeadImg.setImageBitmap(img);
+                    if (mTitleHeadImg != null) {
+                        mTitleHeadImg.setImageBitmap(img);
+                    }
+                    if(mDrawerUserImg != null){
+                        mDrawerUserImg.setImageBitmap(img);
                     }
                 }
             });
         }
-
     }
 
     @Override
     public void showUserName(final String name) {
-        showTip("name"+name);
         mHandler.post(new Runnable() {
             @Override
             public void run() {
                 if (Tools.isEmpty(name)) {
                     mTxtUserName.setText("");
+                    if(mDrawerUserName != null){
+                        mDrawerUserName.setText("");
+                    }
                 } else {
                     mTxtUserName.setText(name);
+                    if(mDrawerUserName != null){
+                        mDrawerUserName.setText(name);
+                    }
                 }
             }
         });
@@ -547,5 +569,21 @@ public class MainFragment extends Fragment implements MainContract.View, BottomN
         if (imm.isActive()) {
             imm.hideSoftInputFromWindow( v.getApplicationWindowToken() , 0 );
         }
+    }
+
+    /*get and set*/
+    @Override
+    public void setPresenter(MainContract.Presenter presenter) {
+        mPresenter = presenter;
+    }
+
+
+
+    public void setDrawerUserImg(CircleImageView circleImageView) {
+        this.mDrawerUserImg = circleImageView;
+    }
+
+    public void setDrawerUserName(TextView textView) {
+        this.mDrawerUserName = textView;
     }
 }

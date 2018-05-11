@@ -6,12 +6,15 @@ package com.baige.login;
 import android.content.Intent;
 import android.util.Log;
 
+import com.baige.BaseActivity;
 import com.baige.BaseApplication;
 import com.baige.callback.HttpBaseCallback;
 import com.baige.data.entity.User;
 import com.baige.data.source.Repository;
 import com.baige.data.source.cache.CacheRepository;
 import com.baige.util.Tools;
+
+import java.io.File;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -78,6 +81,39 @@ public class LoginPresenter implements LoginContract.Presenter {
                 //TODO 保存用户数据
                 Log.d(TAG, user.toString());
                 user.setPassword(psw);
+                final User me = CacheRepository.getInstance().who();
+                //同一名用户
+                if(me != null && Tools.isEquals(me.getName(), user.getName())){
+                    if(!Tools.isEmpty(user.getImgName())){
+                        if(!Tools.isEquals(user.getImgName(), me.getImgName())){
+                            mRepository.downloadImg(user.getImgName(), new HttpBaseCallback(){
+                                @Override
+                                public void downloadFinish(String fileName) {
+                                    super.downloadFinish(fileName);
+                                    File file = new File(BaseApplication.headImgPath + File.separator + fileName);
+                                    if(file.exists()){
+                                        file.delete();
+                                    }
+                                    me.setImgName(fileName);
+                                    //TODO 通知图片下载完成
+                                }
+                            });
+                        }
+                    }else{
+                        //上传本地图片
+                        if(!Tools.isEmpty(me.getImgName())){
+                            File imgFile = new File(BaseApplication.headImgPath, me.getImgName());
+                            if(imgFile.exists()){
+                                mRepository.changeHeadImg(me.getId(), user.getVerification(), imgFile, new HttpBaseCallback(){
+                                    @Override
+                                    public void uploadFinish(String fileName) {
+                                        super.uploadFinish(fileName);
+                                    }
+                                });
+                            }
+                        }
+                    }
+                }
                 CacheRepository.getInstance().setYouself(user);
                 CacheRepository.getInstance().setLogin(true);
                 CacheRepository.getInstance().saveConfig(BaseApplication.getAppContext());

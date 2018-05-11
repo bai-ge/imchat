@@ -14,6 +14,7 @@ import com.baige.service.DaemonService;
 import com.baige.util.Loggerx;
 import com.baige.util.Tools;
 
+import java.io.File;
 import java.util.Map;
 
 
@@ -25,6 +26,8 @@ public class BaseApplication extends Application {
 
     public static String PACKAGE_NAME = "";
 
+    public static String headImgPath = "/head";
+
 
 
     @Override
@@ -32,6 +35,7 @@ public class BaseApplication extends Application {
         super.onCreate();
         self = this;
         PACKAGE_NAME = getPackageName();
+        headImgPath = getApplicationContext().getCacheDir().getAbsolutePath() + File.separator + "head";
         if(Tools.checkPermissionWriteExternalStorage(getApplicationContext())){
             Loggerx.bWriteToFile = true;
         }
