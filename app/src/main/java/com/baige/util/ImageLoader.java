@@ -118,5 +118,4 @@ public class ImageLoader {
         options.inJustDecodeBounds = false;
         return BitmapFactory.decodeFile(pathName, options);
     }
-
 }

@@ -3,6 +3,7 @@ package com.baige.data.source.remote;
 
 
 import com.baige.callback.HttpBaseCallback;
+import com.baige.data.entity.FriendView;
 import com.baige.data.entity.User;
 
 import java.io.File;
@@ -59,6 +60,10 @@ public interface ServerHelper {
 
         void loadUsers(List<User> list);
 
+        void loadFriendView(FriendView friendView);
+
+        void loadFriendViews(List<FriendView> list);
+
     }
     interface FileCallback{
         void progress(String fileName, long finishSize, long totalSize);
@@ -82,5 +87,11 @@ public interface ServerHelper {
     void downloadFile(String url, String path, String fileName, HttpBaseCallback callback);
 
     void downloadImg(String imgName, HttpBaseCallback callback);
+
+    void searchUserBykeyword(int id, String verification, String key, HttpBaseCallback callback);
+
+    void searchFriend(int id, String verification, HttpBaseCallback callback);
+
+    void changeFriendAlias(int id, int uid, String verification, String alias, HttpBaseCallback callback);
 
 }

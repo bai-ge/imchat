@@ -52,14 +52,17 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name="com.baige.filelist.FileListActivity">
-        </activity>
+        <activity android:name="com.baige.filelist.FileListActivity"/>
         <activity android:name="com.baige.telephone.PhoneActivity">
         </activity>
 
         <activity android:name="com.baige.login.LoginActivity"/>
         <activity android:name="com.baige.register.RegisterActivity"/>
         <activity android:name="com.baige.chat.ChatActivity"/>
+        <activity android:name="com.setting.SettingActivity"/>
+        <activity android:name="com.baige.search.SearchActivity"/>
+        <activity android:name="com.baige.friend.FriendActivity"
+                  android:windowSoftInputMode="adjustPan|stateHidden"/>
         //保活机制
         <service
             android:name="com.baige.service.DaemonService"
@@ -92,5 +95,4 @@
             android:enabled="true"
             android:exported="false"/>
     </application>
-
 </manifest>

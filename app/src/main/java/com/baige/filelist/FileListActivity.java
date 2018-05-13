@@ -73,7 +73,7 @@ public class FileListActivity extends BaseActivity {
         FileListFragment fileListFragment  = (FileListFragment) getSupportFragmentManager().findFragmentById(R.id.content_frame);
         if(fileListFragment == null){
             fileListFragment = FileListFragment.newInstance();
-            ActivityUtils.addFragmentToActivity(getSupportFragmentManager(), fileListFragment, R.id.contentFrame);
+            ActivityUtils.addFragmentToActivity(getSupportFragmentManager(), fileListFragment, R.id.content_frame);
         }
         mFileListPresenter = new FileListPresenter(Repository.getInstance(LocalRepository.getInstance(getApplicationContext())), fileListFragment);
     }

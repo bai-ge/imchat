@@ -5,13 +5,13 @@ import android.util.Log;
 import com.baige.BaseApplication;
 import com.baige.callback.HttpBaseCallback;
 import com.baige.common.Parm;
+import com.baige.data.dao.FriendDAO;
 import com.baige.data.dao.UserDAO;
 import com.baige.data.entity.User;
 import com.baige.data.source.DataSource;
+import com.baige.data.source.cache.CacheRepository;
 import com.baige.data.source.local.LocalRepository;
 import com.baige.util.UploadTools;
-import com.baige.util.UploadUtil;
-import com.google.common.net.MediaType;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -46,8 +46,6 @@ public class RemoteRepository implements DataSource, ServerHelper {
 
     private static RemoteRepository INSTANCE = null;
 
-    private String serverAddress = "http://172.25.190.1:8080";
-
     private static final int TIME_OUT = 10 * 1000;// 超时时间
 
     private static final String CHARSET = "utf-8";// 设置编码
@@ -70,6 +68,9 @@ public class RemoteRepository implements DataSource, ServerHelper {
         return INSTANCE;
     }
 
+    public String getServerAddress() {
+        return "http://"+CacheRepository.getInstance().getServerIp()+":8080";
+    }
 
     private void HttpURLPost(String url, String json, PrimaryCallback callBack) {
         checkNotNull(url);
@@ -290,6 +291,7 @@ public class RemoteRepository implements DataSource, ServerHelper {
         }
     }
 
+    //TODO 保留，但不用
     @Override
     public void downloadFile(String url, String path, String fileName, HttpBaseCallback callback) {
         HttpURLConnection conn = null;
@@ -359,7 +361,7 @@ public class RemoteRepository implements DataSource, ServerHelper {
     @Override
     public void login(User user, HttpBaseCallback callBack) {
         Log.d(TAG, "登录：" + user);
-        String url = serverAddress + "/imchat/user/login.action";
+        String url = getServerAddress() + "/imchat/user/login.action";
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put(UserDAO.NAME, user.getName());
@@ -375,7 +377,7 @@ public class RemoteRepository implements DataSource, ServerHelper {
     @Override
     public void register(User user, HttpBaseCallback callBack) {
         Log.d(TAG, "注册：" + user);
-        String url = serverAddress + "/imchat/user/register.action";
+        String url = getServerAddress() + "/imchat/user/register.action";
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put(UserDAO.NAME, user.getName());
@@ -390,7 +392,7 @@ public class RemoteRepository implements DataSource, ServerHelper {
     @Override
     public void updateAlias(int id, String verification, String alias, HttpBaseCallback callback) {
         Log.d(TAG, "修改别名：" + alias);
-        String url = serverAddress + "/imchat/user/alias.action";
+        String url = getServerAddress() + "/imchat/user/alias.action";
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put(UserDAO.ID, id);
@@ -409,7 +411,7 @@ public class RemoteRepository implements DataSource, ServerHelper {
 
     @Override
     public void changeHeadImg(int id, String verification, File headImg, HttpBaseCallback callback) {
-        String url = serverAddress + "/imchat/user/changeImg.action";
+        String url = getServerAddress() + "/imchat/user/changeImg.action";
         Map<String, String> params = new HashMap<>();
         params.put(UserDAO.ID, String.valueOf(id));
         params.put(UserDAO.VERIFICATION, verification);
@@ -418,13 +420,13 @@ public class RemoteRepository implements DataSource, ServerHelper {
 
     @Override
     public void downloadImg(String imgName, HttpBaseCallback callback) {
-        String url = serverAddress + "/imchat/user/downloadImg.action?imgFileName="+imgName;
-        downloadFile(url, BaseApplication.headImgPath, imgName, callback);
+        String url = getServerAddress() + "/imchat/user/downloadImg.action?imgFileName="+imgName;
+        LoadingManager.getInstance().downloadFile(url, BaseApplication.headImgPath, imgName, callback);
     }
 
     @Override
     public void uploadFile(User user, String file, HttpBaseCallback callback) {
-        String url = serverAddress + "/imchat/file/upload.action";
+        String url = getServerAddress() + "/imchat/file/upload.action";
         String urlgotc = "http://192.168.1.102:8082/gotcModule/uploadFiles.action";
         String eclipseUrl = "http://192.168.1.102:8080/struts/upload";
         File f = new File(file);
@@ -432,5 +434,53 @@ public class RemoteRepository implements DataSource, ServerHelper {
 
         UploadTools.uploadFile(f, url, "upload");
         // doPost(url, file);
+    }
+
+    @Override
+    public void searchUserBykeyword(int id, String verification, String key, HttpBaseCallback callback) {
+        Log.d(TAG, "查找用户：" + key);
+        String url = getServerAddress() + "/imchat/user/search.action";
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put(UserDAO.ID, id);
+            jsonObject.put(UserDAO.VERIFICATION, verification);
+            jsonObject.put(Parm.KEYWORD, key);
+            HttpURLPost(url, jsonObject.toString(), callback);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            callback.error(e);
+        }
+    }
+
+    @Override
+    public void searchFriend(int id, String verification, HttpBaseCallback callback) {
+        Log.d(TAG, "查找好友");
+        String url = getServerAddress() + "/imchat/friend/search.action";
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put(Parm.UID, id);
+            jsonObject.put(UserDAO.VERIFICATION, verification);
+            HttpURLPost(url, jsonObject.toString(), callback);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            callback.error(e);
+        }
+    }
+
+    @Override
+    public void changeFriendAlias(int id, int uid, String verification, String alias, HttpBaseCallback callback) {
+        Log.d(TAG, "更改好友备注");
+        String url = getServerAddress() + "/imchat/friend/changAlias.action";
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put(FriendDAO.ID, id);
+            jsonObject.put(Parm.UID, uid);
+            jsonObject.put(UserDAO.VERIFICATION, verification);
+            jsonObject.put(UserDAO.ALIAS, alias);
+            HttpURLPost(url, jsonObject.toString(), callback);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            callback.error(e);
+        }
     }
 }

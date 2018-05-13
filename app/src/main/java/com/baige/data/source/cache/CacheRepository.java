@@ -9,6 +9,7 @@ import android.util.Log;
 import com.baige.AppConfigure;
 import com.baige.BaseApplication;
 import com.baige.data.entity.User;
+import com.baige.util.Tools;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -36,6 +37,15 @@ public class CacheRepository {
     private User me;
 
     private boolean isLogin;
+
+    private String serverIp;
+
+    public String getServerIp(){
+        if(Tools.isEmpty(serverIp)){
+            readConfig(BaseApplication.getAppContext());
+        }
+        return serverIp;
+    }
 
    static {
        //文件名，应用名称
@@ -155,7 +165,9 @@ public class CacheRepository {
         me.setPassword(preferences.getString(AppConfigure.KEY_PASSWORD, ""));
         me.setAlias(preferences.getString(AppConfigure.KEY_USER_ALIAS, ""));
         me.setVerification(preferences.getString(AppConfigure.KEY_VERIFICATION, ""));
+        me.setImgName(preferences.getString(AppConfigure.KEY_USER_IMG, ""));
         setLogin(preferences.getBoolean(AppConfigure.IS_LOGIN, false));
+        serverIp = preferences.getString(AppConfigure.KEY_PHONE_SERVER_IP, AppConfigure.DEFAULT_PHONE_SERVER_IP);
     }
 
     public void saveConfig(Context context) {
@@ -170,8 +182,10 @@ public class CacheRepository {
             editor.putString(AppConfigure.KEY_USER_ALIAS, me.getAlias());
             editor.putString(AppConfigure.KEY_PASSWORD, me.getPassword());
             editor.putString(AppConfigure.KEY_VERIFICATION, me.getVerification());
+            editor.putString(AppConfigure.KEY_USER_IMG, me.getImgName());
         }
         editor.putBoolean(AppConfigure.KEY_IS_LOGIN, isLogin());
+        editor.putString(AppConfigure.KEY_PHONE_SERVER_IP, serverIp);
         editor.apply();
     }
 }

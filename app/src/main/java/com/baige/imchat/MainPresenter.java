@@ -1,16 +1,16 @@
 package com.baige.imchat;
 
-import com.baige.BaseActivity;
-import com.baige.BaseApplication;
+import android.util.Log;
+
 import com.baige.callback.HttpBaseCallback;
-import com.baige.data.entity.FileInfo;
+import com.baige.data.entity.FriendView;
 import com.baige.data.entity.User;
 import com.baige.data.source.Repository;
 import com.baige.data.source.cache.CacheRepository;
 import com.baige.util.Tools;
-import com.baige.util.UploadUtil;
 
 import java.io.File;
+import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -35,10 +35,13 @@ public class MainPresenter implements MainContract.Presenter {
     @Override
     public void start() {
         User user = CacheRepository.getInstance().who();
+        Log.d(TAG, "开始"+user);
         if(user != null){
             mFragment.showUserName(user.getName());
             mFragment.showUserAlias(user.getAlias());
+//            这里显示会引起界面未初始化完成
             mFragment.showUserImg(user.getImgName());
+            loadFriends();
         }
     }
 
@@ -75,13 +78,14 @@ public class MainPresenter implements MainContract.Presenter {
     @Override
     public void changeImg(String fileName) {
         mFragment.showTip("开始上传文件"+fileName);
-        User user = CacheRepository.getInstance().who();
-        File file = new File(fileName);
+        final User user = CacheRepository.getInstance().who();
+        final File file = new File(fileName);
         mRepository.changeHeadImg(user.getId(), user.getVerification(), file, new HttpBaseCallback(){
             @Override
             public void success() {
                 super.success();
                 mFragment.showTip("成功");
+                user.setImgName(file.getName());
             }
 
             @Override
@@ -105,6 +109,32 @@ public class MainPresenter implements MainContract.Presenter {
                 public void downloadFinish(String fileName) {
                     super.downloadFinish(fileName);
                     mFragment.showUserImg(fileName);
+                }
+            });
+        }
+    }
+
+    @Override
+    public void loadFriends() {
+        User user = CacheRepository.getInstance().who();
+        if(user != null && !Tools.isEmpty(user.getVerification())){
+            mRepository.searchFriend(user.getId(), user.getVerification(), new HttpBaseCallback(){
+                @Override
+                public void meaning(String text) {
+                    super.meaning(text);
+                    mFragment.showTip(text);
+                }
+
+                @Override
+                public void fail() {
+                    super.fail();
+                    mFragment.showTip("加载好友失败");
+                }
+
+                @Override
+                public void loadFriendViews(List<FriendView> list) {
+                    super.loadFriendViews(list);
+                    mFragment.showFriends(list);
                 }
             });
         }

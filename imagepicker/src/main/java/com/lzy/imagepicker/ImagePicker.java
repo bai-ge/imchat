@@ -170,7 +170,7 @@ public class ImagePicker {
 
     public File getCropCacheFolder(Context context) {
         if (cropCacheFolder == null) {
-            cropCacheFolder = new File(context.getCacheDir() + "/head/");
+            cropCacheFolder = new File(context.getCacheDir() + "/imagePicker/tmp/");
         }
         return cropCacheFolder;
     }

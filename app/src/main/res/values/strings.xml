@@ -22,6 +22,7 @@
     <string name="tab_person">个人</string>
 
     <string name="user_name">昵称</string>
+    <string name="friend_alias">好友备注</string>
     <string name="email">email@163.com</string>
     <string name="chat_message">这是一条很长很长的消息这是一条很长很长的消息这是一条很长很长的消息这是一条很长很长的消息这是一条很长很长的消息</string>
     <string name="network">离线</string>
@@ -30,5 +31,17 @@
 
     <string name="input_type_digits">123456789qwertyuiopasdfghjklzxcvbnm</string>
     <string name="null_info">这里什么都没有</string>
+
+    <string-array name="server_ip">
+        <item>120.78.148.180</item>
+        <item>39.108.74.14</item>
+        <item>192.168.1.100</item>
+        <item>192.168.1.101</item>
+        <item>192.168.1.102</item>
+        <item>192.168.1.103</item>
+        <item>192.168.1.104</item>
+        <item>192.168.1.105</item>
+        <item>其它</item>
+    </string-array>
 
 </resources>

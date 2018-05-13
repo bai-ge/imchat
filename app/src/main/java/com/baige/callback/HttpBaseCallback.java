@@ -1,6 +1,7 @@
 package com.baige.callback;
 
 
+import com.baige.data.entity.FriendView;
 import com.baige.data.entity.User;
 import com.baige.data.source.remote.ServerHelper;
 
@@ -102,6 +103,16 @@ public class HttpBaseCallback extends BaseCallback implements ServerHelper.Prima
 
     @Override
     public void loadUsers(List<User> list) {
+
+    }
+
+    @Override
+    public void loadFriendView(FriendView friendView) {
+
+    }
+
+    @Override
+    public void loadFriendViews(List<FriendView> list) {
 
     }
 

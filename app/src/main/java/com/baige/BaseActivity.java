@@ -11,6 +11,8 @@ import android.util.Log;
 import android.widget.Toast;
 
 
+import com.baige.util.ImageLoader;
+
 import java.util.ArrayList;
 import java.util.List;
 

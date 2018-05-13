@@ -12,6 +12,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.baige.data.entity.User;
+import com.baige.data.source.cache.CacheRepository;
 import com.baige.imchat.R;
 import com.baige.register.RegisterActivity;
 import com.baige.util.Tools;
@@ -90,7 +92,23 @@ public class LoginFragment extends Fragment implements LoginContract.View{
         mBtmHome.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getActivity().onBackPressed();
+                String name = mTxtName.getText().toString();
+                String psw = mTxtPsw.getText().toString();
+                if (Tools.isEmpty(name)) {
+                    showTip("用户名为空");
+                }  else if (Tools.isEmpty(psw)) {
+                    showTip("密码为空");
+                } else {
+                    User user = CacheRepository.getInstance().who();
+                    if(user == null){
+                        user = new User();
+                        CacheRepository.getInstance().setYouself(user);
+                    }
+                    user.setName(name);
+                    user.setPassword(psw);
+                    CacheRepository.getInstance().setLogin(true);
+                    getActivity().onBackPressed();
+                }
             }
         });
     }

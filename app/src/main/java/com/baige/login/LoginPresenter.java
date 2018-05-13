@@ -1,12 +1,8 @@
 package com.baige.login;
 
 
-
-
-import android.content.Intent;
 import android.util.Log;
 
-import com.baige.BaseActivity;
 import com.baige.BaseApplication;
 import com.baige.callback.HttpBaseCallback;
 import com.baige.data.entity.User;
@@ -39,7 +35,7 @@ public class LoginPresenter implements LoginContract.Presenter {
     @Override
     public void start() {
         User user = CacheRepository.getInstance().who();
-        if(user != null){
+        if (user != null) {
             mFragment.showName(user.getName());
             mFragment.setPsw(user.getPassword());
         }
@@ -57,7 +53,7 @@ public class LoginPresenter implements LoginContract.Presenter {
 
     @Override
     public void login(User user, final String psw) {
-        mRepository.login(user, new HttpBaseCallback(){
+        mRepository.login(user, new HttpBaseCallback() {
             @Override
             public void meaning(String text) {
                 super.meaning(text);
@@ -83,34 +79,18 @@ public class LoginPresenter implements LoginContract.Presenter {
                 user.setPassword(psw);
                 final User me = CacheRepository.getInstance().who();
                 //同一名用户
-                if(me != null && Tools.isEquals(me.getName(), user.getName())){
-                    if(!Tools.isEmpty(user.getImgName())){
-                        if(!Tools.isEquals(user.getImgName(), me.getImgName())){
-                            mRepository.downloadImg(user.getImgName(), new HttpBaseCallback(){
+                if (me != null && Tools.isEquals(me.getName(), user.getName())) {
+                    //上传本地图片
+                    if (Tools.isEmpty(user.getImgName()) && !Tools.isEmpty(me.getImgName())) {
+                        user.setImgName(me.getImgName());
+                        File imgFile = new File(BaseApplication.headImgPath, me.getImgName());
+                        if (imgFile.exists()) {
+                            mRepository.changeHeadImg(me.getId(), user.getVerification(), imgFile, new HttpBaseCallback() {
                                 @Override
-                                public void downloadFinish(String fileName) {
-                                    super.downloadFinish(fileName);
-                                    File file = new File(BaseApplication.headImgPath + File.separator + fileName);
-                                    if(file.exists()){
-                                        file.delete();
-                                    }
-                                    me.setImgName(fileName);
-                                    //TODO 通知图片下载完成
+                                public void uploadFinish(String fileName) {
+                                    super.uploadFinish(fileName);
                                 }
                             });
-                        }
-                    }else{
-                        //上传本地图片
-                        if(!Tools.isEmpty(me.getImgName())){
-                            File imgFile = new File(BaseApplication.headImgPath, me.getImgName());
-                            if(imgFile.exists()){
-                                mRepository.changeHeadImg(me.getId(), user.getVerification(), imgFile, new HttpBaseCallback(){
-                                    @Override
-                                    public void uploadFinish(String fileName) {
-                                        super.uploadFinish(fileName);
-                                    }
-                                });
-                            }
                         }
                     }
                 }

@@ -3,6 +3,7 @@ package com.baige.adapter;
 import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,8 +12,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 
-import com.baige.AppConfigure;
+import com.baige.BaseApplication;
+import com.baige.callback.HttpBaseCallback;
 import com.baige.data.entity.User;
+import com.baige.data.source.cache.CacheRepository;
+import com.baige.data.source.remote.LoadingManager;
 import com.baige.imchat.R;
 import com.baige.util.ImageLoader;
 import com.baige.util.Tools;
@@ -79,11 +83,12 @@ public class UserAdapter extends BaseAdapter {
         ViewHolder holder = null;
         if (convertView == null) {
             LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-            convertView = inflater.inflate(R.layout.item_friend, parent, false);
+            convertView = inflater.inflate(R.layout.item_user, parent, false);
             holder = new ViewHolder();
             holder.viewGroup = convertView.findViewById(R.id.linear_item);
             holder.imgView = (ImageView) convertView.findViewById(R.id.img_user);
             holder.nameView = (TextView) convertView.findViewById(R.id.txt_user_name);
+            holder.aliasView = (TextView) convertView.findViewById(R.id.txt_user_alias);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
@@ -99,20 +104,59 @@ public class UserAdapter extends BaseAdapter {
      * @param holder
      * @param position
      */
-    private void setHolder(ViewHolder holder, int position) {
+    private void setHolder(final ViewHolder holder, int position) {
         final User item = mList.get(position);
-        String name = item.getAlias();
-        if(!Tools.isEmpty(name)){
-            holder.nameView.setText(name);
-        }else{
-            holder.nameView.setText(item.getName());
+        String name = item.getName();
+        holder.nameView.setText(name);
+        if(!Tools.isEmpty(item.getAlias())){
+            holder.aliasView.setText(item.getAlias());
+        }else {
+            holder.aliasView.setText("");
         }
         //TODO 设置照片
-        Bitmap bitmap = mImageLoader.getBitmapFromMemoryCache(AppConfigure.HEAD_IMG_PATH + File.separator + item.getName());
-        if(bitmap == null){
-            holder.imgView.setImageResource(R.drawable.head_img);
-        }else{
-            holder.imgView.setImageBitmap(bitmap);
+        if(!Tools.isEmpty(item.getImgName())){
+            final String path = BaseApplication.headImgPath + File.separator + item.getImgName();
+            Bitmap bitmap = mImageLoader.getBitmapFromMemoryCache(path);
+            if(bitmap == null){
+                Log.d(TAG, "从文件"+item.getImgName());
+                int size = holder.imgView.getWidth();
+                if(size <= 0){
+                    size = 90;
+                }
+                Log.d(TAG, "图片宽度："+size);
+                bitmap = ImageLoader.decodeSampledBitmapFromResource(path, size);
+            }
+            if (bitmap == null) {
+                holder.imgView.setImageResource(R.drawable.head_img);
+                Log.d(TAG, "从网络"+item.getImgName());
+                String url = "http://"+CacheRepository.getInstance().getServerIp() + ":8080/imchat/user/downloadImg.action?imgFileName="+item.getImgName();
+                LoadingManager.getInstance().downloadFile(url, BaseApplication.headImgPath, item.getImgName(), new HttpBaseCallback(){
+                    @Override
+                    public void downloadFinish(String fileName) {
+                        super.downloadFinish(fileName);
+                        mHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                int size = holder.imgView.getWidth();
+                                if(size <= 0){
+                                    size = 90;
+                                }
+                                Bitmap bm = ImageLoader.decodeSampledBitmapFromResource(path, size);
+                                if(bm != null){
+                                    ImageLoader.getInstance().addBitmapToMemoryCache(path, bm);
+                                    Bitmap showBm = bm.copy(Bitmap.Config.ARGB_8888, true);
+                                    holder.imgView.setImageBitmap(showBm);
+                                }
+                            }
+                        });
+                    }
+                });
+            } else {
+                Log.d(TAG, "显示"+item.getImgName());
+                ImageLoader.getInstance().addBitmapToMemoryCache(path, bitmap);
+                Bitmap showBm = bitmap.copy(Bitmap.Config.ARGB_8888, true);
+                holder.imgView.setImageBitmap(showBm);
+            }
         }
         holder.viewGroup.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -152,6 +196,7 @@ public class UserAdapter extends BaseAdapter {
         ViewGroup viewGroup;
         ImageView imgView;
         TextView nameView;
+        TextView aliasView;
     }
 
    public interface OnUserItemListener{

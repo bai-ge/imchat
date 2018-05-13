@@ -31,10 +31,13 @@ public class UserResponseBinder extends AbstractResponseBinder {
                     int codeNum = jsonObject.getInt(Parm.CODE);
                     JSONObject userJson;
                     //TODO 可能去掉MSG
-                    String text = jsonObject.getString(Parm.MEAN);
-                    if(!Tools.isEmpty(text)){
-                        callBack.meaning(text);
+                    if(jsonObject.has(Parm.MEAN)){
+                        String text = jsonObject.getString(Parm.MEAN);
+                        if(!Tools.isEmpty(text)){
+                            callBack.meaning(text);
+                        }
                     }
+
                     if(codeNum == Parm.SUCCESS_CODE && jsonObject.has(Parm.USER)){
                         userJson = jsonObject.getJSONObject(Parm.USER);
                         User user = User.createByJson(userJson);

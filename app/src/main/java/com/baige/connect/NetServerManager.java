@@ -1,7 +1,6 @@
 package com.baige.connect;
 
 
-import android.os.CountDownTimer;
 import android.util.Log;
 
 import java.util.ArrayList;

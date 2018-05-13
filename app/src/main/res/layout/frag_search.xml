@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:id="@+id/activity_add_member"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              tools:context="com.baige.search.SearchActivity">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/bg_1"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/et_find_word"
+            android:layout_width="0dp"
+            android:layout_height="39dp"
+            android:layout_margin="10dp"
+            android:layout_weight="1.0"
+            android:background="@drawable/shape_white_range"
+            android:hint="用户名/手机号"
+            android:paddingLeft="5dp"
+            android:textColorHint="#b3b3b3"
+            android:textSize="18sp"/>
+
+        <Button
+            android:id="@+id/btn_search"
+            android:layout_width="60dp"
+            android:layout_height="39dp"
+            android:layout_margin="10dp"
+            android:layout_marginRight="11dp"
+            android:background="@drawable/ic_btn_enable"
+            android:text="搜索"
+            android:textSize="14sp"/>
+    </LinearLayout>
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/bg_1">
+
+        <ListView
+            android:id="@+id/list_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:divider="@null"
+            android:dividerHeight="2dp"
+            android:fastScrollEnabled="true"
+            android:focusable="true"
+            android:listSelector="@android:color/transparent"
+            android:padding="12dp"
+            android:scrollbars="none"/>
+
+        <LinearLayout
+            android:id="@+id/layout_null"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@drawable/icon_friends_null"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/fab_margin"
+                android:layout_gravity="center"
+                android:textColor="@color/grass_primary"
+                android:text="@string/null_info"/>
+        </LinearLayout>
+
+    </RelativeLayout>
+
+</LinearLayout>

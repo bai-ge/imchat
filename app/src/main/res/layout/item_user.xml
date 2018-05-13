@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="80dp"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/linear_item"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clickable="true"
+        android:background="@drawable/selector_card_bg"
+        android:src="@drawable/selector_file_list_bottom_menu"
+        android:layout_marginTop="@dimen/fab_margin"
+        android:orientation="horizontal">
+        <!--文件图标-->
+        <LinearLayout
+            android:layout_width="55dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center">
+
+            <com.baige.view.CircleImageView
+                android:id="@+id/img_user"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:layout_margin="5dp"
+                android:layout_gravity="center"
+                android:scaleType="centerCrop"
+                android:src="@drawable/head_img"/>
+        </LinearLayout>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <LinearLayout
+                android:id="@+id/layout_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:layout_alignParentEnd="true">
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_toStartOf="@id/layout_btn"
+                android:gravity="center"
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/txt_user_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="left"
+                    android:maxLength="25"
+                    android:text="@string/user_name"
+                    android:ellipsize="middle"
+                    android:minLines="1"
+                    android:textSize="18sp"
+                    android:textColor="@color/text_color_black"/>
+                <TextView
+                    android:id="@+id/txt_user_alias"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="left"
+                    android:maxLength="16"
+                    android:ellipsize="middle"
+                    android:text="@string/user_name"
+                    android:textColor="@color/grass_dark"/>
+            </LinearLayout>
+
+        </RelativeLayout>
+    </LinearLayout>
+
+</RelativeLayout>

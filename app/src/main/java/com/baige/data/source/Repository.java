@@ -2,6 +2,7 @@ package com.baige.data.source;
 
 import android.support.annotation.NonNull;
 
+import com.baige.callback.FriendResponseBinder;
 import com.baige.callback.HttpBaseCallback;
 import com.baige.callback.SimpleResponseBinder;
 import com.baige.callback.UserResponseBinder;
@@ -14,7 +15,6 @@ import java.io.File;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import static com.google.common.base.Preconditions.checkElementIndex;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
@@ -39,11 +39,14 @@ public class Repository implements DataSource, ServerHelper{
 
     private UserResponseBinder mUserResponseBinder;
 
+    private FriendResponseBinder mFriendResponseBinder;
+
     private Repository(LocalRepository localRepository) {
         mLocalRepository =  checkNotNull(localRepository);
         mRemoteRepository = RemoteRepository.getInstance(localRepository);
         mSimpleResponseBinder = new SimpleResponseBinder();
         mUserResponseBinder = new UserResponseBinder();
+        mFriendResponseBinder = new FriendResponseBinder();
         fixedThreadPool = Executors.newFixedThreadPool(5);//创建最多能并发运行5个线程的线程池
     }
 
@@ -178,6 +181,59 @@ public class Repository implements DataSource, ServerHelper{
             });
         }else{
             callback.fail(imgName);
+        }
+    }
+
+    @Override
+    public void searchUserBykeyword(final int id, final String verification, final String key, final HttpBaseCallback callback) {
+        checkNotNull(verification);
+        checkNotNull(key);
+        checkNotNull(callback);
+        callback.setResponseBinder(mUserResponseBinder);
+        if (fixedThreadPool != null) {
+            fixedThreadPool.submit(new Runnable() {
+                @Override
+                public void run() {
+                    mRemoteRepository.searchUserBykeyword(id, verification, key, callback);
+                }
+            });
+        }else{
+            callback.fail();
+        }
+    }
+
+    @Override
+    public void searchFriend(final int id, final String verification, final HttpBaseCallback callback) {
+        checkNotNull(verification);
+        checkNotNull(callback);
+        callback.setResponseBinder(mFriendResponseBinder);
+        if (fixedThreadPool != null) {
+            fixedThreadPool.submit(new Runnable() {
+                @Override
+                public void run() {
+                    mRemoteRepository.searchFriend(id, verification, callback);
+                }
+            });
+        }else{
+            callback.fail();
+        }
+    }
+
+    @Override
+    public void changeFriendAlias(final int id, final int uid, final String verification, final String alias, final HttpBaseCallback callback) {
+        checkNotNull(verification);
+        checkNotNull(alias);
+        checkNotNull(callback);
+        callback.setResponseBinder(mSimpleResponseBinder);
+        if (fixedThreadPool != null) {
+            fixedThreadPool.submit(new Runnable() {
+                @Override
+                public void run() {
+                    mRemoteRepository.changeFriendAlias(id, uid, verification, alias, callback);
+                }
+            });
+        }else{
+            callback.fail();
         }
     }
 }

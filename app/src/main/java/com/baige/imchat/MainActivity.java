@@ -7,7 +7,6 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 
@@ -18,6 +17,7 @@ import com.baige.data.source.local.LocalRepository;
 import com.baige.login.LoginActivity;
 import com.baige.util.ActivityUtils;
 import com.baige.view.CircleImageView;
+import com.setting.SettingActivity;
 
 public class MainActivity extends BaseActivity {
 
@@ -75,6 +75,8 @@ public class MainActivity extends BaseActivity {
                                 break;
                             case R.id.navigation_menu_setting:
                                 showTip(menuItem.getTitle().toString());
+                                intent = new Intent(MainActivity.this, SettingActivity.class);
+                                startActivity(intent);
                                 break;
                             case R.id.navigation_menu_info:
                                 showTip(menuItem.getTitle().toString());

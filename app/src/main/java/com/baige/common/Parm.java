@@ -7,6 +7,11 @@ public class Parm {
     public final static String PASSWORD = "password";
     public final static String CODE = "code";
     public final static String MEAN = "mean";
+    public final static String KEYWORD = "keyword";
+
+    public final static String FRIENDS = "friends";
+    public final static String FRIEND = "friend";
+    public final static String UID = "uid";
 
     public static final int SUCCESS_CODE = 200;
     public static final int FAIL_CODE = 500;

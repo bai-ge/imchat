@@ -27,9 +27,11 @@ public class SimpleResponseBinder extends AbstractResponseBinder {
                     int codeNum = jsonObject.getInt(Parm.CODE);
 
                     //TODO 可能去掉MSG
-                    String text = jsonObject.getString(Parm.MEAN);
-                    if(!Tools.isEmpty(text)){
-                        callBack.meaning(text);
+                    if(jsonObject.has(Parm.MEAN)){
+                        String text = jsonObject.getString(Parm.MEAN);
+                        if(!Tools.isEmpty(text)){
+                            callBack.meaning(text);
+                        }
                     }
                     callbackCode(callBack, codeNum);
                     //TODO 暂时仅处理返回码

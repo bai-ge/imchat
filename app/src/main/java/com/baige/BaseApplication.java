@@ -8,6 +8,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
+import android.os.Environment;
 
 import com.baige.data.entity.AppPackgeInfo;
 import com.baige.service.DaemonService;
@@ -28,14 +29,27 @@ public class BaseApplication extends Application {
 
     public static String headImgPath = "/head";
 
+    public static String tmpPath = "/tmp";
 
+    public String getDiskCacheDir(Context context) {
+        String cachePath = null;
+        if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())
+                || !Environment.isExternalStorageRemovable()) {
+            cachePath = context.getExternalCacheDir().getPath();
+        } else {
+            cachePath = context.getCacheDir().getPath();
+        }
+        return cachePath;
+    }
 
     @Override
     public void onCreate() {
         super.onCreate();
         self = this;
         PACKAGE_NAME = getPackageName();
-        headImgPath = getApplicationContext().getCacheDir().getAbsolutePath() + File.separator + "head";
+        headImgPath = getDiskCacheDir(getAppContext()) + File.separator + "head";
+        tmpPath =  getDiskCacheDir(getAppContext()) + File.separator + "tmp";
+
         if(Tools.checkPermissionWriteExternalStorage(getApplicationContext())){
             Loggerx.bWriteToFile = true;
         }

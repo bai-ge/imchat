@@ -8,6 +8,11 @@ import com.baige.data.source.cache.CacheRepository;
 import com.baige.exception.IllegalFilePath;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -154,6 +159,52 @@ public class FileUtils {
             Log.e(TAG, "重命名失败");
         }
         return result;
+    }
+
+    public static boolean moveTo(File oldFile, File newFile){
+        boolean result = false;
+        long time = System.currentTimeMillis();
+        try {
+            result = oldFile.renameTo(newFile);
+        } catch (Exception e) {
+            Log.e(TAG, "重命名失败");
+        }
+        if(!result){
+            int length = 2097152;
+            FileInputStream in = null;
+            FileOutputStream out = null;
+            try {
+                in = new FileInputStream(oldFile);
+                out = new FileOutputStream(newFile);
+                FileChannel inC = in.getChannel();
+                FileChannel outC = out.getChannel();
+                ByteBuffer b = null;
+                while(true){
+                    if( inC.position() == inC.size()){
+                        inC.close();
+                        outC.close();
+                        Log.d(TAG, "移动文件成功！time:"+ String.valueOf(System.currentTimeMillis() - time));
+                        oldFile.delete();
+                        return true;
+                    }
+                    if((inC.size()-inC.position()) < length){
+                        length = (int)(inC.size() - inC.position());
+                    }else{
+                        length = 2097152;
+                    }
+                    b = ByteBuffer.allocateDirect(length);
+                    inC.read(b);
+                    b.flip();
+                    outC.write(b);
+                    outC.force(false);
+                }
+            } catch (IOException e){
+                e.printStackTrace();
+            }
+            return false;
+        }
+        return result;
+
     }
 
     /**
