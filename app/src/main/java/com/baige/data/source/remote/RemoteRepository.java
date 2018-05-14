@@ -5,8 +5,11 @@ import android.util.Log;
 import com.baige.BaseApplication;
 import com.baige.callback.HttpBaseCallback;
 import com.baige.common.Parm;
+import com.baige.data.dao.ChatMessageDAO;
 import com.baige.data.dao.FriendDAO;
 import com.baige.data.dao.UserDAO;
+import com.baige.data.entity.ChatMsgInfo;
+import com.baige.data.entity.FriendView;
 import com.baige.data.entity.User;
 import com.baige.data.source.DataSource;
 import com.baige.data.source.cache.CacheRepository;
@@ -477,6 +480,108 @@ public class RemoteRepository implements DataSource, ServerHelper {
             jsonObject.put(Parm.UID, uid);
             jsonObject.put(UserDAO.VERIFICATION, verification);
             jsonObject.put(UserDAO.ALIAS, alias);
+            HttpURLPost(url, jsonObject.toString(), callback);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            callback.error(e);
+        }
+    }
+
+    @Override
+    public void relateUser(int uid, String verification, int friendId, HttpBaseCallback callback) {
+        Log.d(TAG, "添加好友");
+        String url = getServerAddress() + "/imchat/friend/relate.action";
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put(Parm.UID, uid);
+            jsonObject.put(UserDAO.VERIFICATION, verification);
+            jsonObject.put(FriendDAO.FRIEND_ID, friendId);
+            HttpURLPost(url, jsonObject.toString(), callback);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            callback.error(e);
+        }
+    }
+
+    @Override
+    public void operationFriend(int id, int uid, String verification, int friendId, String operation, HttpBaseCallback callback) {
+        Log.d(TAG, "好友操作" + operation);
+        String url = getServerAddress() + "/imchat/friend/operation.action";
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put(FriendDAO.ID, id);
+            jsonObject.put(Parm.UID, uid);
+            jsonObject.put(UserDAO.VERIFICATION, verification);
+            jsonObject.put(FriendDAO.FRIEND_ID, friendId);
+            jsonObject.put(Parm.OPERATION, operation);
+            HttpURLPost(url, jsonObject.toString(), callback);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            callback.error(e);
+        }
+    }
+
+    @Override
+    public void sendMsg(int uid, String verification, int friendId, String msg, int type, HttpBaseCallback callback) {
+        Log.d(TAG, "发送信息" + msg);
+        String url = getServerAddress() + "/imchat/chat/send.action";
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put(ChatMessageDAO.SENDER_ID, uid);
+            jsonObject.put(UserDAO.VERIFICATION, verification);
+            jsonObject.put(ChatMessageDAO.RECEIVE_ID, friendId);
+            jsonObject.put(ChatMessageDAO.CONTEXT, msg);
+            jsonObject.put(ChatMessageDAO.CONTEXT_TYPE, type);
+            HttpURLPost(url, jsonObject.toString(), callback);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            callback.error(e);
+        }
+    }
+
+    @Override
+    public void findMsgRelate(int uid, String verification, int friendId, HttpBaseCallback callback) {
+        Log.d(TAG, "查找消息");
+        String url = getServerAddress() + "/imchat/chat/find.action";
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put(ChatMessageDAO.SENDER_ID, uid);
+            jsonObject.put(UserDAO.VERIFICATION, verification);
+            jsonObject.put(ChatMessageDAO.RECEIVE_ID, friendId);
+            HttpURLPost(url, jsonObject.toString(), callback);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            callback.error(e);
+        }
+    }
+
+    @Override
+    public void findMsgRelateAfterTime(int uid, String verification, int friendId, long time, HttpBaseCallback callback) {
+        Log.d(TAG, "查找消息");
+        String url = getServerAddress() + "/imchat/chat/findAfterTime.action";
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put(ChatMessageDAO.SENDER_ID, uid);
+            jsonObject.put(UserDAO.VERIFICATION, verification);
+            jsonObject.put(ChatMessageDAO.RECEIVE_ID, friendId);
+            jsonObject.put(ChatMessageDAO.SEND_TIME, time);
+            HttpURLPost(url, jsonObject.toString(), callback);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            callback.error(e);
+        }
+    }
+
+    @Override
+    public void findMsgRelateBeforeTime(int uid, String verification, int friendId, long time, HttpBaseCallback callback) {
+        Log.d(TAG, "查找消息");
+        String url = getServerAddress() + "/imchat/chat/findBeforeTime.action";
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put(ChatMessageDAO.SENDER_ID, uid);
+            jsonObject.put(UserDAO.VERIFICATION, verification);
+            jsonObject.put(ChatMessageDAO.RECEIVE_ID, friendId);
+            jsonObject.put(ChatMessageDAO.SEND_TIME, time);
             HttpURLPost(url, jsonObject.toString(), callback);
         } catch (JSONException e) {
             e.printStackTrace();

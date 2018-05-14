@@ -32,8 +32,9 @@
             android:layout_height="39dp"
             android:layout_margin="10dp"
             android:layout_marginRight="11dp"
-            android:background="@drawable/ic_btn_enable"
+            android:background="@drawable/selector_btn"
             android:text="搜索"
+            android:textColor="@color/white"
             android:textSize="14sp"/>
     </LinearLayout>
 

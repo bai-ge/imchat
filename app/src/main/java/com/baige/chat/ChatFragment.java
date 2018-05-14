@@ -2,6 +2,8 @@ package com.baige.chat;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
@@ -13,6 +15,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import com.baige.adapter.ChatMsgAdapter;
@@ -21,6 +24,7 @@ import com.baige.imchat.R;
 import com.baige.telephone.PhoneActivity;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -29,6 +33,12 @@ import java.util.ArrayList;
 
 
 public class ChatFragment extends Fragment implements ChatContract.View {
+
+    private String TAG = ChatFragment.class.getSimpleName();
+
+    private Toast mToast;
+
+    private Handler mHandler;
 
     private ChatContract.Presenter mPresenter;
 
@@ -40,9 +50,9 @@ public class ChatFragment extends Fragment implements ChatContract.View {
 
     private ListView mListView;
 
-    private TextView mTextName;
+    private TextView mTxtName;
 
-    private TextView mTextNetwork;
+    private TextView mTxtNetwork;
 
     @Override
     public void onResume() {
@@ -57,6 +67,8 @@ public class ChatFragment extends Fragment implements ChatContract.View {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mHandler = new Handler(Looper.getMainLooper());
+        mToast = Toast.makeText(getContext(), "", Toast.LENGTH_LONG);
         mChatAdapter = new ChatMsgAdapter(new ArrayList<ChatMsgInfo>(), mOnChatMsgItemListener);
     }
 
@@ -100,6 +112,12 @@ public class ChatFragment extends Fragment implements ChatContract.View {
             @Override
             public void onClick(View v) {
                 if (!mInputText.getText().toString().equals("")) {
+                    String msg = mInputText.getText().toString();
+//                    ChatMsgInfo chatMsgInfo = new ChatMsgInfo(CacheRepository.getInstance().who().getName(), msg, Parm.MSG_IS_SEND);
+//                    int i = mChatAdapter.getCount() % 3;
+//                    chatMsgInfo.setShowType(i + Parm.MSG_IS_RECEIVE);
+//                    mChatAdapter.addItem(chatMsgInfo);
+                    mPresenter.sendMsg(msg);
                     mInputText.setText("");
                 }
             }
@@ -112,8 +130,8 @@ public class ChatFragment extends Fragment implements ChatContract.View {
                 getActivity().onBackPressed();
             }
         });
-        mTextName = root.findViewById(R.id.txt__toolbar_user_name);
-        mTextNetwork = root.findViewById(R.id.txt__toolbar_network);
+        mTxtName = root.findViewById(R.id.txt__toolbar_user_name);
+        mTxtNetwork = root.findViewById(R.id.txt__toolbar_network);
 
         root.findViewById(R.id.btn__toolbar_phone).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -141,6 +159,76 @@ public class ChatFragment extends Fragment implements ChatContract.View {
         return new ChatFragment();
     }
 
+    public void showTip(final String text) {
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                mToast.setText(text);
+                mToast.show();
+            }
+        });
+    }
+
+    @Override
+    public void clearMsg() {
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                mChatAdapter.clear();
+            }
+        });
+    }
+
+    @Override
+    public void showMsg(final List<ChatMsgInfo> msgInfoList) {
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                mChatAdapter.updateList(msgInfoList);
+            }
+        });
+
+    }
+
+    @Override
+    public void showMsg(final ChatMsgInfo chatMsgInfo) {
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                mChatAdapter.addItem(chatMsgInfo);
+            }
+        });
+    }
+
+    @Override
+    public void notifyChange() {
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                mChatAdapter.notifyDataSetChanged();
+            }
+        });
+    }
+
+    @Override
+    public void showFriendName(final String name) {
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                mTxtName.setText(name);
+            }
+        });
+    }
+
+    @Override
+    public void showFriendNetwork(final String network) {
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                mTxtNetwork.setText(network);
+            }
+        });
+    }
 
     private ChatMsgAdapter.OnChatMsgItemListener mOnChatMsgItemListener = new ChatMsgAdapter.OnChatMsgItemListener() {
         @Override

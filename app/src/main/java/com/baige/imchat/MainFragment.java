@@ -111,6 +111,8 @@ public class MainFragment extends Fragment implements MainContract.View, BottomN
 
 
     /*消息*/
+    private BadgeItem mBadgeItem;//消息上的小点
+
     private ListView mLastChatListView;
 
     private ViewGroup mLastChatNothingView;
@@ -144,6 +146,8 @@ public class MainFragment extends Fragment implements MainContract.View, BottomN
     private final int IMAGE_PICKER = 100;
 
     private ArrayList<ImageItem> images = null;
+
+
 
 
     @Override
@@ -231,13 +235,13 @@ public class MainFragment extends Fragment implements MainContract.View, BottomN
             }
         });
 
-        BadgeItem badgeItem = new BadgeItem();
-        badgeItem.setHideOnSelect(false)
+        mBadgeItem = new BadgeItem();
+        mBadgeItem.setHideOnSelect(false)
                 .setText("10")
                 .setBackgroundColorResource(R.color.orange)
                 .setBorderWidth(0);
 
-        mBottomNavigationBar.addItem(new BottomNavigationItem(R.drawable.ic_msg, R.string.tab_message).setBadgeItem(badgeItem))
+        mBottomNavigationBar.addItem(new BottomNavigationItem(R.drawable.ic_msg, R.string.tab_message).setBadgeItem(mBadgeItem))
                 .addItem(new BottomNavigationItem(R.drawable.ic_friends, R.string.tab_friends))
                 .addItem(new BottomNavigationItem(R.drawable.ic_folder, R.string.tab_file))
                 .addItem(new BottomNavigationItem(R.drawable.ic_person, R.string.tab_person))
@@ -306,8 +310,20 @@ public class MainFragment extends Fragment implements MainContract.View, BottomN
                 super.onChanged();
                 if (mLastChatMsgAdapter.getCount() == 0) {
                     mLastChatNothingView.setVisibility(View.VISIBLE);
+                    mBadgeItem.hide();
                 } else {
                     mLastChatNothingView.setVisibility(View.INVISIBLE);
+                    int count = mLastChatMsgAdapter.getMessageCount();
+                    if(count == 0){
+                        mBadgeItem.hide();
+                    }else{
+                        if(count <= 99){
+                            mBadgeItem.setText(String.valueOf(count));
+                        }else{
+                            mBadgeItem.setText("99+");
+                        }
+                        mBadgeItem.show();
+                    }
                 }
             }
 
@@ -509,6 +525,11 @@ public class MainFragment extends Fragment implements MainContract.View, BottomN
         @Override
         public void onClickItem(LastChatMsgInfo item) {
             Intent intent = new Intent(getActivity(), ChatActivity.class);
+            FriendView friendView = new FriendView();
+            friendView.setFriendId(item.getUid());
+            friendView.setFriendName(item.getName());
+            friendView.setFriendAlias(item.getAlias());
+            intent.putExtra("friend", friendView);
             startActivity(intent);
         }
 
@@ -561,19 +582,19 @@ public class MainFragment extends Fragment implements MainContract.View, BottomN
     @Override
     public void showUserImg(final Bitmap img) {
         if (img != null) {
-            final Bitmap bitmap = img.copy(Bitmap.Config.ARGB_8888, true);
-            if(bitmap != null){
+//            final Bitmap bitmap = img.copy(Bitmap.Config.ARGB_8888, true);
+            if(img != null){
                 mHandler.post(new Runnable() {
                     @Override
                     public void run() {
                         if (mCircleImageView != null) {
-                            mCircleImageView.setImageBitmap(bitmap);
+                            mCircleImageView.setImageBitmap(img);
                         }
                         if (mTitleHeadImg != null) {
-                            mTitleHeadImg.setImageBitmap(bitmap);
+                            mTitleHeadImg.setImageBitmap(img);
                         }
                         if (mDrawerUserImg != null) {
-                            mDrawerUserImg.setImageBitmap(bitmap);
+                            mDrawerUserImg.setImageBitmap(img);
                         }
                     }
                 });

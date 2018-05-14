@@ -4,7 +4,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/bg_1">
+    android:background="@color/bg_1"
+    >
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -25,15 +26,16 @@
                 android:src="@drawable/head_img"
                 app:civ_border_color="@color/white"
                 app:civ_border_width="2dp"/>
+
             <TextView
                 android:id="@+id/txt_user_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/fab_margin"
+                android:gravity="center"
                 android:text="@string/email"
-                android:textSize="18sp"
                 android:textColor="@color/grass_dark"
-                android:gravity="center"/>
+                android:textSize="18sp"/>
         </LinearLayout>
 
 
@@ -67,10 +69,10 @@
                             android:id="@+id/txt_user_alias"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:gravity="right"
-                            android:text="@string/user_name"
+                            android:layout_gravity="center"
                             android:layout_marginRight="@dimen/fab_margin"
-                            android:layout_gravity="center"/>
+                            android:gravity="right"
+                            android:text="@string/user_name"/>
                     </LinearLayout>
 
                     <View style="@style/divider_line"/>
@@ -96,20 +98,21 @@
                             android:layout_weight="1"
                             android:background="@null"
                             android:drawablePadding="5dp"
+                            android:editable="false"
                             android:gravity="right"
                             android:inputType="text"
-                            android:editable="false"
                             android:minLines="1"
                             android:textColor="@color/dark_gray"
                             android:textSize="16sp"/>
+
                         <ImageButton
                             android:id="@+id/btn_edit_friend_alias"
                             android:layout_width="30dp"
                             android:layout_height="30dp"
-                            android:background="@drawable/icon_edit_pen"
                             android:layout_gravity="center"
-                            android:src="@drawable/selector_normal_bg"
-                            android:layout_marginRight="@dimen/fab_margin"/>
+                            android:layout_marginRight="@dimen/fab_margin"
+                            android:background="@drawable/icon_edit_pen"
+                            android:src="@drawable/selector_normal_bg"/>
                     </LinearLayout>
 
                     <View style="@style/divider_line"/>
@@ -206,6 +209,7 @@
                     </LinearLayout>
 
                     <View style="@style/divider_line"/>
+
                     <LinearLayout style="@style/new_alarm_clcok_item">
 
                         <TextView
@@ -216,39 +220,45 @@
                             android:text="已上传流量"
                             android:textColor="@color/black_text_normal_common"
                             android:textSize="16sp"/>
+
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_margin="@dimen/fab_margin"
                             android:gravity="center"
                             android:orientation="vertical">
+
                             <RelativeLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content">
+
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_alignParentLeft="true"
-                                    android:textColor="@color/text_color_green"
-                                    android:text="136MB"/>
+                                    android:text="136MB"
+                                    android:textColor="@color/text_color_green"/>
+
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_alignParentRight="true"
-                                    android:textColor="@color/text_color_green"
-                                    android:text="200MB"/>
+                                    android:text="200MB"
+                                    android:textColor="@color/text_color_green"/>
                             </RelativeLayout>
+
                             <ProgressBar
+                                style="?android:attr/progressBarStyleHorizontal"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center"
-                                style="?android:attr/progressBarStyleHorizontal"
-                                android:progress="68"
-                                android:max="100"/>
+                                android:max="100"
+                                android:progress="68"/>
                         </LinearLayout>
                     </LinearLayout>
 
                     <View style="@style/divider_line"/>
+
                     <LinearLayout style="@style/new_alarm_clcok_item">
 
                         <TextView
@@ -259,65 +269,147 @@
                             android:text="已下载流量"
                             android:textColor="@color/black_text_normal_common"
                             android:textSize="16sp"/>
+
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_margin="@dimen/fab_margin"
                             android:gravity="center"
                             android:orientation="vertical">
+
                             <RelativeLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content">
+
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:textColor="@color/text_color_green"
-                                    android:text="50MB"
+                                    android:layout_alignParentStart="true"
                                     android:layout_alignParentTop="true"
-                                    android:layout_alignParentStart="true"/>
+                                    android:text="50MB"
+                                    android:textColor="@color/text_color_green"/>
+
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_alignParentRight="true"
-                                    android:textColor="@color/text_color_green"
-                                    android:text="200MB"/>
+                                    android:text="200MB"
+                                    android:textColor="@color/text_color_green"/>
                             </RelativeLayout>
+
                             <ProgressBar
+                                style="?android:attr/progressBarStyleHorizontal"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center"
-                                style="?android:attr/progressBarStyleHorizontal"
-                                android:progress="25"
-                                android:max="100"/>
+                                android:max="100"
+                                android:progress="25"/>
+                        </LinearLayout>
+
+                        <View style="@style/divider_line"/>
+
+
+                    </LinearLayout>
+                </LinearLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <LinearLayout
+                        android:id="@+id/layout_ask"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <Button
+                            android:id="@+id/btn_reject"
+                            android:layout_width="0dp"
+                            android:layout_height="45dp"
+                            android:layout_margin="@dimen/fab_margin"
+                            android:layout_weight="1"
+                            android:background="@drawable/selector_btn"
+                            android:text="拒绝"
+                            android:textColor="@color/white"/>
+
+                        <Button
+                            android:id="@+id/btn_agree"
+                            android:layout_width="0dp"
+                            android:layout_height="45dp"
+                            android:layout_margin="@dimen/fab_margin"
+                            android:layout_weight="1"
+                            android:background="@drawable/selector_btn"
+                            android:text="同意"
+                            android:textColor="@color/white"/>
                     </LinearLayout>
 
-                    <View style="@style/divider_line"/>
+                    <LinearLayout
+                        android:id="@+id/layout_add"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
 
+                        <Button
+                            android:id="@+id/btn_defriend"
+                            android:layout_width="0dp"
+                            android:layout_height="45dp"
+                            android:layout_margin="@dimen/fab_margin"
+                            android:layout_weight="1"
+                            android:background="@drawable/selector_btn"
+                            android:text="拉黑"
+                            android:textColor="@color/white"/>
 
-                </LinearLayout>
-                </LinearLayout>
+                        <Button
+                            android:id="@+id/btn_add_friend"
+                            android:layout_width="0dp"
+                            android:layout_height="45dp"
+                            android:layout_margin="@dimen/fab_margin"
+                            android:layout_weight="1"
+                            android:background="@drawable/selector_btn"
+                            android:text="添加好友"
+                            android:textColor="@color/white"/>
+                    </LinearLayout>
 
-                <Button
-                    android:id="@+id/btn_friend"
-                    android:layout_width="match_parent"
-                    android:layout_height="45dp"
-                    android:background="@drawable/selector_btn"
-                    android:text="添加好友"
-                    android:textColor="@color/white"
-                    android:layout_marginLeft="30dp"
-                    android:layout_marginRight="30dp"
-                    android:layout_marginTop="@dimen/fab_margin"/>
+                    <LinearLayout
+                        android:id="@+id/layout_friend"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <Button
+                            android:id="@+id/btn_delete_friend"
+                            android:layout_width="0dp"
+                            android:layout_height="45dp"
+                            android:layout_margin="@dimen/fab_margin"
+                            android:layout_weight="1"
+                            android:background="@drawable/selector_btn"
+                            android:text="删除好友"
+                            android:textColor="@color/white"/>
+
+                        <Button
+                            android:id="@+id/btn_sendmsg"
+                            android:layout_width="0dp"
+                            android:layout_height="45dp"
+                            android:layout_margin="@dimen/fab_margin"
+                            android:layout_weight="1"
+                            android:background="@drawable/selector_btn"
+                            android:text="发送信息"
+                            android:textColor="@color/white"/>
+                    </LinearLayout>
+                </RelativeLayout>
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/fab_margin"
                     android:orientation="vertical">
+
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center"
-                        android:textColor="@color/grass_dark"
-                        android:text="@string/copyright"/>
+                        android:text="@string/copyright"
+                        android:textColor="@color/grass_dark"/>
                 </LinearLayout>
             </LinearLayout>
 

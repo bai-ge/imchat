@@ -3,6 +3,7 @@ package com.baige.data.source.remote;
 
 
 import com.baige.callback.HttpBaseCallback;
+import com.baige.data.entity.ChatMsgInfo;
 import com.baige.data.entity.FriendView;
 import com.baige.data.entity.User;
 
@@ -64,6 +65,10 @@ public interface ServerHelper {
 
         void loadFriendViews(List<FriendView> list);
 
+        void loadMsg(ChatMsgInfo chatMsgInfo);
+
+        void loadMsgList(List<ChatMsgInfo> chatMsgInfos);
+
     }
     interface FileCallback{
         void progress(String fileName, long finishSize, long totalSize);
@@ -93,5 +98,17 @@ public interface ServerHelper {
     void searchFriend(int id, String verification, HttpBaseCallback callback);
 
     void changeFriendAlias(int id, int uid, String verification, String alias, HttpBaseCallback callback);
+
+    void relateUser(int uid, String verification, int friendId, HttpBaseCallback callback);
+
+    void operationFriend(int id, int uid, String verification, int friendId, String operation, HttpBaseCallback callback);
+
+    void sendMsg(int uid, String verification, int friendId, String msg, int type,  HttpBaseCallback callback);
+
+    void findMsgRelate(int uid, String verification, int friendId, HttpBaseCallback callback);
+
+    void findMsgRelateAfterTime(int uid, String verification, int friendId, long time, HttpBaseCallback callback);
+
+    void findMsgRelateBeforeTime(int uid, String verification, int friendId, long time, HttpBaseCallback callback);
 
 }

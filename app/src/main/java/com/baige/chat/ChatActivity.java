@@ -4,6 +4,7 @@ package com.baige.chat;
 import android.os.Bundle;
 
 import com.baige.BaseActivity;
+import com.baige.data.entity.FriendView;
 import com.baige.data.source.Repository;
 import com.baige.data.source.local.LocalRepository;
 import com.baige.imchat.R;
@@ -29,5 +30,11 @@ public class ChatActivity extends BaseActivity {
         }
 
         ChatPresenter chatPresenter = new ChatPresenter(Repository.getInstance(LocalRepository.getInstance(getApplicationContext())), chatFragment);
+        if(getIntent().getExtras().containsKey("friend")){
+            FriendView friendView = getIntent().getExtras().getParcelable("friend");
+            if(friendView != null){
+                chatPresenter.setFriendView(friendView);
+            }
+        }
     }
 }

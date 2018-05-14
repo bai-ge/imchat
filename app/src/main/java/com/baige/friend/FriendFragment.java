@@ -18,9 +18,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.baige.BaseApplication;
+import com.baige.chat.ChatActivity;
+import com.baige.common.State;
 import com.baige.data.entity.FriendView;
 import com.baige.data.entity.User;
 import com.baige.data.source.cache.CacheRepository;
+import com.baige.filelist.FileListContract;
 import com.baige.imchat.R;
 import com.baige.register.RegisterActivity;
 import com.baige.util.ImageLoader;
@@ -54,7 +57,23 @@ public class FriendFragment extends Fragment implements FriendContract.View{
 
     private ImageButton mBtnEditFriendAlias;
 
-    private Button mBtnFriend;
+    private Button mBtnReject;
+
+    private Button mBtnAgree;
+
+    private Button mBtnDefriend;
+
+    private Button mBtnAddFriend;
+
+    private Button mBtnDeleteFriend;
+
+    private Button mBtnSendMsg;
+
+    private ViewGroup mLayoutAsk;
+
+    private ViewGroup mLayoutAdd;
+
+    private ViewGroup mLayoutFriend;
 
     @Override
     public void setPresenter(FriendContract.Presenter presenter) {
@@ -82,6 +101,58 @@ public class FriendFragment extends Fragment implements FriendContract.View{
         mEditFriendAlias = root.findViewById(R.id.edit_friend_alias);
         mBtnEditFriendAlias = root.findViewById(R.id.btn_edit_friend_alias);
 
+        mLayoutAsk = root.findViewById(R.id.layout_ask);
+        mLayoutAdd = root.findViewById(R.id.layout_add);
+        mLayoutFriend = root.findViewById(R.id.layout_friend);
+
+        mBtnReject = root.findViewById(R.id.btn_reject);
+        mBtnAgree = root.findViewById(R.id.btn_agree);
+        mBtnDefriend = root.findViewById(R.id.btn_defriend);
+        mBtnAddFriend = root.findViewById(R.id.btn_add_friend);
+        mBtnDeleteFriend = root.findViewById(R.id.btn_delete_friend);
+        mBtnSendMsg = root.findViewById(R.id.btn_sendmsg);
+
+        mBtnReject.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mPresenter.reject();
+            }
+        });
+
+        mBtnAgree.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mPresenter.agree();
+            }
+        });
+
+        mBtnAddFriend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mPresenter.addFriend();
+            }
+        });
+        mBtnDeleteFriend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mPresenter.deleteFriend();
+            }
+        });
+
+        mBtnDefriend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mPresenter.defriend();
+            }
+        });
+        mBtnSendMsg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), ChatActivity.class);
+                intent.putExtra("friend", mPresenter.getFriend());
+                startActivity(intent);
+            }
+        });
         mEditFriendAlias.setEnabled(false);
         mBtnEditFriendAlias.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -124,6 +195,7 @@ public class FriendFragment extends Fragment implements FriendContract.View{
         showFriendName(friendView.getFriendName());
         showUserAlias(friendView.getAlias());
         showFriendAlias(friendView.getFriendAlias());
+        showBtnLayoutByState(friendView.getState());
     }
 
     @Override
@@ -201,6 +273,81 @@ public class FriendFragment extends Fragment implements FriendContract.View{
                 }else{
                     mEditFriendAlias.setText(friendAlias);
                 }
+            }
+        });
+    }
+
+    public void showLayoutAdd(){
+        mLayoutAdd.setVisibility(View.VISIBLE);
+        mLayoutAsk.setVisibility(View.INVISIBLE);
+        mLayoutFriend.setVisibility(View.INVISIBLE);
+    }
+    public void showLayoutAsk(){
+        mLayoutAdd.setVisibility(View.INVISIBLE);
+        mLayoutAsk.setVisibility(View.VISIBLE);
+        mLayoutFriend.setVisibility(View.INVISIBLE);
+    }
+    public void showLayoutFriend(){
+        mLayoutAdd.setVisibility(View.INVISIBLE);
+        mLayoutAsk.setVisibility(View.INVISIBLE);
+        mLayoutFriend.setVisibility(View.VISIBLE);
+    }
+    public void showLayoutBtnNull(){
+        mLayoutAdd.setVisibility(View.INVISIBLE);
+        mLayoutAsk.setVisibility(View.INVISIBLE);
+        mLayoutFriend.setVisibility(View.INVISIBLE);
+    }
+    @Override
+    public void showBtnLayoutByState(final int state) {
+        final int uid = state / 10;
+        final int realState = state % 10;
+        final User user = CacheRepository.getInstance().who();
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                if(state == 0 || user == null){
+                    showLayoutAdd();
+                }else{
+                    if(uid == user.getId()){
+                        switch (realState){
+                            case State.RELATETION_ADD:
+                                showLayoutAdd();
+                                break;
+                            case State.RELATETION_AGREE:
+                                showLayoutFriend();
+                                break;
+                            case State.RELATETION_REJECT:
+                                showLayoutAdd();
+                                break;
+                            case State.RELATETION_DELETE:
+                                showLayoutAdd();
+                                break;
+                            case State.RELATETION_DEFRIEND:
+                                showLayoutAdd();
+                                break;
+                        }
+                    }else{
+                        switch (realState){
+                            case State.RELATETION_ADD:
+                                showLayoutAsk();
+                                break;
+                            case State.RELATETION_AGREE:
+                                showLayoutFriend();
+                                break;
+                            case State.RELATETION_REJECT:
+                                showLayoutAdd();
+                                break;
+                            case State.RELATETION_DELETE:
+                                showLayoutAdd();
+                                break;
+                            case State.RELATETION_DEFRIEND:
+                                //您已被拉黑，无法添加该好友
+                                showLayoutBtnNull();
+                                break;
+                        }
+                    }
+                }
+
             }
         });
     }

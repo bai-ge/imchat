@@ -2,10 +2,12 @@ package com.baige.data.source;
 
 import android.support.annotation.NonNull;
 
+import com.baige.callback.ChatMessageResponseBinder;
 import com.baige.callback.FriendResponseBinder;
 import com.baige.callback.HttpBaseCallback;
 import com.baige.callback.SimpleResponseBinder;
 import com.baige.callback.UserResponseBinder;
+import com.baige.data.entity.ChatMsgInfo;
 import com.baige.data.entity.User;
 import com.baige.data.source.local.LocalRepository;
 import com.baige.data.source.remote.RemoteRepository;
@@ -41,12 +43,15 @@ public class Repository implements DataSource, ServerHelper{
 
     private FriendResponseBinder mFriendResponseBinder;
 
+    private ChatMessageResponseBinder mChatMessageResponseBinder;
+
     private Repository(LocalRepository localRepository) {
         mLocalRepository =  checkNotNull(localRepository);
         mRemoteRepository = RemoteRepository.getInstance(localRepository);
         mSimpleResponseBinder = new SimpleResponseBinder();
         mUserResponseBinder = new UserResponseBinder();
         mFriendResponseBinder = new FriendResponseBinder();
+        mChatMessageResponseBinder = new ChatMessageResponseBinder();
         fixedThreadPool = Executors.newFixedThreadPool(5);//创建最多能并发运行5个线程的线程池
     }
 
@@ -230,6 +235,109 @@ public class Repository implements DataSource, ServerHelper{
                 @Override
                 public void run() {
                     mRemoteRepository.changeFriendAlias(id, uid, verification, alias, callback);
+                }
+            });
+        }else{
+            callback.fail();
+        }
+    }
+
+    @Override
+    public void relateUser(final int uid, final String verification, final int friendId, final HttpBaseCallback callback) {
+        checkNotNull(verification);
+        checkNotNull(callback);
+        callback.setResponseBinder(mSimpleResponseBinder);
+        if (fixedThreadPool != null) {
+            fixedThreadPool.submit(new Runnable() {
+                @Override
+                public void run() {
+                    mRemoteRepository.relateUser(uid, verification, friendId, callback);
+                }
+            });
+        }else{
+            callback.fail();
+        }
+    }
+
+    @Override
+    public void operationFriend(final int id, final int uid, final String verification, final int friendId, final String operation, final HttpBaseCallback callback) {
+        checkNotNull(verification);
+        checkNotNull(callback);
+        callback.setResponseBinder(mSimpleResponseBinder);
+        if (fixedThreadPool != null) {
+            fixedThreadPool.submit(new Runnable() {
+                @Override
+                public void run() {
+                    mRemoteRepository.operationFriend(id, uid, verification, friendId, operation, callback);
+                }
+            });
+        }else{
+            callback.fail();
+        }
+    }
+
+    @Override
+    public void sendMsg(final int uid, final String verification, final int friendId, final String msg, final int type, final HttpBaseCallback callback) {
+        checkNotNull(verification);
+        checkNotNull(msg);
+        checkNotNull(callback);
+        callback.setResponseBinder(mChatMessageResponseBinder);
+        if (fixedThreadPool != null) {
+            fixedThreadPool.submit(new Runnable() {
+                @Override
+                public void run() {
+                    mRemoteRepository.sendMsg(uid, verification, friendId, msg, type, callback);
+                }
+            });
+        }else{
+            callback.fail();
+        }
+    }
+
+    @Override
+    public void findMsgRelate(final int uid, final String verification, final int friendId, final HttpBaseCallback callback) {
+        checkNotNull(verification);
+        checkNotNull(callback);
+        callback.setResponseBinder(mChatMessageResponseBinder);
+        if (fixedThreadPool != null) {
+            fixedThreadPool.submit(new Runnable() {
+                @Override
+                public void run() {
+                    mRemoteRepository.findMsgRelate(uid, verification, friendId, callback);
+                }
+            });
+        }else{
+            callback.fail();
+        }
+    }
+
+    @Override
+    public void findMsgRelateAfterTime(final int uid, final String verification, final int friendId, final long time, final HttpBaseCallback callback) {
+        checkNotNull(verification);
+        checkNotNull(callback);
+        callback.setResponseBinder(mChatMessageResponseBinder);
+        if (fixedThreadPool != null) {
+            fixedThreadPool.submit(new Runnable() {
+                @Override
+                public void run() {
+                    mRemoteRepository.findMsgRelateAfterTime(uid, verification, friendId, time, callback);
+                }
+            });
+        }else{
+            callback.fail();
+        }
+    }
+
+    @Override
+    public void findMsgRelateBeforeTime(final int uid, final String verification, final int friendId, final long time, final HttpBaseCallback callback) {
+        checkNotNull(verification);
+        checkNotNull(callback);
+        callback.setResponseBinder(mChatMessageResponseBinder);
+        if (fixedThreadPool != null) {
+            fixedThreadPool.submit(new Runnable() {
+                @Override
+                public void run() {
+                    mRemoteRepository.findMsgRelateBeforeTime(uid, verification, friendId, time, callback);
                 }
             });
         }else{

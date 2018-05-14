@@ -47,6 +47,11 @@ public class FriendPresenter implements FriendContract.Presenter {
     }
 
     @Override
+    public FriendView getFriend() {
+        return mFriendView;
+    }
+
+    @Override
     public void updateFriendAlias(final String text) {
         if(!Tools.isEmpty(text) && !Tools.isEquals(text, mFriendView.getFriendAlias())){
             User user = CacheRepository.getInstance().who();
@@ -82,6 +87,131 @@ public class FriendPresenter implements FriendContract.Presenter {
                 public void downloadFinish(String fileName) {
                     super.downloadFinish(fileName);
                     mFragment.showFriendImg(fileName);
+                }
+            });
+        }
+    }
+
+    @Override
+    public void addFriend() {
+        User user = CacheRepository.getInstance().who();
+        if(user != null && !Tools.isEmpty(user.getVerification()) && mFriendView != null){
+            mRepository.relateUser(user.getId(),  user.getVerification(), mFriendView.getFriendId(), new HttpBaseCallback(){
+                @Override
+                public void success() {
+                    super.success();
+                }
+
+                @Override
+                public void fail() {
+                    super.fail();
+                    mFragment.showTip("添加失败");
+                }
+
+                @Override
+                public void meaning(String text) {
+                    super.meaning(text);
+                    mFragment.showTip(text);
+                }
+            });
+        }
+    }
+
+    @Override
+    public void agree() {
+        User user = CacheRepository.getInstance().who();
+        if(user != null && !Tools.isEmpty(user.getVerification()) && mFriendView != null){
+            mRepository.operationFriend(mFriendView.getId(), user.getId(),  user.getVerification(), mFriendView.getFriendId(), "agree", new HttpBaseCallback(){
+                @Override
+                public void success() {
+                    super.success();
+                }
+
+                @Override
+                public void fail() {
+                    super.fail();
+                    mFragment.showTip("操作失败");
+                }
+
+                @Override
+                public void meaning(String text) {
+                    super.meaning(text);
+                    mFragment.showTip(text);
+                }
+            });
+        }
+    }
+
+    @Override
+    public void reject() {
+        User user = CacheRepository.getInstance().who();
+        if(user != null && !Tools.isEmpty(user.getVerification()) && mFriendView != null){
+            mRepository.operationFriend(mFriendView.getId(), user.getId(),  user.getVerification(), mFriendView.getFriendId(), "reject", new HttpBaseCallback(){
+                @Override
+                public void success() {
+                    super.success();
+                }
+
+                @Override
+                public void fail() {
+                    super.fail();
+                    mFragment.showTip("操作失败");
+                }
+
+                @Override
+                public void meaning(String text) {
+                    super.meaning(text);
+                    mFragment.showTip(text);
+                }
+            });
+        }
+    }
+
+    @Override
+    public void deleteFriend() {
+        User user = CacheRepository.getInstance().who();
+        if(user != null && !Tools.isEmpty(user.getVerification()) && mFriendView != null){
+            mRepository.operationFriend(mFriendView.getId(), user.getId(),  user.getVerification(), mFriendView.getFriendId(), "delete", new HttpBaseCallback(){
+                @Override
+                public void success() {
+                    super.success();
+                }
+
+                @Override
+                public void fail() {
+                    super.fail();
+                    mFragment.showTip("操作失败");
+                }
+
+                @Override
+                public void meaning(String text) {
+                    super.meaning(text);
+                    mFragment.showTip(text);
+                }
+            });
+        }
+    }
+
+    @Override
+    public void defriend() {
+        User user = CacheRepository.getInstance().who();
+        if(user != null && !Tools.isEmpty(user.getVerification()) && mFriendView != null){
+            mRepository.operationFriend(mFriendView.getId(), user.getId(),  user.getVerification(), mFriendView.getFriendId(), "defriend", new HttpBaseCallback(){
+                @Override
+                public void success() {
+                    super.success();
+                }
+
+                @Override
+                public void fail() {
+                    super.fail();
+                    mFragment.showTip("操作失败");
+                }
+
+                @Override
+                public void meaning(String text) {
+                    super.meaning(text);
+                    mFragment.showTip(text);
                 }
             });
         }

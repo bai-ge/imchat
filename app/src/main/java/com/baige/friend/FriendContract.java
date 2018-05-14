@@ -19,6 +19,18 @@ public interface FriendContract {
 
         void downloadImg(String imgName);
 
+        void addFriend();
+
+        void agree();
+
+        void reject();
+
+        void deleteFriend();
+
+        void defriend();
+
+        FriendView getFriend();
+
     }
 
     interface View extends BaseView<Presenter> {
@@ -35,6 +47,8 @@ public interface FriendContract {
         void showUserAlias(String alias);
 
         void showFriendAlias(String friendAlias);
+
+        void showBtnLayoutByState(int state);
 
     }
 }

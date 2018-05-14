@@ -40,6 +40,14 @@ public class User extends BaseEntity{
         this.password = password;
     }
 
+    public String getSuitableName(){
+        String name = getName();
+        if(Tools.isEmpty(name)){
+            name = getAlias();
+        }
+        return name;
+    }
+
     public int getid() {
         return id;
     }

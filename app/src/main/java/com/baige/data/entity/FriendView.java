@@ -4,6 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.baige.util.JsonTools;
+import com.baige.util.Tools;
 
 import org.json.JSONObject;
 
@@ -81,6 +82,18 @@ public class FriendView implements Parcelable{
         this.friendName = name;
         this.alias = alias;
     }
+
+    public String getSuitableName(){
+        String name = getFriendAlias();
+        if(Tools.isEmpty(name)){
+            name = getAlias();
+            if(Tools.isEmpty(name)){
+                name = getFriendName();
+            }
+        }
+        return name;
+    }
+
     public String getFriendName() {
         return friendName;
     }

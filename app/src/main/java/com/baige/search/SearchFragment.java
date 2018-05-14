@@ -1,5 +1,6 @@
 package com.baige.search;
 
+import android.content.Intent;
 import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.os.Handler;
@@ -14,7 +15,10 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.baige.adapter.UserAdapter;
+import com.baige.data.entity.FriendView;
 import com.baige.data.entity.User;
+import com.baige.data.source.cache.CacheRepository;
+import com.baige.friend.FriendActivity;
 import com.baige.imchat.R;
 import com.baige.util.Tools;
 
@@ -137,7 +141,18 @@ public class SearchFragment extends Fragment implements SearchContract.View {
         @Override
         public void onClickItem(User user) {
             showTip("点击"+user.getName());
-            mPresenter.relate(user);
+//            mPresenter.relate(user);
+            FriendView friendView = new FriendView();
+            friendView.setUid(CacheRepository.getInstance().who().getId());
+            friendView.setFriendId(user.getId());
+            friendView.setFriendName(user.getName());
+            friendView.setAlias(user.getAlias());
+            friendView.setFriendName(user.getName());
+            friendView.setFriendDeviceId(user.getDeviceId());
+            friendView.setFriendImgName(user.getImgName());
+            Intent intent = new Intent(getContext(), FriendActivity.class);
+            intent.putExtra("friend", friendView);
+            startActivity(intent);
         }
 
         @Override

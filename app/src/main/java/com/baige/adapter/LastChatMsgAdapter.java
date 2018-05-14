@@ -73,6 +73,18 @@ public class LastChatMsgAdapter extends BaseAdapter {
         return i;
     }
 
+    public int getMessageCount(){
+        int res = 0;
+        if(mList == null || mList.size() == 0){
+            return 0;
+        }else{
+            for (int i = 0; i < mList.size(); i++) {
+                res += mList.get(i).getMsgCount();
+            }
+        }
+        return res;
+    }
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder holder = null;
