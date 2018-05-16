@@ -521,17 +521,19 @@ public class RemoteRepository implements DataSource, ServerHelper {
         }
     }
 
+
     @Override
-    public void sendMsg(int uid, String verification, int friendId, String msg, int type, HttpBaseCallback callback) {
-        Log.d(TAG, "发送信息" + msg);
+    public void sendMsg(ChatMsgInfo chatMsgInfo, String verification, HttpBaseCallback callback) {
+        Log.d(TAG, "发送信息" + chatMsgInfo.getContext());
         String url = getServerAddress() + "/imchat/chat/send.action";
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put(ChatMessageDAO.SENDER_ID, uid);
+            jsonObject.put(ChatMessageDAO.SENDER_ID, chatMsgInfo.getSenderId());
             jsonObject.put(UserDAO.VERIFICATION, verification);
-            jsonObject.put(ChatMessageDAO.RECEIVE_ID, friendId);
-            jsonObject.put(ChatMessageDAO.CONTEXT, msg);
-            jsonObject.put(ChatMessageDAO.CONTEXT_TYPE, type);
+            jsonObject.put(ChatMessageDAO.RECEIVE_ID, chatMsgInfo.getReceiveId());
+            jsonObject.put(ChatMessageDAO.CONTEXT, chatMsgInfo.getContext());
+            jsonObject.put(ChatMessageDAO.CONTEXT_TYPE, chatMsgInfo.getContextType());
+            jsonObject.put(ChatMessageDAO.REMARK, chatMsgInfo.getRemark());
             HttpURLPost(url, jsonObject.toString(), callback);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -581,6 +583,86 @@ public class RemoteRepository implements DataSource, ServerHelper {
             jsonObject.put(ChatMessageDAO.SENDER_ID, uid);
             jsonObject.put(UserDAO.VERIFICATION, verification);
             jsonObject.put(ChatMessageDAO.RECEIVE_ID, friendId);
+            jsonObject.put(ChatMessageDAO.SEND_TIME, time);
+            HttpURLPost(url, jsonObject.toString(), callback);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            callback.error(e);
+        }
+    }
+
+    @Override
+    public void findMsg(int uid, String verification, HttpBaseCallback callback) {
+        Log.d(TAG, "查找消息");
+        String url = getServerAddress() + "/imchat/chat/find.action";
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put(ChatMessageDAO.SENDER_ID, uid);
+            jsonObject.put(UserDAO.VERIFICATION, verification);
+            HttpURLPost(url, jsonObject.toString(), callback);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            callback.error(e);
+        }
+    }
+
+    @Override
+    public void findMsgAfterTime(int uid, String verification, long time, HttpBaseCallback callback) {
+        Log.d(TAG, "查找消息");
+        String url = getServerAddress() + "/imchat/chat/findAfterTime.action";
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put(ChatMessageDAO.SENDER_ID, uid);
+            jsonObject.put(UserDAO.VERIFICATION, verification);
+            jsonObject.put(ChatMessageDAO.SEND_TIME, time);
+            HttpURLPost(url, jsonObject.toString(), callback);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            callback.error(e);
+        }
+    }
+
+    @Override
+    public void findMsgBeforeTime(int uid, String verification, long time, HttpBaseCallback callback) {
+        Log.d(TAG, "查找消息");
+        String url = getServerAddress() + "/imchat/chat/findBeforeTime.action";
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put(ChatMessageDAO.SENDER_ID, uid);
+            jsonObject.put(UserDAO.VERIFICATION, verification);
+            jsonObject.put(ChatMessageDAO.SEND_TIME, time);
+            HttpURLPost(url, jsonObject.toString(), callback);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            callback.error(e);
+        }
+    }
+
+    @Override
+    public void readMsgBeforeTime(int uid, String verification, long time, HttpBaseCallback callback) {
+        Log.d(TAG, "标记已读");
+        String url = getServerAddress() + "/imchat/chat/read.action";
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put(Parm.UID, uid);
+            jsonObject.put(UserDAO.VERIFICATION, verification);
+            jsonObject.put(ChatMessageDAO.SEND_TIME, time);
+            HttpURLPost(url, jsonObject.toString(), callback);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            callback.error(e);
+        }
+    }
+
+    @Override
+    public void readMsgBeforeTime(int uid, String verification, int friendId, long time, HttpBaseCallback callback) {
+        Log.d(TAG, "标记已读");
+        String url = getServerAddress() + "/imchat/chat/read.action";
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put(Parm.UID, uid);
+            jsonObject.put(UserDAO.VERIFICATION, verification);
+            jsonObject.put(FriendDAO.FRIEND_ID, friendId);
             jsonObject.put(ChatMessageDAO.SEND_TIME, time);
             HttpURLPost(url, jsonObject.toString(), callback);
         } catch (JSONException e) {

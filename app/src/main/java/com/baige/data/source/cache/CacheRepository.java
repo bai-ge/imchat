@@ -8,11 +8,17 @@ import android.util.Log;
 
 import com.baige.AppConfigure;
 import com.baige.BaseApplication;
+import com.baige.data.entity.FriendView;
 import com.baige.data.entity.User;
+import com.baige.data.observer.ChatMessageObservable;
+import com.baige.data.observer.FriendViewObservable;
+import com.baige.data.observer.LastChatMessageObservable;
 import com.baige.util.Tools;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
 
 
 /**
@@ -26,6 +32,13 @@ public class CacheRepository {
     private final static String TAG = CacheRepository.class.getCanonicalName();
 
     private static CacheRepository INSTANCE = null;
+
+
+    private ChatMessageObservable chatMessageObservable;
+
+    private FriendViewObservable friendViewObservable;
+
+    private LastChatMessageObservable lastChatMessageObservable;
 
     private int fileSortType;
 
@@ -103,6 +116,9 @@ public class CacheRepository {
 
     private CacheRepository() {
         readConfig(BaseApplication.getAppContext());
+        chatMessageObservable = new ChatMessageObservable();
+        friendViewObservable = new FriendViewObservable();
+        lastChatMessageObservable = new LastChatMessageObservable();
     }
 
     public static CacheRepository getInstance() {
@@ -114,6 +130,29 @@ public class CacheRepository {
             }
         }
         return INSTANCE;
+    }
+
+    public void registerDataChange(Observer observer){
+        chatMessageObservable.addObserver(observer);
+        friendViewObservable.addObserver(observer);
+        lastChatMessageObservable.addObserver(observer);
+    }
+    public void unRegisterDataChange(Observer observer){
+        chatMessageObservable.deleteObserver(observer);
+        friendViewObservable.deleteObserver(observer);
+        lastChatMessageObservable.deleteObserver(observer);
+    }
+
+    public ChatMessageObservable getChatMessageObservable() {
+        return chatMessageObservable;
+    }
+
+    public FriendViewObservable getFriendViewObservable() {
+        return friendViewObservable;
+    }
+
+    public LastChatMessageObservable getLastChatMessageObservable() {
+        return lastChatMessageObservable;
     }
 
     public int getFileSortType() {

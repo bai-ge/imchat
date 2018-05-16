@@ -277,16 +277,16 @@ public class Repository implements DataSource, ServerHelper{
     }
 
     @Override
-    public void sendMsg(final int uid, final String verification, final int friendId, final String msg, final int type, final HttpBaseCallback callback) {
+    public void sendMsg(final ChatMsgInfo chatMsgInfo, final String verification, final HttpBaseCallback callback) {
         checkNotNull(verification);
-        checkNotNull(msg);
+        checkNotNull(chatMsgInfo);
         checkNotNull(callback);
         callback.setResponseBinder(mChatMessageResponseBinder);
         if (fixedThreadPool != null) {
             fixedThreadPool.submit(new Runnable() {
                 @Override
                 public void run() {
-                    mRemoteRepository.sendMsg(uid, verification, friendId, msg, type, callback);
+                    mRemoteRepository.sendMsg(chatMsgInfo, verification, callback);
                 }
             });
         }else{
@@ -338,6 +338,91 @@ public class Repository implements DataSource, ServerHelper{
                 @Override
                 public void run() {
                     mRemoteRepository.findMsgRelateBeforeTime(uid, verification, friendId, time, callback);
+                }
+            });
+        }else{
+            callback.fail();
+        }
+    }
+
+    @Override
+    public void findMsg(final int uid, final String verification, final HttpBaseCallback callback) {
+        checkNotNull(verification);
+        checkNotNull(callback);
+        callback.setResponseBinder(mChatMessageResponseBinder);
+        if (fixedThreadPool != null) {
+            fixedThreadPool.submit(new Runnable() {
+                @Override
+                public void run() {
+                    mRemoteRepository.findMsg(uid, verification, callback);
+                }
+            });
+        }else{
+            callback.fail();
+        }
+    }
+
+    @Override
+    public void findMsgAfterTime(final int uid, final String verification, final long time, final HttpBaseCallback callback) {
+        checkNotNull(verification);
+        checkNotNull(callback);
+        callback.setResponseBinder(mChatMessageResponseBinder);
+        if (fixedThreadPool != null) {
+            fixedThreadPool.submit(new Runnable() {
+                @Override
+                public void run() {
+                    mRemoteRepository.findMsgAfterTime(uid, verification, time, callback);
+                }
+            });
+        }else{
+            callback.fail();
+        }
+    }
+
+    @Override
+    public void findMsgBeforeTime(final int uid, final String verification, final long time, final HttpBaseCallback callback) {
+        checkNotNull(verification);
+        checkNotNull(callback);
+        callback.setResponseBinder(mChatMessageResponseBinder);
+        if (fixedThreadPool != null) {
+            fixedThreadPool.submit(new Runnable() {
+                @Override
+                public void run() {
+                    mRemoteRepository.findMsgBeforeTime(uid, verification, time, callback);
+                }
+            });
+        }else{
+            callback.fail();
+        }
+    }
+
+    @Override
+    public void readMsgBeforeTime(final int uid, final String verification, final long time, final HttpBaseCallback callback) {
+        checkNotNull(verification);
+        checkNotNull(callback);
+        callback.setResponseBinder(mSimpleResponseBinder);
+        if (fixedThreadPool != null) {
+            fixedThreadPool.submit(new Runnable() {
+                @Override
+                public void run() {
+                    mRemoteRepository.readMsgBeforeTime(uid, verification, time, callback);
+                }
+            });
+        }else{
+            callback.fail();
+        }
+    }
+
+    @Override
+    public void readMsgBeforeTime(final int uid, final String verification, final int friendId, final long time, final HttpBaseCallback callback) {
+        checkNotNull(verification);
+        checkNotNull(callback);
+        callback.setResponseBinder(mSimpleResponseBinder);
+        if (fixedThreadPool != null) {
+            fixedThreadPool.submit(new Runnable() {
+                @Override
+                public void run() {
+                    mRemoteRepository.readMsgBeforeTime(uid, verification, friendId, time, callback);
                 }
             });
         }else{

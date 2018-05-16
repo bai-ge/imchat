@@ -6,6 +6,12 @@ import android.media.ThumbnailUtils;
 import android.provider.MediaStore.Video.Thumbnails;
 import android.util.LruCache;
 
+import com.baige.BaseApplication;
+import com.baige.imchat.R;
+import com.baige.view.CircleImageView;
+
+import java.io.File;
+
 /**
  * 采用单例模式,防止多个实例出现共同占用内存造成OOM
  *
@@ -117,5 +123,24 @@ public class ImageLoader {
         // 使用获取到的inSampleSize值再次解析图片
         options.inJustDecodeBounds = false;
         return BitmapFactory.decodeFile(pathName, options);
+    }
+
+
+    public static void loadUserImg(String imgName, CircleImageView view){
+        if(!Tools.isEmpty(imgName)){
+            String url = BaseApplication.headImgPath + File.separator + imgName;
+            Bitmap bitmap = ImageLoader.getInstance().getBitmapFromMemoryCache(url);
+            if(bitmap == null){
+                bitmap = ImageLoader.decodeSampledBitmapFromResource(url, view.getWidth() <= 50 ? 50 : view.getWidth());
+            }
+            if(bitmap != null){
+                ImageLoader.getInstance().addBitmapToMemoryCache(url, bitmap);
+                view.setImageBitmap(bitmap);
+            }else{
+                view.setImageResource(R.drawable.head_img);
+            }
+        }else{
+            view.setImageResource(R.drawable.head_img);
+        }
     }
 }

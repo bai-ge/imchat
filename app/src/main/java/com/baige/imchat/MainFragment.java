@@ -524,12 +524,11 @@ public class MainFragment extends Fragment implements MainContract.View, BottomN
     private LastChatMsgAdapter.OnLastChatMsgItemListener mOnLastChatMsgItemListener = new LastChatMsgAdapter.OnLastChatMsgItemListener() {
         @Override
         public void onClickItem(LastChatMsgInfo item) {
+            Log.d(TAG, "onclickItem "+item);
             Intent intent = new Intent(getActivity(), ChatActivity.class);
-            FriendView friendView = new FriendView();
-            friendView.setFriendId(item.getUid());
-            friendView.setFriendName(item.getName());
-            friendView.setFriendAlias(item.getAlias());
+            FriendView friendView = CacheRepository.getInstance().getFriendViewObservable().get(item.getUid());
             intent.putExtra("friend", friendView);
+            Log.d(TAG, "friend"+friendView);
             startActivity(intent);
         }
 
@@ -649,6 +648,8 @@ public class MainFragment extends Fragment implements MainContract.View, BottomN
                         startActivity(intent);
                         break;
                     case R.id.refresh:
+                        mPresenter.loadFriends();
+                        mPresenter.loadMsg();
                         break;
                     case R.id.add_notify:
                         setSelfNotification();
@@ -787,6 +788,22 @@ public class MainFragment extends Fragment implements MainContract.View, BottomN
                 mFriendsAdapter.updateList(friendViewList);
             }
         });
+    }
+
+    @Override
+    public void showLastChatMsgs(final List<LastChatMsgInfo> lastChatMsgInfos) {
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                mLastChatMsgAdapter.updateList(lastChatMsgInfos);
+            }
+        });
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mPresenter.stop();
     }
 
     /*get and set*/

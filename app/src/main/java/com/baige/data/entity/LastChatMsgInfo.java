@@ -1,5 +1,7 @@
 package com.baige.data.entity;
 
+import com.baige.util.Tools;
+
 /**
  * Created by baige on 2018/5/7.
  */
@@ -12,7 +14,13 @@ public class LastChatMsgInfo {
 
     private String alias; //别名
 
+    private String friendAlias;//朋友备注
+
+    private String imagName;
+
     private String lastMessage;
+
+    private int msgType;
 
     private long lastTime;
 
@@ -37,6 +45,16 @@ public class LastChatMsgInfo {
         this.msgCount = msgCount;
     }
 
+    public String getSuitableName(){
+        String name = getFriendAlias();
+        if(Tools.isEmpty(name)){
+            name = getAlias();
+            if(Tools.isEmpty(name)){
+                name = getName();
+            }
+        }
+        return name;
+    }
     public int getUid() {
         return uid;
     }
@@ -83,5 +101,44 @@ public class LastChatMsgInfo {
 
     public void setMsgCount(int msgCount) {
         this.msgCount = msgCount;
+    }
+
+    public String getFriendAlias() {
+        return friendAlias;
+    }
+
+    public void setFriendAlias(String friendAlias) {
+        this.friendAlias = friendAlias;
+    }
+
+    public String getImagName() {
+        return imagName;
+    }
+
+    public void setImagName(String imagName) {
+        this.imagName = imagName;
+    }
+
+    public int getMsgType() {
+        return msgType;
+    }
+
+    public void setMsgType(int msgType) {
+        this.msgType = msgType;
+    }
+
+    @Override
+    public String toString() {
+        return "LastChatMsgInfo{" +
+                "uid=" + uid +
+                ", name='" + name + '\'' +
+                ", alias='" + alias + '\'' +
+                ", friendAlias='" + friendAlias + '\'' +
+                ", imagName='" + imagName + '\'' +
+                ", lastMessage='" + lastMessage + '\'' +
+                ", msgType=" + msgType +
+                ", lastTime=" + lastTime +
+                ", msgCount=" + msgCount +
+                '}';
     }
 }

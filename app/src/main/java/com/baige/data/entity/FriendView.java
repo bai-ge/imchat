@@ -3,6 +3,7 @@ package com.baige.data.entity;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.baige.common.State;
 import com.baige.util.JsonTools;
 import com.baige.util.Tools;
 
@@ -92,6 +93,11 @@ public class FriendView implements Parcelable{
             }
         }
         return name;
+    }
+
+    public boolean isFriend(){
+        int realState = state % 10;
+        return realState == State.RELATETION_AGREE;
     }
 
     public String getFriendName() {

@@ -19,6 +19,7 @@ import android.view.inputmethod.InputMethodManager;
 
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -172,20 +173,35 @@ public class Tools {
         }
     }
 
+    public static long getZeroDataTime(long time){
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String dateString = dateFormat.format(new Date(time));
+        try {
+            time = dateFormat.parse(dateString).getTime();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return time;
+    }
+
     //TODO 未完善
     public static String getSuitableTimeFormat(long time){
-        long d = System.currentTimeMillis() - time;
-        SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm", Locale.CHINA);
-        if(isSameDay(time, System.currentTimeMillis())){
-            return dateFormat.format(new Date(time));
-        }else if(d <= 0){
-            return dateFormat.format(new Date(time));
-        }else if(d < TIME_SIZE_DAY){
-            return "昨天 "+dateFormat.format(new Date(time));
-        }else {
-            dateFormat = new SimpleDateFormat("MM-dd", Locale.CHINA);
-            return dateFormat.format(new Date(time));
+        SimpleDateFormat dateFormat =  new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        long now = System.currentTimeMillis();
+
+        if(isSameDay(now, time)){
+            dateFormat = new SimpleDateFormat("HH:mm");
+        }else if(isSameDay(now - TIME_SIZE_DAY, time)){
+            dateFormat = new SimpleDateFormat("昨天 HH:mm");
+        }else if(isSameDay(now - TIME_SIZE_DAY * 2, time)){
+            dateFormat = new SimpleDateFormat("前天 HH:mm");
+        }else if(isSameDay(now + TIME_SIZE_DAY, time)){
+            dateFormat = new SimpleDateFormat("明天 HH:mm");
+        }else if(isSameDay(now + TIME_SIZE_DAY * 2, time)){
+            dateFormat = new SimpleDateFormat("后天 HH:mm");
         }
+
+        return dateFormat.format(new Date(time));
     }
 
 

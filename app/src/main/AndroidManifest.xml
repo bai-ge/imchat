@@ -63,6 +63,12 @@
         <activity android:name="com.baige.search.SearchActivity"/>
         <activity android:name="com.baige.friend.FriendActivity"
                   android:windowSoftInputMode="adjustPan|stateHidden"/>
+
+        <service android:name="com.baige.service.PullService"
+                 android:enabled="false"
+                 android:exported="false">
+
+        </service>
         //保活机制
         <service
             android:name="com.baige.service.DaemonService"

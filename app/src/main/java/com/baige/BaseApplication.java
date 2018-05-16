@@ -12,6 +12,7 @@ import android.os.Environment;
 
 import com.baige.data.entity.AppPackgeInfo;
 import com.baige.service.DaemonService;
+import com.baige.service.PullService;
 import com.baige.util.Loggerx;
 import com.baige.util.Tools;
 

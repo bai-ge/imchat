@@ -26,6 +26,10 @@ import com.baige.telephone.PhoneActivity;
 import java.util.ArrayList;
 import java.util.List;
 
+import rx.Observable;
+import rx.Subscriber;
+import rx.Subscription;
+
 
 /**
  * Created by 百戈 on 2017/2/19.
@@ -169,6 +173,37 @@ public class ChatFragment extends Fragment implements ChatContract.View {
         });
     }
 
+
+    private Subscriber<ChatMsgInfo> chatSubscriber = new Subscriber<ChatMsgInfo>() {
+
+        @Override
+        public void onNext(ChatMsgInfo chatMsgInfo) {
+            mChatAdapter.addItem(chatMsgInfo);
+        }
+
+        @Override
+        public void onCompleted() { }
+
+        @Override
+        public void onError(Throwable e) { }
+    };
+
+    private Observable<ChatMsgInfo> chatMsgInfoObservable = Observable.create(new Observable.OnSubscribe<ChatMsgInfo>() {
+        ChatMsgInfo chatMsgInfo;
+
+        public void setChatMsgInfo(ChatMsgInfo chatMsgInfo) {
+            this.chatMsgInfo = chatMsgInfo;
+        }
+
+        @Override
+        public void call(Subscriber<? super ChatMsgInfo> subscriber) {
+            if(chatMsgInfo != null){
+                subscriber.onNext(chatMsgInfo);
+            }
+        }
+    });
+
+
     @Override
     public void clearMsg() {
         mHandler.post(new Runnable() {
@@ -196,6 +231,19 @@ public class ChatFragment extends Fragment implements ChatContract.View {
             @Override
             public void run() {
                 mChatAdapter.addItem(chatMsgInfo);
+            }
+        });
+    }
+
+    @Override
+    public void addMsg(List<ChatMsgInfo> msgInfoList) {
+        for (ChatMsgInfo c : msgInfoList) {
+            mChatAdapter.addItem(c, false);
+        }
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                mChatAdapter.notifyDataSetChanged();
             }
         });
     }
@@ -242,5 +290,9 @@ public class ChatFragment extends Fragment implements ChatContract.View {
         }
     };
 
-
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mPresenter.stop();
+    }
 }

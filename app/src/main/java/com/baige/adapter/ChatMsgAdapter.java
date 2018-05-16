@@ -3,26 +3,21 @@ package com.baige.adapter;
 import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.Looper;
-import android.provider.ContactsContract;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.baige.AppConfigure;
 import com.baige.BaseApplication;
 import com.baige.data.entity.ChatMsgInfo;
-import com.baige.data.entity.User;
 import com.baige.imchat.R;
 import com.baige.util.ImageLoader;
 import com.baige.util.Tools;
 import com.baige.view.CircleImageView;
 
-import org.w3c.dom.Text;
 
 import java.io.File;
 import java.util.Collections;
@@ -116,23 +111,7 @@ public class ChatMsgAdapter extends BaseAdapter {
         return convertView;
     }
 
-    private void loadUserImg(String imgName, CircleImageView view){
-        if(!Tools.isEmpty(imgName)){
-            String url = BaseApplication.headImgPath + File.separator + imgName;
-            Bitmap bitmap = ImageLoader.getInstance().getBitmapFromMemoryCache(url);
-            if(bitmap == null){
-                bitmap = ImageLoader.decodeSampledBitmapFromResource(url, view.getWidth() <= 50 ? 50 : view.getWidth());
-            }
-            if(bitmap != null){
-                ImageLoader.getInstance().addBitmapToMemoryCache(url, bitmap);
-                view.setImageBitmap(bitmap);
-            }else{
-                view.setImageResource(R.drawable.head_img);
-            }
-        }else{
-            view.setImageResource(R.drawable.head_img);
-        }
-    }
+
 
     /**
      * 设置Holder上的每一个组件的值
@@ -142,12 +121,14 @@ public class ChatMsgAdapter extends BaseAdapter {
      */
     private void setHolder(ViewHolder holder, int position) {
         final ChatMsgInfo item = mList.get(position);
+        final ChatMsgInfo preItem = position > 1 ? mList.get(position- 1) : null;
+
         if(item.isReceive()){
             holder.leftLayout.setVisibility(View.VISIBLE);
             holder.rightLayout.setVisibility(View.GONE);
             holder.informLayout.setVisibility(View.GONE);
 
-            loadUserImg(item.getUserImgName(), holder.leftImgView);
+            ImageLoader.loadUserImg(item.getUserImgName(), holder.leftImgView);
             holder.leftTxtUserNameView.setText(item.getUserName());
             if(item.isText()){
                 holder.leftTxtMsgView.setText(item.getContext());
@@ -164,11 +145,15 @@ public class ChatMsgAdapter extends BaseAdapter {
             }else {
                 holder.leftBtnWarning.setVisibility(View.GONE);
             }
+            if(position == 0 || preItem != null && item.getSendTime() - preItem.getSendTime() >= 5 * 60 * 1000){
+                holder.informTxt.setText(Tools.getSuitableTimeFormat(item.getSendTime()));
+                holder.informLayout.setVisibility(View.VISIBLE);
+            }
         }else if(item.isSend()){
             holder.leftLayout.setVisibility(View.GONE);
             holder.rightLayout.setVisibility(View.VISIBLE);
             holder.informLayout.setVisibility(View.GONE);
-            loadUserImg(item.getUserImgName(), holder.rightImgView);
+            ImageLoader.loadUserImg(item.getUserImgName(), holder.rightImgView);
 
             holder.rightTxtUserNameView.setText(item.getUserName());
             if(item.isText()){
@@ -186,6 +171,10 @@ public class ChatMsgAdapter extends BaseAdapter {
             }else {
                 holder.rightBtnWarning.setVisibility(View.GONE);
             }
+           if(position == 0 || preItem != null && item.getSendTime() - preItem.getSendTime() >= 5 * 60 * 1000){
+                holder.informTxt.setText(Tools.getSuitableTimeFormat(item.getSendTime()));
+                holder.informLayout.setVisibility(View.VISIBLE);
+            }
         }else {
             holder.leftLayout.setVisibility(View.GONE);
             holder.rightLayout.setVisibility(View.GONE);
@@ -194,8 +183,8 @@ public class ChatMsgAdapter extends BaseAdapter {
         }
     }
 
-    public void updateList(List<ChatMsgInfo> users) {
-        this.mList = users;
+    public void updateList(List<ChatMsgInfo> chatMsgInfos) {
+        this.mList = chatMsgInfos;
         if(mList != null){
             Collections.sort(mList);
         }
@@ -207,10 +196,17 @@ public class ChatMsgAdapter extends BaseAdapter {
         notifyDataSetChanged();
     }
 
-    public void addItem(ChatMsgInfo user) {
-        mList.add(user);
+    public void addItem(ChatMsgInfo chatMsgInfo) {
+        mList.add(chatMsgInfo);
         Collections.sort(mList);
         notifyDataSetChanged();
+    }
+    public void addItem(ChatMsgInfo chatMsgInfo, boolean notify) {
+        mList.add(chatMsgInfo);
+        Collections.sort(mList);
+       if(notify){
+           notifyDataSetChanged();
+       }
     }
 
     class ViewHolder {

@@ -3,7 +3,11 @@ package com.baige.data.source.local;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
+import com.baige.data.entity.ChatMsgInfo;
 import com.baige.data.source.DataSource;
+
+import rx.Observable;
+import rx.Subscriber;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -31,5 +35,8 @@ public class LocalRepository implements DataSource {
         }
         return INSTANCE;
     }
+
+
+
 
 }

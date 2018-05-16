@@ -1,15 +1,22 @@
 package com.baige.imchat;
 
 import android.util.Log;
+import android.widget.ListView;
 
 import com.baige.callback.HttpBaseCallback;
+import com.baige.data.entity.ChatMsgInfo;
 import com.baige.data.entity.FriendView;
 import com.baige.data.entity.User;
+import com.baige.data.observer.BaseObserver;
+import com.baige.data.observer.ChatMessageObservable;
+import com.baige.data.observer.FriendViewObservable;
+import com.baige.data.observer.LastChatMessageObservable;
 import com.baige.data.source.Repository;
 import com.baige.data.source.cache.CacheRepository;
 import com.baige.util.Tools;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -41,8 +48,16 @@ public class MainPresenter implements MainContract.Presenter {
             mFragment.showUserAlias(user.getAlias());
 //            这里显示会引起界面未初始化完成
             mFragment.showUserImg(user.getImgName());
+
             loadFriends();
+            loadMsg();
+            CacheRepository.getInstance().registerDataChange(dataObserver);
+            List<FriendView> friendViewList = CacheRepository.getInstance().getFriendViewObservable().loadCache();
+            List<ChatMsgInfo> chatMsgInfos = CacheRepository.getInstance().getChatMessageObservable().loadCache();
+            CacheRepository.getInstance().getLastChatMessageObservable().analyze(chatMsgInfos, user.getId());
+            CacheRepository.getInstance().getLastChatMessageObservable().analyze(friendViewList);
         }
+
     }
 
     @Override
@@ -134,9 +149,60 @@ public class MainPresenter implements MainContract.Presenter {
                 @Override
                 public void loadFriendViews(List<FriendView> list) {
                     super.loadFriendViews(list);
-                    mFragment.showFriends(list);
+                    CacheRepository.getInstance().getFriendViewObservable().put(list);
+                }
+            });
+        }
+
+    }
+
+    @Override
+    public void loadMsg() {
+        User user = CacheRepository.getInstance().who();
+        if (user != null) {
+            mRepository.findMsg(user.getId(), user.getVerification(),  new HttpBaseCallback() {
+                @Override
+                public void loadMsgList(List<ChatMsgInfo> chatMsgInfos) {
+                    super.loadMsgList(chatMsgInfos);
+                    Collections.sort(chatMsgInfos);
+                    CacheRepository.getInstance().getChatMessageObservable().put(chatMsgInfos);
+                }
+
+                @Override
+                public void meaning(String text) {
+                    super.meaning(text);
+                    mFragment.showTip(text);
                 }
             });
         }
     }
+
+    @Override
+    public void stop() {
+        CacheRepository.getInstance().getChatMessageObservable().remote(dataObserver);
+    }
+
+    private BaseObserver dataObserver = new BaseObserver() {
+
+        @Override
+       public void update(ChatMessageObservable observable, Object arg){
+            Log.d(TAG, "消息："+arg);
+            User user = CacheRepository.getInstance().who();
+            List<ChatMsgInfo> chatMsgInfos = observable.loadCache();
+            CacheRepository.getInstance().getLastChatMessageObservable().analyze(chatMsgInfos, user.getId());
+        }
+
+        @Override
+        public void update(FriendViewObservable observable, Object arg){
+            Log.d(TAG, "好友："+arg);
+            mFragment.showFriends(observable.loadCache());
+            CacheRepository.getInstance().getLastChatMessageObservable().analyze( observable.loadCache());
+        }
+
+        @Override
+        public void update(LastChatMessageObservable observable, Object arg){
+            Log.d(TAG, "最近消息："+arg);
+            mFragment.showLastChatMsgs(observable.loadCache());
+        }
+    };
 }

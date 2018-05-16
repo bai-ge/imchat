@@ -19,6 +19,7 @@ import com.baige.data.source.remote.LoadingManager;
 import com.baige.imchat.R;
 import com.baige.util.ImageLoader;
 import com.baige.util.Tools;
+import com.baige.view.CircleImageView;
 
 import java.io.File;
 import java.util.List;
@@ -98,6 +99,23 @@ public class FriendAdapter extends BaseAdapter {
         return convertView;
     }
 
+    private void loadUserImg(String imgName, CircleImageView view){
+        if(!Tools.isEmpty(imgName)){
+            String url = BaseApplication.headImgPath + File.separator + imgName;
+            Bitmap bitmap = ImageLoader.getInstance().getBitmapFromMemoryCache(url);
+            if(bitmap == null){
+                bitmap = ImageLoader.decodeSampledBitmapFromResource(url, view.getWidth() <= 50 ? 50 : view.getWidth());
+            }
+            if(bitmap != null){
+                ImageLoader.getInstance().addBitmapToMemoryCache(url, bitmap);
+                view.setImageBitmap(bitmap);
+            }else{
+                view.setImageResource(R.drawable.head_img);
+            }
+        }else{
+            view.setImageResource(R.drawable.head_img);
+        }
+    }
     /**
      * 设置Holder上的每一个组件的值
      *
@@ -106,14 +124,12 @@ public class FriendAdapter extends BaseAdapter {
      */
     private void setHolder(final ViewHolder holder, int position) {
         final FriendView item = mList.get(position);
-        String name = item.getFriendName();
-        holder.friendAliasView.setText(name);
-        holder.nameView.setText(name);
 
-        if(!Tools.isEmpty(item.getFriendAlias())){
-            holder.friendAliasView.setText(item.getFriendAlias());
-        }
-        if(!Tools.isEmpty(item.getAlias())){
+        holder.friendAliasView.setText(item.getSuitableName());//备注
+
+        holder.nameView.setText(item.getFriendName());//好友账号
+
+        if(!Tools.isEmpty(item.getAlias())){//好友别名
             holder.aliasView.setText("("+item.getAlias()+")");
         }else{
             holder.aliasView.setText("");
@@ -160,8 +176,7 @@ public class FriendAdapter extends BaseAdapter {
             } else {
                 Log.d(TAG, "显示"+item.getFriendImgName());
                 ImageLoader.getInstance().addBitmapToMemoryCache(path, bitmap);
-                Bitmap showBm = bitmap.copy(Bitmap.Config.ARGB_8888, true);
-                holder.imgView.setImageBitmap(showBm);
+                holder.imgView.setImageBitmap(bitmap);
             }
         }
         holder.viewGroup.setOnClickListener(new View.OnClickListener() {

@@ -157,4 +157,9 @@ public class FileListPresenter implements FileListContract.Presenter {
         }
 
     }
+
+    @Override
+    public void stop() {
+
+    }
 }

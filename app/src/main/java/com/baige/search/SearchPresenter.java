@@ -82,4 +82,9 @@ public class SearchPresenter implements SearchContract.Presenter {
     public void relate(User user) {
 
     }
+
+    @Override
+    public void stop() {
+
+    }
 }

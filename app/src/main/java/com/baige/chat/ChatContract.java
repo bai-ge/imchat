@@ -17,9 +17,12 @@ public interface ChatContract {
 
     interface Presenter extends BasePresenter {
         void sendMsg(String msg);
+        void reSendMsg(ChatMsgInfo chatMsgInfo);
         void loadMsg();
         void loadMsgAfterTime(long time);
         void loadMsgBeforeTime(long time);
+
+        void readBeforeTime();
     }
 
     interface View extends BaseView<Presenter> {
@@ -28,6 +31,7 @@ public interface ChatContract {
         void showFriendNetwork(String network);
         void showMsg(List<ChatMsgInfo> msgInfoList);
         void showMsg(ChatMsgInfo chatMsgInfo);
+        void addMsg(List<ChatMsgInfo> msgInfoList);
         void notifyChange();
     }
 

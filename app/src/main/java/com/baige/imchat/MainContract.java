@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import com.baige.BasePresenter;
 import com.baige.BaseView;
 import com.baige.data.entity.FriendView;
+import com.baige.data.entity.LastChatMsgInfo;
 
 import java.util.List;
 
@@ -23,6 +24,8 @@ public interface MainContract {
 
         void loadFriends();
 
+        void loadMsg();
+
     }
 
     interface View extends BaseView<Presenter> {
@@ -37,5 +40,7 @@ public interface MainContract {
         void showUserAlias(String alias);
 
         void showFriends(List<FriendView> friendViewList);
+
+        void showLastChatMsgs(List<LastChatMsgInfo> lastChatMsgInfos);
     }
 }

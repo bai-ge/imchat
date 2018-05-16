@@ -9,6 +9,20 @@
         android:orientation="vertical"
         android:background="#dedede"
         android:padding="10dp">
+        <!--系统通知-->
+        <LinearLayout
+            android:id="@+id/inform_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:gravity="center">
+            <TextView
+                android:id="@+id/inform_msg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"
+                android:text="@string/inform"/>
+        </LinearLayout>
         <!--左边，接收到的信息-->
         <RelativeLayout
             android:id="@+id/left_layout"
@@ -162,20 +176,7 @@
 
         </RelativeLayout>
 
-        <!--系统通知-->
-        <LinearLayout
-            android:id="@+id/inform_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:gravity="center">
-            <TextView
-                android:id="@+id/inform_msg"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="12sp"
-                android:text="@string/inform"/>
-        </LinearLayout>
+
     </LinearLayout>
 
 

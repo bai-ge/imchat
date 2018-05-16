@@ -8,11 +8,17 @@ import com.baige.callback.HttpBaseCallback;
 
 import com.baige.data.entity.FriendView;
 import com.baige.data.entity.User;
+import com.baige.data.observer.BaseObserver;
+import com.baige.data.observer.ChatMessageObservable;
+import com.baige.data.observer.FriendViewObservable;
+import com.baige.data.observer.LastChatMessageObservable;
 import com.baige.data.source.Repository;
 import com.baige.data.source.cache.CacheRepository;
 import com.baige.util.Tools;
 
 
+import java.util.Observable;
+import java.util.Observer;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -41,6 +47,7 @@ public class FriendPresenter implements FriendContract.Presenter {
     }
     @Override
     public void start() {
+        CacheRepository.getInstance().registerDataChange(dataObserver);
         if(mFriendView != null){
             mFragment.showFriendView(mFriendView);
         }
@@ -216,4 +223,12 @@ public class FriendPresenter implements FriendContract.Presenter {
             });
         }
     }
+
+    @Override
+    public void stop() {
+        CacheRepository.getInstance().unRegisterDataChange(dataObserver);
+    }
+    private BaseObserver dataObserver = new BaseObserver() {
+
+    };
 }

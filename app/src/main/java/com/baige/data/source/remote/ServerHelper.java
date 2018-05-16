@@ -103,7 +103,9 @@ public interface ServerHelper {
 
     void operationFriend(int id, int uid, String verification, int friendId, String operation, HttpBaseCallback callback);
 
-    void sendMsg(int uid, String verification, int friendId, String msg, int type,  HttpBaseCallback callback);
+    //void sendMsg(int uid, String verification, int friendId, String msg, int type,  HttpBaseCallback callback);
+
+    void sendMsg(ChatMsgInfo chatMsgInfo, String verification, HttpBaseCallback callback);
 
     void findMsgRelate(int uid, String verification, int friendId, HttpBaseCallback callback);
 
@@ -111,4 +113,13 @@ public interface ServerHelper {
 
     void findMsgRelateBeforeTime(int uid, String verification, int friendId, long time, HttpBaseCallback callback);
 
+    void findMsg(int uid, String verification, HttpBaseCallback callback);
+
+    void findMsgAfterTime(int uid, String verification, long time, HttpBaseCallback callback);
+
+    void findMsgBeforeTime(int uid, String verification, long time, HttpBaseCallback callback);
+
+    void readMsgBeforeTime(int uid, String verification, long time, HttpBaseCallback callback);
+
+    void readMsgBeforeTime(int uid, String verification, int friendId, long time, HttpBaseCallback callback);
 }

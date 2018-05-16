@@ -3,8 +3,6 @@ package com.baige.connect.msg;
 import android.util.Log;
 
 
-import com.baige.data.source.cache.CacheRepository;
-import com.baige.util.IPUtil;
 import com.baige.util.Tools;
 
 import org.json.JSONException;

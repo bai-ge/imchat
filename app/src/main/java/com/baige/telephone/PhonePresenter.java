@@ -32,6 +32,10 @@ public class PhonePresenter implements PhoneContract.Presenter {
     }
 
 
+    @Override
+    public void stop() {
+
+    }
 
     @Override
     public void onHangUp() {

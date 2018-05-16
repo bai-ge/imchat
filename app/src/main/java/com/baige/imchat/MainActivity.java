@@ -15,6 +15,7 @@ import com.baige.data.source.Repository;
 import com.baige.data.source.cache.CacheRepository;
 import com.baige.data.source.local.LocalRepository;
 import com.baige.login.LoginActivity;
+import com.baige.service.PullService;
 import com.baige.util.ActivityUtils;
 import com.baige.view.CircleImageView;
 import com.setting.SettingActivity;
@@ -110,6 +111,7 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+
         CacheRepository.getInstance().saveConfig(getApplicationContext());
     }
 }

@@ -31,7 +31,10 @@ public class RegisterPresenter implements RegisterContract.Presenter {
 
     }
 
+    @Override
+    public void stop() {
 
+    }
 
     @Override
     public void register(final User user, String code) {
