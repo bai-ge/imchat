@@ -21,6 +21,23 @@
             app:civ_border_color="#FFFFFFFF"
             app:civ_border_width="1dp"/>
 
+        <TextView
+            android:id="@+id/txt_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
+            android:text="标题"
+            android:textColor="@color/white"
+            android:textSize="20sp"/>
+        <ProgressBar
+            android:id="@+id/progress_network"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_toRightOf="@id/txt_title"
+            android:layout_centerVertical="true"
+            android:layout_margin="@dimen/fab_margin"
+            android:indeterminateDrawable ="@drawable/progress_circle"/>
         <Button
             android:id="@+id/title_menu"
             android:layout_width="30dp"
@@ -32,9 +49,26 @@
             android:background="@drawable/ic_menu"/>
     </RelativeLayout>
 
+    <!--通知栏-->
+    <LinearLayout
+        android:id="@+id/inform_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/yellow">
+
+        <TextView
+            android:id="@+id/txt_inform"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="您已处于离线状态"/>
+    </LinearLayout>
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
         <android.support.v4.view.ViewPager
             android:id="@+id/view_pager"
             android:layout_width="match_parent"

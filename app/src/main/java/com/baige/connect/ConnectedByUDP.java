@@ -71,6 +71,14 @@ public class ConnectedByUDP extends BaseConnector {
     public boolean isConnected() {
         return getState() == ConnectedByUDP.State.Connected;
     }
+
+    @Override
+    public boolean isConnected(int lastReceiveTime) {
+        if(System.currentTimeMillis() - getLastReceiveMessageTime() > lastReceiveTime){
+            return false;
+        }
+        return isDisconnected();
+    }
     public boolean isConnecting() {
         return getState() == ConnectedByUDP.State.Connecting;
     }
@@ -132,6 +140,9 @@ public class ConnectedByUDP extends BaseConnector {
 //        if(getRunningSocket() != null){
 //            getRunningSocket().remove(this);
 //        }
+        if(getRunningSocket() == null){
+            return;
+        }
         setDisconnecting(true);
         sendDisconnectedPacket();
         //不再发送信息
@@ -263,8 +274,13 @@ public class ConnectedByUDP extends BaseConnector {
             if(!packet.isPacket()){
                 packet.packet();
             }
-            DatagramPacket datagramPacket = new DatagramPacket(packet.getAllBuf(), packet.getAllBuf().length, getAddress().getInetSocketAddress());
-            if(getRunningSocket() != null){
+            DatagramPacket datagramPacket = null;
+            try {
+                datagramPacket = new DatagramPacket(packet.getAllBuf(), packet.getAllBuf().length, getAddress().getInetSocketAddress());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            if(getRunningSocket() != null && datagramPacket != null){
                 getRunningSocket().send(datagramPacket);
                 return packet;
             }

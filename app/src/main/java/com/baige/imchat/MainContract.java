@@ -31,6 +31,16 @@ public interface MainContract {
     interface View extends BaseView<Presenter> {
         void showTip(String text);
 
+        void showNetwork(int state);
+
+        void showInform(String text);
+
+        void showInform(String text, long time);
+
+        void hideInform();
+
+        void showDrawer();
+
         void showUserImg(String imgName);
 
         void showUserImg(Bitmap img);

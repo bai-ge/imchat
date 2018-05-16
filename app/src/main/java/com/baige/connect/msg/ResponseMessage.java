@@ -1,5 +1,7 @@
 package com.baige.connect.msg;
 
+import com.baige.common.Parm;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 

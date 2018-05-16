@@ -1,6 +1,8 @@
 package com.baige.connect;
 
 
+import android.util.Log;
+
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -21,6 +23,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class DatagramSocketServer {
 
     final DatagramSocketServer self = this;
+
+    private static final String TAG = DatagramSocketServer.class.getCanonicalName();
 
     private int localPort = -1;
 
@@ -160,6 +164,10 @@ public class DatagramSocketServer {
             }
         }
     }
+    public ConnectedByUDP get(String address){
+        return connectedByUDPmap.get(address);
+    }
+
     public ConnectedByUDP put(ConnectedByUDP connector){
         if(connector == null){
             return null;
@@ -260,6 +268,7 @@ public class DatagramSocketServer {
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
+                        Log.e(TAG, e.getMessage());
                         runningServerSocket = null;
                     }
                 }

@@ -243,7 +243,7 @@ public class SocketServer extends OnConnectedListener.SimpleOnConnectedListener{
             client.disconnect();
         }
     }
-    private class ListenThread extends Thread  {
+    private class ListenThread extends Thread {
         private boolean running;
         protected ListenThread setRunning(boolean running) {
             this.running = running;

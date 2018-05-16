@@ -2,14 +2,20 @@ package com.baige.connect.msg;
 
 import android.util.Log;
 
-
+import com.baige.common.Parm;
+import com.baige.connect.SocketPacket;
+import com.baige.data.entity.Candidate;
+import com.baige.data.source.cache.CacheRepository;
+import com.baige.util.JsonTools;
 import com.baige.util.Tools;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.DatagramPacket;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -45,8 +51,8 @@ public class MessageManager {
             jsonObject.put(Parm.FROM, deviceId);
             jsonObject.put(Parm.LOCAL_IP, localIp);
             jsonObject.put(Parm.LOCAL_PORT, localPort);
-            jsonObject.put(Parm.ACCEPT_PORT, acceptPort);
-            jsonObject.put(Parm.LOCAL_UDP_PORT, localUdpPort);
+//            jsonObject.put(Parm.ACCEPT_PORT, acceptPort);
+//            jsonObject.put(Parm.LOCAL_UDP_PORT, localUdpPort);
             return jsonObject.toString();
         } catch (JSONException e) {
             e.printStackTrace();
@@ -69,6 +75,51 @@ public class MessageManager {
         }
         return null;
     }
+    public static String udpTest(String deviceId, String callbackId, String localIp, String localUdpPort){
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put(Parm.DATA_TYPE, Parm.TYPE_UDP_TEST);
+            jsonObject.put(Parm.FROM, deviceId);
+            jsonObject.put(Parm.CALLBACK, callbackId);
+            jsonObject.put(Parm.LOCAL_IP, localIp);
+            jsonObject.put(Parm.LOCAL_UDP_PORT, localUdpPort);
+            jsonObject.put(Parm.SEND_TIME, System.currentTimeMillis());
+            return jsonObject.toString();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static String udpTest(String deviceId, String localIp, String localUdpPort) {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put(Parm.DATA_TYPE, Parm.TYPE_UDP_TEST);
+            jsonObject.put(Parm.FROM, deviceId);
+            jsonObject.put(Parm.LOCAL_IP, localIp);
+            jsonObject.put(Parm.LOCAL_UDP_PORT, localUdpPort);
+            jsonObject.put(Parm.SEND_TIME, System.currentTimeMillis());
+            return jsonObject.toString();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static JSONObject udpTestResponse(String serverId, String deviceId, String remoteIp, String remoteUdpPort) {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put(Parm.DATA_TYPE, Parm.TYPE_UDP_TEST);
+            jsonObject.put(Parm.FROM, serverId);
+            jsonObject.put(Parm.DEVICE_ID, deviceId);
+            jsonObject.put(Parm.REMOTE_IP, remoteIp);
+            jsonObject.put(Parm.REMOTE_UDP_PORT, remoteUdpPort);
+            return jsonObject;
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
     public static String logout(String deviceId) {
         JSONObject jsonObject = new JSONObject();
@@ -85,39 +136,83 @@ public class MessageManager {
     /**
      * 注意需要告诉对方自己使用的通话端口
      */
-    public static String callTo(String talkWith) {
-//        String msg;
-//        CacheRepository cacheRepository = CacheRepository.getInstance();
-//        MessageHeader header = new MessageHeader();
-//        header.setVersion(VERSION);
-//        header.setFrom(cacheRepository.getDeviceId());
-//        header.setMethod(MessageHeader.Method.CALL_TO);
-//        header.addDes(talkWith);
-//        header.putParam(MessageHeader.Param.LOCAL_IP, cacheRepository.getLocalIp());
-//        header.putParam(MessageHeader.Param.REMOTE_IP, cacheRepository.getRemoteIp());
-//        header.putParam(MessageHeader.Param.LOCAL_UDP_PORT, String.valueOf(cacheRepository.getLocalUdpPort()));
-//        header.putParam(MessageHeader.Param.REMOTE_UDP_PORT, String.valueOf(cacheRepository.getRemoteUdpPort()));
-//        header.constructionParam();
-//        msg = MessageParser.getJSON(header);
-//        return msg;
+    public static String callTo(String talkWith, String name) {
+        CacheRepository cacheRepository = CacheRepository.getInstance();
+        try {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put(Parm.FROM, cacheRepository.getDeviceId());
+            jsonObject.put(Parm.USERNAME, name);
+            jsonObject.put(Parm.TO, talkWith);
+            jsonObject.put(Parm.DATA_TYPE, Parm.TYPE_CALL_TO);
+            ArrayList<Candidate> candidates = cacheRepository.getCandidates();
+            if (candidates != null && candidates.size() > 0) {
+                JSONArray jsonArray = new JSONArray();
+                for (Candidate candidate : candidates){
+                    jsonArray.put(JsonTools.getJSON(candidate));
+                }
+                jsonObject.put(Parm.CANDIDATES, jsonArray);
+            }
+            Log.d(TAG, "call To MSG:"+jsonObject.toString());
+            return jsonObject.toString();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         return null;
     }
 
     public static String replyCallTo(String talkWith) {
-//        String msg;
-//        CacheRepository cacheRepository = CacheRepository.getInstance();
-//        MessageHeader header = new MessageHeader();
-//        header.setVersion(VERSION);
-//        header.setFrom(cacheRepository.getDeviceId());
-//        header.setMethod(MessageHeader.Method.REPLY_CALL_TO);
-//        header.addDes(talkWith);
-//        header.putParam(MessageHeader.Param.LOCAL_IP, cacheRepository.getLocalIp());
-//        header.putParam(MessageHeader.Param.REMOTE_IP, cacheRepository.getRemoteIp());
-//        header.putParam(MessageHeader.Param.LOCAL_UDP_PORT, String.valueOf(cacheRepository.getLocalUdpPort()));
-//        header.putParam(MessageHeader.Param.REMOTE_UDP_PORT, String.valueOf(cacheRepository.getRemoteUdpPort()));
-//        header.constructionParam();
-//        msg = MessageParser.getJSON(header);
-//        return msg;
+        CacheRepository cacheRepository = CacheRepository.getInstance();
+        try {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put(Parm.FROM, cacheRepository.getDeviceId());
+            jsonObject.put(Parm.TO, talkWith);
+            jsonObject.put(Parm.DATA_TYPE, Parm.TYPE_REPLY_CALL_TO);
+            ArrayList<Candidate> candidates = cacheRepository.getCandidates();
+            if (candidates != null && candidates.size() > 0) {
+                JSONArray jsonArray = new JSONArray();
+                for (Candidate candidate : candidates){
+                    jsonArray.put(JsonTools.getJSON(candidate));
+                }
+                jsonObject.put(Parm.CANDIDATES, jsonArray);
+            }
+            return jsonObject.toString();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    public static JSONObject sendCandidateTo(String to){
+        CacheRepository cacheRepository = CacheRepository.getInstance();
+        try {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put(Parm.FROM, cacheRepository.getDeviceId());
+            jsonObject.put(Parm.TO, to);
+            jsonObject.put(Parm.DATA_TYPE, Parm.TYPE_TRY_PTP);
+            ArrayList<Candidate> candidates = cacheRepository.getCandidates();
+            if (candidates != null && candidates.size() > 0) {
+                JSONArray jsonArray = new JSONArray();
+                for (Candidate candidate : candidates){
+                    jsonArray.put(JsonTools.getJSON(candidate));
+                }
+                jsonObject.put(Parm.CANDIDATES, jsonArray);
+            }
+            return jsonObject;
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static JSONObject tryPTPConnect(String from, String to){
+        try {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put(Parm.FROM, from);
+            jsonObject.put(Parm.TO, to);
+            jsonObject.put(Parm.DATA_TYPE, Parm.TYPE_TRY_PTP_CONNECT);
+            return jsonObject;
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         return null;
     }
 
@@ -126,33 +221,80 @@ public class MessageManager {
      * 注意需要告诉对方自己使用的通话端口
      */
     public static String onPickUp(String talkWith) {
-//        String msg;
-//        CacheRepository cacheRepository = CacheRepository.getInstance();
-//        MessageHeader header = new MessageHeader();
-//        header.setVersion(VERSION);
-//        header.setFrom(cacheRepository.getDeviceId());
-//        header.setMethod(MessageHeader.Method.PICK_UP);
-//        header.addDes(talkWith);
-//        header.putParam(MessageHeader.Param.LOCAL_IP, cacheRepository.getLocalIp());
-//        header.putParam(MessageHeader.Param.REMOTE_IP, cacheRepository.getRemoteIp());
-//        header.putParam(MessageHeader.Param.LOCAL_UDP_PORT, String.valueOf(cacheRepository.getLocalUdpPort()));
-//        header.constructionParam();
-//        msg = MessageParser.getJSON(header);
-//        return msg;
+        CacheRepository cacheRepository = CacheRepository.getInstance();
+        try {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put(Parm.FROM, cacheRepository.getDeviceId());
+            jsonObject.put(Parm.TO, talkWith);
+            jsonObject.put(Parm.DATA_TYPE, Parm.TYPE_PICK_UP);
+
+            return jsonObject.toString();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         return null;
     }
 
     public static String onHangUp(String talkWith) {
-//        String msg;
-//        CacheRepository cacheRepository = CacheRepository.getInstance();
-//        MessageHeader header = new MessageHeader();
-//        header.setVersion(VERSION);
-//        header.setFrom(cacheRepository.getDeviceId());
-//        header.setMethod(MessageHeader.Method.HANG_UP);
-//        header.addDes(talkWith);
-//        header.constructionParam();
-//        msg = MessageParser.getJSON(header);
-//        return msg;
+        CacheRepository cacheRepository = CacheRepository.getInstance();
+        try {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put(Parm.FROM, cacheRepository.getDeviceId());
+            jsonObject.put(Parm.TO, talkWith);
+            jsonObject.put(Parm.DATA_TYPE, Parm.TYPE_HANG_UP);
+            return jsonObject.toString();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static String helpPickUp(String from, String to, String callbackId){
+        try {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put(Parm.FROM, from);
+            jsonObject.put(Parm.TO, to);
+            jsonObject.put(Parm.DATA_TYPE, Parm.TYPE_HELP_PICK_UP);
+            jsonObject.put(Parm.CALLBACK, callbackId);
+            return jsonObject.toString();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    public static String helpSetSpeakerphone(String from, String to, boolean on, String callbackId){
+        try {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put(Parm.FROM, from);
+            jsonObject.put(Parm.TO, to);
+            jsonObject.put(Parm.DATA_TYPE, Parm.TYPE_HELP_SPEAKER_PHONE);
+            jsonObject.put(Parm.SPEAKER_PHONE, on);
+            jsonObject.put(Parm.CALLBACK, callbackId);
+            return jsonObject.toString();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static SocketPacket voice(String from, String to, byte[] voice, int delayTime) {
+        if(voice == null || voice.length == 0){
+            return  null;
+        }
+        SocketPacket socketPacket = new SocketPacket();
+        try {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put(Parm.FROM, from);
+            jsonObject.put(Parm.TO, to);
+            jsonObject.put(Parm.SEND_TIME, System.currentTimeMillis());
+            jsonObject.put(Parm.DELAY_TIME, delayTime);
+            jsonObject.put(Parm.DATA_TYPE, Parm.TYPE_VOICE);
+            socketPacket.setHeaderBuf(jsonObject.toString().getBytes());
+            socketPacket.setContentBuf(voice);
+            return socketPacket;
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         return null;
     }
 

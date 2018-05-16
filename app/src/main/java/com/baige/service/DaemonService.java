@@ -13,20 +13,28 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Parcelable;
 import android.os.Process;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
-
+import com.baige.AppConfigure;
 import com.baige.broadcast.WakeReceiver;
-import com.baige.connect.NetServerManager;
+import com.baige.common.Parm;
+import com.baige.connect.BaseConnector;
+import com.baige.connect.OnConnectedListener;
 import com.baige.connect.SocketClientAddress;
+import com.baige.connect.SocketPacket;
+import com.baige.connect.msg.MessageManager;
+import com.baige.data.entity.DeviceModel;
+import com.baige.pushcore.SendMessageBroadcast;
+import com.baige.util.IPUtil;
 import com.baige.util.Tools;
 import com.coolerfall.daemon.Daemon;
-import com.baige.AppConfigure;
 
 
 /**
@@ -35,7 +43,7 @@ import com.baige.AppConfigure;
 
 public class DaemonService extends Service {
 
-    public final static String DEFAULT_SERVER_IP = "125.217.52.17";
+    public final static String DEFAULT_SERVER_IP = "120.78.148.180";
 
     public final static String DEFAULT_SERVER_PORT = "12056";
 
@@ -56,15 +64,53 @@ public class DaemonService extends Service {
 
 
 
+
+
     //网络连接
 
-    private NetServerManager mNetServerManager;
 
     private NetworkConnectChangedReceiver networkConnectChangedReceiver;
 
+    private LocalBroadcastReceiver localBroadcastReceiver;
+
+    private ServerConnector mServerConnector;
 
 
 
+
+    private ServerConnector.OnServerConnectorListener mOnServerConnectorListener = new ServerConnector.OnServerConnectorListener() {
+        @Override
+        public void onConnecting(BaseConnector connector) {
+            Intent intent = new Intent();
+            intent.setAction(SendMessageBroadcast.ACTION_CONNECT_STATE);
+            intent.putExtra(SendMessageBroadcast.KEY_CONNECT_STATE, Parm.CONNECTING);
+            sendBroadcast(intent);
+        }
+
+        @Override
+        public void onConnected(BaseConnector connector) {
+            Intent intent = new Intent();
+            intent.setAction(SendMessageBroadcast.ACTION_CONNECT_STATE);
+            intent.putExtra(SendMessageBroadcast.KEY_CONNECT_STATE, Parm.CONNECTED);
+            sendBroadcast(intent);
+        }
+
+        @Override
+        public void onLogin(DeviceModel device) {
+            Intent intent = new Intent();
+            intent.setAction(SendMessageBroadcast.ACTION_CONNECT_STATE);
+            intent.putExtra(SendMessageBroadcast.KEY_CONNECT_STATE, Parm.LOGIN);
+            sendBroadcast(intent);
+        }
+
+        @Override
+        public void onDisConnected(BaseConnector connector) {
+            Intent intent = new Intent();
+            intent.setAction(SendMessageBroadcast.ACTION_CONNECT_STATE);
+            intent.putExtra(SendMessageBroadcast.KEY_CONNECT_STATE, Parm.DISCONNECTED);
+            sendBroadcast(intent);
+        }
+    };
 
 
     @Override
@@ -76,11 +122,14 @@ public class DaemonService extends Service {
         readConfig();
         saveConfig();
         checkNetwork();
-        mNetServerManager = NetServerManager.getInstance();
+
+        mServerConnector = ServerConnector.getInstance();
+        mServerConnector.setListener(mOnServerConnectorListener);
 
         networkConnectChangedReceiver = new NetworkConnectChangedReceiver();
+        localBroadcastReceiver = new LocalBroadcastReceiver();
         registerReceiver();
-      //  startTask();
+//        startTask();
         grayGuard();
 
         // Notification notification = new Notification();
@@ -93,6 +142,12 @@ public class DaemonService extends Service {
         filter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
         filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
         registerReceiver(networkConnectChangedReceiver, filter);
+
+        filter = new IntentFilter();
+        filter.addAction(SendMessageBroadcast.ACTION_SEND_MSG);
+        filter.addAction(SendMessageBroadcast.ACTION_CONNECT_SERVER);
+        filter.addAction(SendMessageBroadcast.ACTION_DISCONNECT_SERVER);
+        registerReceiver(localBroadcastReceiver, filter);
     }
 
     private void startTask() {
@@ -118,7 +173,7 @@ public class DaemonService extends Service {
 //                            Log.d(TAG, "收到服务器信息"+responsePacket);
 //                        }
 //                    });
-                    mNetServerManager.connectTOServer(mDaemonServiceRepository.getServerAddress().getRemoteIP(), Integer.valueOf(mDaemonServiceRepository.getServerAddress().getRemotePort()) );
+//                    mNetServerManager.connectTOServer(mDaemonServiceRepository.getServerAddress().getRemoteIP(), Integer.valueOf(mDaemonServiceRepository.getServerAddress().getRemotePort()) );
                 }
             }
         }).start();
@@ -128,9 +183,61 @@ public class DaemonService extends Service {
     public IBinder onBind(Intent intent) {
         return new IPush.Stub() {
             @Override
+            public int getConnectState() throws RemoteException {
+                if(mServerConnector != null){
+                   return mServerConnector.getConnectState();
+                }
+                return 0;
+            }
+
+            @Override
+            public int connectToServer(String ip, String port) throws RemoteException {
+                mDaemonServiceRepository.setServerAddress(new SocketClientAddress(ip, port));
+                saveConfig();
+                mServerConnector.connectTOServer(ip, Integer.valueOf(port), mOnConnectedListener);
+                return 0;
+            }
+
+            @Override
+            public int sendMessage(String msg) throws RemoteException {
+                mServerConnector.sendMessage(msg);
+                return 0;
+            }
+
+            @Override
+            public int disconnectServer() throws RemoteException {
+                if(mServerConnector != null && mServerConnector.getServerDevice() != null ||mServerConnector.getServerDevice().getConnectedByTCP() != null){
+                    mServerConnector.getServerDevice().getConnectedByTCP().setTryConnectCount(100);
+                    mServerConnector.getServerDevice().getConnectedByTCP().disconnect();
+                }
+                return 0;
+            }
+
+            @Override
             public int getPid() throws RemoteException {
                 Log.d(TAG, Thread.currentThread().getName());
                 return Process.myPid();
+            }
+
+            @Override
+            public String getDeviceId() throws RemoteException {
+                return mDaemonServiceRepository.getDeviceId();
+            }
+
+            @Override
+            public String setDeviceId(String deviceId) throws RemoteException {
+                if(!deviceId.equals(getDeviceId())){
+                    mDaemonServiceRepository.setDeviceId(deviceId);
+                    saveConfig();
+                    String msg = MessageManager.login(mDaemonServiceRepository.getDeviceId(), IPUtil.getLocalIPAddress(true), "", "", "");
+                    if(msg != null){
+                        mServerConnector.sendMessage(msg);
+                        Log.v(TAG, "发送数据："+msg);
+                    }else{
+                        throw new IllegalArgumentException("the login msg is null");
+                    }
+                }
+                return deviceId;
             }
 
             @Override
@@ -145,6 +252,7 @@ public class DaemonService extends Service {
         super.onDestroy();
         saveConfig();
         unregisterReceiver(networkConnectChangedReceiver);
+        unregisterReceiver(localBroadcastReceiver);
         Log.d(TAG, "onDestroy()");
         startService(new Intent(this, DaemonService.class));
     }
@@ -243,7 +351,7 @@ public class DaemonService extends Service {
                             Log.e(TAG, "当前移动网络连接可用 ");
                         }
                         //TODO 尝试连接服务器
-                       mNetServerManager.connectTOServer(mDaemonServiceRepository.getServerAddress().getRemoteIP(), Integer.valueOf(mDaemonServiceRepository.getServerAddress().getRemotePort()) );
+                       mServerConnector.connectTOServer(mDaemonServiceRepository.getServerAddress().getRemoteIP(), Integer.valueOf(mDaemonServiceRepository.getServerAddress().getRemotePort()), mOnConnectedListener );
                     } else {
                         Log.e(TAG, "当前没有网络连接，请确保你已经打开网络 ");
                         mDaemonServiceRepository.setWifiValid(false);
@@ -251,13 +359,12 @@ public class DaemonService extends Service {
                     }
 
 
-                    Log.e(TAG, "info.getTypeName()" + activeNetwork.getTypeName());
-                    Log.e(TAG, "getSubtypeName()" + activeNetwork.getSubtypeName());
-                    Log.e(TAG, "getState()" + activeNetwork.getState());
-                    Log.e(TAG, "getDetailedState()"
-                            + activeNetwork.getDetailedState().name());
-                    Log.e(TAG, "getDetailedState()" + activeNetwork.getExtraInfo());
-                    Log.e(TAG, "getType()" + activeNetwork.getType());
+                    Log.v(TAG, "info.getTypeName()" + activeNetwork.getTypeName());
+                    Log.v(TAG, "getSubtypeName()" + activeNetwork.getSubtypeName());
+                    Log.v(TAG, "getState()" + activeNetwork.getState());
+                    Log.v(TAG, "getDetailedState()" + activeNetwork.getDetailedState().name());
+                    Log.v(TAG, "getDetailedState()" + activeNetwork.getExtraInfo());
+                    Log.v(TAG, "getType()" + activeNetwork.getType());
                 } else {   // not connected to the internet
                     Log.e(TAG, "当前没有网络连接，请确保你已经打开网络 ");
                     mDaemonServiceRepository.setWifiValid(false);
@@ -265,6 +372,49 @@ public class DaemonService extends Service {
 
                 }
             }
+        }
+    }
+
+    private void OnSendingFail(String msg){
+        Intent intent = new Intent();
+        intent.setAction(SendMessageBroadcast.ACTION_SEND_MSG_FIAL);
+        intent.putExtra(SendMessageBroadcast.KEY_SEND_MSG, msg);
+        intent.putExtra(SendMessageBroadcast.KEY_SERVER_IP, mDaemonServiceRepository.getServerAddress().getRemoteIP());
+        sendBroadcast(intent);
+    }
+
+    public class LocalBroadcastReceiver extends BroadcastReceiver{
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            Log.d(TAG, "本地广播"+action);
+            if(action.equals(SendMessageBroadcast.ACTION_CONNECT_SERVER)){
+                Bundle bundle = intent.getExtras();
+                if(bundle.containsKey(SendMessageBroadcast.KEY_SERVER_IP) && bundle.containsKey(SendMessageBroadcast.KEY_SERVER_PORT)){
+                    String ip = bundle.getString(SendMessageBroadcast.KEY_SERVER_IP);
+                    String port = bundle.getString(SendMessageBroadcast.KEY_SERVER_PORT);
+                    mDaemonServiceRepository.setServerAddress(new SocketClientAddress(ip, port));
+                    saveConfig();
+                    mServerConnector.connectTOServer(ip, Integer.valueOf(port), mOnConnectedListener);
+                }
+            }else if(action.equals(SendMessageBroadcast.ACTION_SEND_MSG)){
+                Bundle bundle = intent.getExtras();
+                if(bundle.containsKey(SendMessageBroadcast.KEY_SEND_MSG) ){
+                    String msg = bundle.getString(SendMessageBroadcast.KEY_SEND_MSG);
+                   boolean isSend =  mServerConnector.sendMessage(msg);
+                    if(!isSend){
+                        OnSendingFail(msg);
+                    }
+                }
+            }else if(action.equals(SendMessageBroadcast.ACTION_DISCONNECT_SERVER)){
+                DeviceModel deviceModel = mServerConnector.getServerDevice();
+                if(deviceModel != null && deviceModel.getConnectedByTCP() != null){
+                    deviceModel.getConnectedByTCP().setTryConnectCount(100); //断线后取消重连
+                    deviceModel.getConnectedByTCP().disconnect();
+                }
+            }
+
         }
     }
 
@@ -332,6 +482,22 @@ public class DaemonService extends Service {
             mDaemonServiceRepository.setNetworkValid(false);
         }
     }
+
+    private OnConnectedListener mOnConnectedListener = new OnConnectedListener.SimpleOnConnectedListener(){
+        @Override
+        public void onResponse(BaseConnector connector, @NonNull SocketPacket responsePacket) {
+            super.onResponse(connector, responsePacket);
+            if(responsePacket != null && !responsePacket.isDisconnected() && !responsePacket.isHeartBeat()){
+                if(responsePacket.getContentBuf() != null && responsePacket.getContentBuf().length > 0){
+                    Intent intent = new Intent();
+                    intent.setAction(SendMessageBroadcast.ACTION_RECEIVE_MSG);
+                    intent.putExtra(SendMessageBroadcast.KEY_RECEIVE_MSG, Tools.dataToString(responsePacket.getContentBuf(), Tools.DEFAULT_ENCODE));
+                    sendBroadcast(intent);
+                }
+            }
+
+        }
+    };
 
     public void readConfig() {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());

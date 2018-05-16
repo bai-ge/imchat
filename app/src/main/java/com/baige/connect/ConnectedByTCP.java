@@ -1,7 +1,6 @@
 package com.baige.connect;
 
 
-
 import android.support.annotation.NonNull;
 import android.util.Log;
 
@@ -202,11 +201,20 @@ public class ConnectedByTCP extends BaseConnector {
         return this.socketInputReader;
     }
 
-    protected InputStream getSocketInputStream() throws IOException{
+    protected InputStream getSocketInputStream() throws IOException {
         if (this.socketInputStream == null) {
             this.socketInputStream = getRunningSocket().getInputStream();
         }
         return this.socketInputStream;
+    }
+
+    /**
+     * @param inputStream
+     * @return
+     */
+    protected  ConnectedByTCP setSocketInputStream(InputStream inputStream){
+        this.socketInputStream = inputStream;
+        return this;
     }
 
     public boolean isConnected() {
@@ -220,6 +228,14 @@ public class ConnectedByTCP extends BaseConnector {
 
     public boolean isDisconnected() {
         return getState() == State.Disconnected;
+    }
+
+    @Override
+    public boolean isConnected(int lastReceiveTime) {
+        if(System.currentTimeMillis() - getLastReceiveMessageTime() > lastReceiveTime){
+            return false;
+        }
+        return isDisconnected();
     }
 
     public boolean isConnecting() {
@@ -249,14 +265,20 @@ public class ConnectedByTCP extends BaseConnector {
         return this.receivingListeners;
     }
 
+    private long lastConnectTime = 0;
     @Override
     public void connect() {
         if (!isDisconnected()) {
             return;
         }
+
         if (getAddress() == null) {
             throw new IllegalArgumentException("we need a SocketClientAddress to connect");
         }
+        if(System.currentTimeMillis() - lastConnectTime <= 8000){
+            return;
+        }
+        lastConnectTime = System.currentTimeMillis();
         getAddress().checkValidation();
         setState(State.Connecting);
         tryConnectCount ++;
@@ -699,6 +721,7 @@ public class ConnectedByTCP extends BaseConnector {
 
 
             self.setSocketInputReader(null);
+            self.setSocketInputStream(null);
 //          self.setSocketConfigure(null);
 
             //TODO 取消正在发送和正在接收的包

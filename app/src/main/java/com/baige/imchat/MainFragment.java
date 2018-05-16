@@ -12,8 +12,10 @@ import android.os.Handler;
 import android.provider.ContactsContract;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.NotificationCompat;
 import android.support.v7.view.menu.MenuPopupHelper;
 import android.text.Editable;
@@ -32,6 +34,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.PopupMenu;
+import android.widget.ProgressBar;
 import android.widget.RemoteViews;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -44,11 +47,13 @@ import com.baige.adapter.FriendAdapter;
 import com.baige.adapter.LastChatMsgAdapter;
 import com.baige.adapter.UserAdapter;
 import com.baige.chat.ChatActivity;
+import com.baige.common.Parm;
 import com.baige.data.entity.FriendView;
 import com.baige.data.entity.LastChatMsgInfo;
 import com.baige.data.entity.User;
 import com.baige.data.source.cache.CacheRepository;
 import com.baige.filelist.FileListActivity;
+import com.baige.filelist.FileListContract;
 import com.baige.friend.FriendActivity;
 import com.baige.login.LoginActivity;
 import com.baige.search.SearchActivity;
@@ -87,7 +92,16 @@ public class MainFragment extends Fragment implements MainContract.View, BottomN
 
     private MainContract.Presenter mPresenter;
 
+    /*标题*/
     private CircleImageView mTitleHeadImg;
+
+    private TextView mTxtTitle;
+
+    private ProgressBar mProgressNetwork;
+
+    private ViewGroup mInformLayout;
+
+    private TextView mTxtInform;
 
     private Button mBtnMenu;
 
@@ -105,6 +119,8 @@ public class MainFragment extends Fragment implements MainContract.View, BottomN
 
     //组件
     /*主界面 抽屉*/
+    private DrawerLayout mDrawerLayout;
+
     private CircleImageView mDrawerUserImg;
 
     private TextView mDrawerUserName;
@@ -183,6 +199,7 @@ public class MainFragment extends Fragment implements MainContract.View, BottomN
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.frag_main, container, false);
         View pagerView = inflater.inflate(R.layout.pager_message, container, false);
+
         initMessageView(pagerView);
         mViewList.add(pagerView);
 
@@ -214,10 +231,32 @@ public class MainFragment extends Fragment implements MainContract.View, BottomN
         }
     }
 
-
-    private void initView(View root) {
+    private void initTitle(View root){
         mTitleHeadImg = root.findViewById(R.id.user_img);
         mBtnMenu = root.findViewById(R.id.title_menu);
+        mTxtTitle = root.findViewById(R.id.txt_title);
+        mProgressNetwork = root.findViewById(R.id.progress_network);
+        mInformLayout = root.findViewById(R.id.inform_layout);
+        mTxtInform = root.findViewById(R.id.txt_inform);
+
+        mBtnMenu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showPopupMenu(view);
+            }
+        });
+        mTitleHeadImg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showDrawer();
+            }
+        });
+    }
+
+
+    private void initView(View root) {
+        initTitle(root);
+
         mViewPager = root.findViewById(R.id.view_pager);
         mBottomNavigationBar = root.findViewById(R.id.bottom_navigation_bar);
 
@@ -228,12 +267,7 @@ public class MainFragment extends Fragment implements MainContract.View, BottomN
         mBottomNavigationBar.setInActiveColor(R.color.dark_gray);
         mBottomNavigationBar.setActiveColor(R.color.blue);
 
-        mBtnMenu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showPopupMenu(view);
-            }
-        });
+
 
         mBadgeItem = new BadgeItem();
         mBadgeItem.setHideOnSelect(false)
@@ -284,6 +318,20 @@ public class MainFragment extends Fragment implements MainContract.View, BottomN
             @Override
             public void onPageSelected(int position) {
                 mBottomNavigationBar.selectTab(position);
+                switch (position){
+                    case 0:
+                        mTxtTitle.setText("消息");
+                        break;
+                    case 1:
+                        mTxtTitle.setText("好友");
+                        break;
+                    case 2:
+                        mTxtTitle.setText("文件");
+                        break;
+                    case 3:
+                        mTxtTitle.setText("个人");
+                        break;
+                }
             }
 
             @Override
@@ -801,6 +849,80 @@ public class MainFragment extends Fragment implements MainContract.View, BottomN
     }
 
     @Override
+    public void showNetwork(final int state) {
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                switch (state){
+                    case Parm.CONNECTING:
+                        showInform("正在连接服务器……");
+                        mProgressNetwork.setVisibility(View.VISIBLE);
+                        break;
+                    case Parm.CONNECTED:
+                        showInform("正在登录……");
+                        mProgressNetwork.setVisibility(View.VISIBLE);
+                        break;
+                    case Parm.LOGIN:
+                        hideInform();
+                        mProgressNetwork.setVisibility(View.INVISIBLE);
+                        break;
+                    case Parm.DISCONNECTED:
+                        showInform("已断开连接!");
+                        mProgressNetwork.setVisibility(View.VISIBLE);
+                        break;
+                }
+            }
+        });
+
+    }
+
+    private Runnable mHideInformRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if(mInformLayout != null){
+                mInformLayout.setVisibility(View.GONE);
+            }
+        }
+    };
+
+    @Override
+    public void showInform(final String text) {
+        mHandler.removeCallbacks(mHideInformRunnable);
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                mTxtInform.setText(text);
+                if(mInformLayout != null){
+                    mInformLayout.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+    }
+
+    @Override
+    public void showInform(String text, long time) {
+        showInform(text);
+        if(time <= 0){
+            time = 8000;
+        }
+        mHandler.postDelayed(mHideInformRunnable, time);
+    }
+
+    @Override
+    public void hideInform() {
+        mHandler.post(mHideInformRunnable);
+    }
+
+    public void showDrawer() {
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                mDrawerLayout.openDrawer(GravityCompat.START);
+            }
+        });
+    }
+
+    @Override
     public void onDestroy() {
         super.onDestroy();
         mPresenter.stop();
@@ -819,5 +941,9 @@ public class MainFragment extends Fragment implements MainContract.View, BottomN
 
     public void setDrawerUserName(TextView textView) {
         this.mDrawerUserName = textView;
+    }
+
+    public void setmDrawerLayout(DrawerLayout drawerLayout){
+        this.mDrawerLayout = drawerLayout;
     }
 }

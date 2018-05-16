@@ -4,20 +4,20 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Environment;
 import android.preference.PreferenceManager;
-import android.util.Log;
 
 import com.baige.AppConfigure;
 import com.baige.BaseApplication;
-import com.baige.data.entity.FriendView;
+import com.baige.data.entity.Candidate;
 import com.baige.data.entity.User;
 import com.baige.data.observer.ChatMessageObservable;
 import com.baige.data.observer.FriendViewObservable;
 import com.baige.data.observer.LastChatMessageObservable;
+import com.baige.pushcore.SendMessageBroadcast;
 import com.baige.util.Tools;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Observable;
 import java.util.Observer;
 
 
@@ -51,7 +51,31 @@ public class CacheRepository {
 
     private boolean isLogin;
 
+
+    //网络相关
+
+    private String deviceId ; //极光推送的设备ID
+
+    private int serverPort = 12056;
+
+    private int serverUdpPort = 12059;
+
     private String serverIp;
+
+
+    private String localIp = null;
+
+    private int localPort = 0;
+
+    private String remoteIp = null;
+
+    private int remotePort = 0;
+
+    private int remoteUdpPort = 0;
+
+    private int localUdpPort = 0;
+
+    private Map<String, Candidate> candidateMap;
 
     public String getServerIp(){
         if(Tools.isEmpty(serverIp)){
@@ -60,7 +84,99 @@ public class CacheRepository {
         return serverIp;
     }
 
-   static {
+    public String getDeviceId() {
+        if(Tools.isEmpty(deviceId)){
+            readConfig(BaseApplication.getAppContext());
+        }
+        return deviceId;
+    }
+
+    public void setDeviceId(String deviceId) {
+        this.deviceId = deviceId;
+    }
+
+    public int getServerPort() {
+        return serverPort;
+    }
+
+    public void setServerPort(int serverPort) {
+        this.serverPort = serverPort;
+    }
+
+    public int getServerUdpPort() {
+        return serverUdpPort;
+    }
+
+    public void setServerUdpPort(int serverUdpPort) {
+        this.serverUdpPort = serverUdpPort;
+    }
+
+    public void setServerIp(String serverIp) {
+        this.serverIp = serverIp;
+    }
+
+    public String getLocalIp() {
+        return localIp;
+    }
+
+    public void setLocalIp(String localIp) {
+        this.localIp = localIp;
+    }
+
+    public int getLocalPort() {
+        return localPort;
+    }
+
+    public void setLocalPort(int localPort) {
+        this.localPort = localPort;
+    }
+
+    public String getRemoteIp() {
+        return remoteIp;
+    }
+
+    public void setRemoteIp(String remoteIp) {
+        this.remoteIp = remoteIp;
+    }
+
+    public int getRemotePort() {
+        return remotePort;
+    }
+
+    public void setRemotePort(int remotePort) {
+        this.remotePort = remotePort;
+    }
+
+    public int getRemoteUdpPort() {
+        return remoteUdpPort;
+    }
+
+    public void setRemoteUdpPort(int remoteUdpPort) {
+        this.remoteUdpPort = remoteUdpPort;
+    }
+
+    public int getLocalUdpPort() {
+        return localUdpPort;
+    }
+
+    public void setLocalUdpPort(int localUdpPort) {
+        this.localUdpPort = localUdpPort;
+    }
+
+    public Candidate add(Candidate candidate){
+        if(candidate != null){
+            candidateMap.put(candidate.getFrom(), candidate);
+        }
+        return candidate;
+    }
+    public ArrayList<Candidate> getCandidates(){
+        if(candidateMap != null &&candidateMap.size() > 0){
+            return new ArrayList<>(candidateMap.values());
+        }
+        return null;
+    }
+
+    static {
        //文件名，应用名称
        mAppNameMap.put("bluetooth","蓝牙接收文件");
        mAppNameMap.put("browser","浏览器");
@@ -206,7 +322,13 @@ public class CacheRepository {
         me.setVerification(preferences.getString(AppConfigure.KEY_VERIFICATION, ""));
         me.setImgName(preferences.getString(AppConfigure.KEY_USER_IMG, ""));
         setLogin(preferences.getBoolean(AppConfigure.IS_LOGIN, false));
-        serverIp = preferences.getString(AppConfigure.KEY_PHONE_SERVER_IP, AppConfigure.DEFAULT_PHONE_SERVER_IP);
+        String ip = preferences.getString(AppConfigure.KEY_PHONE_SERVER_IP, AppConfigure.DEFAULT_PHONE_SERVER_IP);
+        deviceId = preferences.getString(AppConfigure.KEY_DEVICE_ID, Tools.getMobileDeviceId());
+
+        if(!Tools.isEmpty(ip) && !Tools.isEquals(ip, serverIp)){
+            serverIp = ip;
+            SendMessageBroadcast.getInstance().connectServer(serverIp, ""+getServerPort());
+        }
     }
 
     public void saveConfig(Context context) {

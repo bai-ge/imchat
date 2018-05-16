@@ -44,7 +44,7 @@ public class SocketInputReader extends Reader {
         throw new IOException("read() is not support for SocketInputReader, try readBytes().");
     }
 
-    public int read(byte[] buf) throws IOException{
+    public int read(byte[] buf) throws IOException {
         synchronized (lock){
             if (!__i__isOpen()) {
                 throw new IOException("InputStreamReader is closed");
