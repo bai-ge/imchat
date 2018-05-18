@@ -2,6 +2,8 @@ package com.baige.telephone;
 
 
 import android.content.Context;
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -22,12 +24,14 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.baige.data.entity.FriendView;
 import com.baige.imchat.R;
+import com.baige.util.ImageLoader;
 import com.baige.view.CircleImageView;
 import com.baige.view.ProgressBall;
 
 import java.text.SimpleDateFormat;
-
+import java.util.Date;
 
 
 /**
@@ -139,6 +143,7 @@ public class PhoneFragment extends Fragment implements PhoneContract.View , Sens
         mBtnLoudspeaker.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                setSpeakerphoneOn(TelePhone.getInstance().changeSpeakerphoneOn());
             }
         });
 
@@ -201,10 +206,6 @@ public class PhoneFragment extends Fragment implements PhoneContract.View , Sens
     }
 
 
-
-
-
-
     @Override
     public void setPresenter(PhoneContract.Presenter presenter) {
         mPresenter = presenter;
@@ -254,6 +255,25 @@ public class PhoneFragment extends Fragment implements PhoneContract.View , Sens
         super.onDestroy();
     }
 
+
+    @Override
+    public void showFriend(FriendView friendView) {
+        if(friendView != null){
+            showName(friendView.getSuitableName());
+            showFriendImg(friendView.getFriendImgName());
+        }
+    }
+
+    @Override
+    public void showAddress(final String address) {
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                mTextAddress.setText(address);
+            }
+        });
+    }
+
     @Override
     public void showTip(final String text) {
         mHandler.post(new Runnable() {
@@ -261,6 +281,138 @@ public class PhoneFragment extends Fragment implements PhoneContract.View , Sens
             public void run() {
                 mToast.setText(text);
                 mToast.show();
+            }
+        });
+    }
+
+    @Override
+    public void showStatus(final String text) {
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                mTextStatus.setText(text);
+            }
+        });
+    }
+
+    @Override
+    public void showName(final String name) {
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                mTextUserName.setText(name);
+            }
+        });
+    }
+
+    @Override
+    public void showLog(final String text) {
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                mEditLog.append(mSimpleDateFormat.format(new Date()) + " " + text + "\n");
+            }
+        });
+    }
+
+    @Override
+    public void showLog(final TelePhone.LogBean logBean) {
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                mEditLog.append(mSimpleDateFormat.format(new Date(logBean.getTime())) + " " + logBean.getLog() + "\n");
+            }
+        });
+    }
+
+    @Override
+    public void showDelayTime(final long delay) {
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                mTextDelayTime.setText(String.valueOf(delay) + "ms");
+            }
+        });
+    }
+
+    @Override
+    public void clearLog() {
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                mEditLog.setText("");
+            }
+        });
+    }
+
+    @Override
+    public void hidePickUpBtn() {
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                mBtnPickUp.setVisibility(View.GONE);
+            }
+        });
+    }
+
+    /*
+    * 是否正在呼叫中
+    * */
+    @Override
+    public void showProgress(final boolean isShow) {
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                if(isShow){
+                    mProgressBall.setVisibility(View.VISIBLE);
+                }else{
+                    mProgressBall.setVisibility(View.INVISIBLE);
+                }
+
+            }
+        });
+    }
+
+    @Override
+    public void showFriendImg(String imgName) {
+        ImageLoader.loadUserImg(imgName, mImg);
+    }
+
+    /**
+     * 设置Tab布局
+     *
+     * @param iconId   Tab图标
+     * @param btn      控件
+     * @param color    Tab文字颜色
+     */
+    private void setButtonView(int iconId, Button btn, int color) {
+        @SuppressWarnings("deprecation") Drawable drawable = getResources().getDrawable(iconId);
+        if (drawable != null) {
+            Rect rect = new Rect();
+            Drawable[] drawables = btn.getCompoundDrawables();
+            drawable.setBounds(0, 0, 48, 48);
+            for (int i = 0; i < drawables.length; i++) {
+                if(drawables[i] != null){
+                    drawable.setBounds(drawables[i].getBounds());
+                }
+            }
+            //drawable.setBounds(0, 0, 35, 35);
+            // 设置图标
+            btn.setCompoundDrawables(null, drawable, null, null);
+        }
+        // 设置文字颜色
+        btn.setTextColor(color);
+    }
+    @Override
+    public void setSpeakerphoneOn(final boolean on) {
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                if(on){
+                    setButtonView(R.drawable.ic_speaker_on, mBtnLoudspeaker, getResources().getColor(R.color.blue));
+                }else{
+                    setButtonView(R.drawable.ic_speaker_off, mBtnLoudspeaker, getResources().getColor(R.color.white));
+                }
             }
         });
     }

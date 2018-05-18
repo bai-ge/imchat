@@ -1,7 +1,6 @@
 package com.baige.pushcore;
 
 import android.content.Context;
-import android.content.Intent;
 import android.util.Log;
 
 import com.baige.callback.CallbackManager;

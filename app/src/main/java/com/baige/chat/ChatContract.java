@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import com.baige.BasePresenter;
 import com.baige.BaseView;
 import com.baige.data.entity.ChatMsgInfo;
+import com.baige.data.entity.FriendView;
 
 import java.util.List;
 
@@ -21,6 +22,7 @@ public interface ChatContract {
         void loadMsg();
         void loadMsgAfterTime(long time);
         void loadMsgBeforeTime(long time);
+        FriendView getFriendView();
 
         void readBeforeTime();
     }

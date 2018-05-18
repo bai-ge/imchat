@@ -48,7 +48,7 @@ public class RegisterPresenter implements RegisterContract.Presenter {
             @Override
             public void success() {
                 super.success();
-
+                mFragment.delayBack(2000);
             }
 
             @Override

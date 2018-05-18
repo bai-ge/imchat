@@ -18,5 +18,6 @@ public interface RegisterContract {
 
     interface View extends BaseView<Presenter> {
         void showTip(String text);
+        void delayBack(long time);
     }
 }

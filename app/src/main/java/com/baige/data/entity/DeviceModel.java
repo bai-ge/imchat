@@ -3,6 +3,8 @@ package com.baige.data.entity;
 import com.baige.connect.ConnectedByTCP;
 import com.baige.connect.ConnectedByUDP;
 
+import java.util.ArrayList;
+
 
 /*描述的是对方的设备信息*/
 public class DeviceModel {
@@ -16,7 +18,7 @@ public class DeviceModel {
 	private String localIp;
 	private String remoteIp;
 
-    private int acceptPort;
+    private int acceptPort;//tcp监听端口
 	private int localPort;
 	private int remotePort;
 
@@ -27,8 +29,19 @@ public class DeviceModel {
 	
 	private ConnectedByUDP connectedByUDP;
 
+
+    private ArrayList<Candidate> candidates;
+
+    public ArrayList<Candidate> getCandidates() {
+        return candidates;
+    }
+
+    public void setCandidates(ArrayList<Candidate> candidates) {
+        this.candidates = candidates;
+    }
+
 	public DeviceModel() {
-		loginTime = System.currentTimeMillis();
+        loginTime = 0;
 	}
 
 	public DeviceModel(String deviceid, String userid) {

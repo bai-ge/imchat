@@ -134,4 +134,17 @@ public class RegisterFragment extends Fragment implements RegisterContract.View 
             }
         });
     }
+
+    @Override
+    public void delayBack(long time) {
+        if(time < 0){
+            time = 2000;
+        }
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                getActivity().onBackPressed();
+            }
+        }, time);
+    }
 }

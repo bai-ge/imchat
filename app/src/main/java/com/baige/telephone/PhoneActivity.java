@@ -9,6 +9,7 @@ import android.widget.Toast;
 
 
 import com.baige.BaseActivity;
+import com.baige.data.entity.FriendView;
 import com.baige.data.source.Repository;
 import com.baige.data.source.local.LocalRepository;
 import com.baige.imchat.R;
@@ -69,6 +70,13 @@ public class PhoneActivity extends BaseActivity {
                     getSupportFragmentManager(), phoneFragment, R.id.content_frame);
         }
         PhonePresenter presenter = new PhonePresenter(Repository.getInstance(LocalRepository.getInstance(getApplicationContext())), phoneFragment);
+
+        if (getIntent().getExtras().containsKey("friend")) {
+            FriendView friendView = getIntent().getExtras().getParcelable("friend");
+            if (friendView != null) {
+                presenter.setFriendView(friendView);
+            }
+        }
 
         PowerManager pm = (PowerManager)getSystemService(Context.POWER_SERVICE);
         mWakelock = pm.newWakeLock(PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.SCREEN_DIM_WAKE_LOCK, "Telephone");

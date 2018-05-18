@@ -93,6 +93,8 @@ public class PullService {
     }
 
     public void onDestroy() {
-        timer.cancel();
+        if(timer != null){
+            timer.cancel();
+        }
     }
 }

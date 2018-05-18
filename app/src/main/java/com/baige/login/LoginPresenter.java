@@ -47,7 +47,7 @@ public class LoginPresenter implements LoginContract.Presenter {
         User user = new User();
         user.setName(name);
         user.setPassword(Tools.MD5(psw));
-        user.setDeviceId(Tools.ramdom());
+        user.setDeviceId(CacheRepository.getInstance().getDeviceId());
         login(user, psw);
     }
 

@@ -46,29 +46,41 @@
 
         <!--windowSoftInputMode="adjustPan|stateHidden 跟软键盘的弹出有关，https://blog.csdn.net/xww810319/article/details/17397429-->
         <activity android:name=".MainActivity"
+                  android:launchMode="singleInstance"
                   android:windowSoftInputMode="adjustPan|stateHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name="com.baige.filelist.FileListActivity"/>
-        <activity android:name="com.baige.telephone.PhoneActivity">
+        <activity android:name="com.baige.filelist.FileListActivity"
+                  android:launchMode="singleInstance"/>
+        <activity android:name="com.baige.telephone.PhoneActivity"
+                  android:launchMode="singleInstance">
         </activity>
 
         <activity android:name="com.baige.login.LoginActivity"/>
-        <activity android:name="com.baige.register.RegisterActivity"/>
-        <activity android:name="com.baige.chat.ChatActivity"/>
+        <activity android:name="com.baige.register.RegisterActivity"
+                  android:windowSoftInputMode="stateHidden"/>
+        <activity android:name="com.baige.chat.ChatActivity"
+                  android:launchMode="singleInstance"/>
         <activity android:name="com.setting.SettingActivity"/>
         <activity android:name="com.baige.search.SearchActivity"/>
         <activity android:name="com.baige.friend.FriendActivity"
+                  android:launchMode="singleInstance"
                   android:windowSoftInputMode="adjustPan|stateHidden"/>
 
         <service android:name="com.baige.service.PullService"
                  android:enabled="false"
                  android:exported="false">
-
         </service>
+
+        <receiver android:name="com.baige.pushcore.IPushReceiver">
+            <intent-filter>
+                <action android:name="com.baige.imchat.RECEIVE_MSG"/>
+                <action android:name="com.baige.imchat.SEND_MSG_FIAL"/>
+            </intent-filter>
+        </receiver>
         //保活机制
         <service
             android:name="com.baige.service.DaemonService"

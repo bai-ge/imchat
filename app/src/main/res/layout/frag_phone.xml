@@ -33,13 +33,13 @@
 
         <com.baige.view.CircleImageView
             android:id="@+id/user_img"
-            android:layout_width="200dp"
-            android:layout_height="200dp"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
             android:layout_gravity="center"
             android:layout_margin="@dimen/fab_margin"
             android:src="@drawable/head_img"
-            app:civ_border_color="@color/white"
-            app:civ_border_width="2dp"/>
+            app:civ_border_color="@color/grass_primary"
+            app:civ_border_width="1dp"/>
 
         <TextView
             android:id="@+id/user_name"

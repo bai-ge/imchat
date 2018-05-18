@@ -51,10 +51,19 @@ public class CacheRepository {
 
     private boolean isLogin;
 
+    //铃声设置
+    private boolean isSilence; //是否静音
+
+    private String ringUri;
+
+    private boolean phoneVibrate;
+
 
     //网络相关
 
-    private String deviceId ; //极光推送的设备ID
+    private boolean isP2PConnectSuccess = false;
+
+    private String deviceId; //极光推送的设备ID
 
     private int serverPort = 12056;
 
@@ -77,18 +86,26 @@ public class CacheRepository {
 
     private Map<String, Candidate> candidateMap;
 
-    public String getServerIp(){
-        if(Tools.isEmpty(serverIp)){
+    public String getServerIp() {
+        if (Tools.isEmpty(serverIp)) {
             readConfig(BaseApplication.getAppContext());
         }
         return serverIp;
     }
 
     public String getDeviceId() {
-        if(Tools.isEmpty(deviceId)){
+        if (Tools.isEmpty(deviceId)) {
             readConfig(BaseApplication.getAppContext());
         }
         return deviceId;
+    }
+
+    public boolean isP2PConnectSuccess() {
+        return isP2PConnectSuccess;
+    }
+
+    public void setP2PConnectSuccess(boolean p2PConnectSuccess) {
+        isP2PConnectSuccess = p2PConnectSuccess;
     }
 
     public void setDeviceId(String deviceId) {
@@ -163,72 +180,73 @@ public class CacheRepository {
         this.localUdpPort = localUdpPort;
     }
 
-    public Candidate add(Candidate candidate){
-        if(candidate != null){
+    public Candidate add(Candidate candidate) {
+        if (candidate != null) {
             candidateMap.put(candidate.getFrom(), candidate);
         }
         return candidate;
     }
-    public ArrayList<Candidate> getCandidates(){
-        if(candidateMap != null &&candidateMap.size() > 0){
+
+    public ArrayList<Candidate> getCandidates() {
+        if (candidateMap != null && candidateMap.size() > 0) {
             return new ArrayList<>(candidateMap.values());
         }
         return null;
     }
 
     static {
-       //文件名，应用名称
-       mAppNameMap.put("bluetooth","蓝牙接收文件");
-       mAppNameMap.put("browser","浏览器");
-       mAppNameMap.put("DCIM","相册");
-       mAppNameMap.put("Download","系统下载");
-       mAppNameMap.put("downloaded_rom","系统更新包");
-       mAppNameMap.put("miliao","米聊");
-       mAppNameMap.put("MiMarket","应用商店");
-       mAppNameMap.put("MIUI","米柚");
-       mAppNameMap.put("Music","音乐");
-       mAppNameMap.put("mishop","小米商城");
-       mAppNameMap.put("tmp","临时文件");
-       mAppNameMap.put("Recordings","录音");
-       mAppNameMap.put("huawei","华为");
-       mAppNameMap.put("Ringtones","铃声");
-       mAppNameMap.put("backups","ES浏览器备份");
-       mAppNameMap.put("baidu","百度");
-       mAppNameMap.put("BaiduMap","百度地图");
-       mAppNameMap.put("QQBrowser","QQ浏览器");
-       mAppNameMap.put("sogou","搜狗输入法");
-       mAppNameMap.put("tencent","腾讯");
-       mAppNameMap.put("360","360");
-       mAppNameMap.put("360Browser","360浏览器");
-       mAppNameMap.put("360Download","360助手");
-       mAppNameMap.put("alipay","支付宝钱包");
-       mAppNameMap.put("AirDroid","AirDroid");
-       mAppNameMap.put("autonavi","高德地图");
-       mAppNameMap.put("BaiduNetdisk","百度云");
-       mAppNameMap.put("baofeng","暴风影音");
-       mAppNameMap.put("CamScanner","CamScanner");
-       mAppNameMap.put("com.taobao.taobao","淘宝");
-       mAppNameMap.put("com.UCMobile","手机UC");
-       mAppNameMap.put("dianxin","授权管理");
-       mAppNameMap.put("egame","爱游戏");
-       mAppNameMap.put("GitHub","GitHub");
-       mAppNameMap.put("ickeck","腾讯视频");
-       mAppNameMap.put("KuGou","酷狗音乐");
-       mAppNameMap.put("msc","掌阅iReader");
-       mAppNameMap.put("netease","网易");
-       mAppNameMap.put("pptv_video_sdk","百度视频");
-       mAppNameMap.put("QIYIVideo","奇艺视频");
-       mAppNameMap.put("qqmusic","QQ音乐");
-       mAppNameMap.put("sina","新浪");
-       mAppNameMap.put("suning.ebuy","苏宁易购");
-       mAppNameMap.put("tieba","百度贴吧");
-       mAppNameMap.put("xtuome","超级课程表");
-       mAppNameMap.put("Youdao","有道词典");
-       mAppNameMap.put("youku","优酷");
-       mAppNameMap.put("powerword","金山词霸");
-       mAppNameMap.put("Musiclrc","华为音乐歌词");
-       mAppNameMap.put("wandoujia","豌豆荚");
-   }
+        //文件名，应用名称
+        mAppNameMap.put("bluetooth", "蓝牙接收文件");
+        mAppNameMap.put("browser", "浏览器");
+        mAppNameMap.put("DCIM", "相册");
+        mAppNameMap.put("Download", "系统下载");
+        mAppNameMap.put("downloaded_rom", "系统更新包");
+        mAppNameMap.put("miliao", "米聊");
+        mAppNameMap.put("MiMarket", "应用商店");
+        mAppNameMap.put("MIUI", "米柚");
+        mAppNameMap.put("Music", "音乐");
+        mAppNameMap.put("mishop", "小米商城");
+        mAppNameMap.put("tmp", "临时文件");
+        mAppNameMap.put("Recordings", "录音");
+        mAppNameMap.put("huawei", "华为");
+        mAppNameMap.put("Ringtones", "铃声");
+        mAppNameMap.put("backups", "ES浏览器备份");
+        mAppNameMap.put("baidu", "百度");
+        mAppNameMap.put("BaiduMap", "百度地图");
+        mAppNameMap.put("QQBrowser", "QQ浏览器");
+        mAppNameMap.put("sogou", "搜狗输入法");
+        mAppNameMap.put("tencent", "腾讯");
+        mAppNameMap.put("360", "360");
+        mAppNameMap.put("360Browser", "360浏览器");
+        mAppNameMap.put("360Download", "360助手");
+        mAppNameMap.put("alipay", "支付宝钱包");
+        mAppNameMap.put("AirDroid", "AirDroid");
+        mAppNameMap.put("autonavi", "高德地图");
+        mAppNameMap.put("BaiduNetdisk", "百度云");
+        mAppNameMap.put("baofeng", "暴风影音");
+        mAppNameMap.put("CamScanner", "CamScanner");
+        mAppNameMap.put("com.taobao.taobao", "淘宝");
+        mAppNameMap.put("com.UCMobile", "手机UC");
+        mAppNameMap.put("dianxin", "授权管理");
+        mAppNameMap.put("egame", "爱游戏");
+        mAppNameMap.put("GitHub", "GitHub");
+        mAppNameMap.put("ickeck", "腾讯视频");
+        mAppNameMap.put("KuGou", "酷狗音乐");
+        mAppNameMap.put("msc", "掌阅iReader");
+        mAppNameMap.put("netease", "网易");
+        mAppNameMap.put("pptv_video_sdk", "百度视频");
+        mAppNameMap.put("QIYIVideo", "奇艺视频");
+        mAppNameMap.put("qqmusic", "QQ音乐");
+        mAppNameMap.put("sina", "新浪");
+        mAppNameMap.put("suning.ebuy", "苏宁易购");
+        mAppNameMap.put("tieba", "百度贴吧");
+        mAppNameMap.put("xtuome", "超级课程表");
+        mAppNameMap.put("Youdao", "有道词典");
+        mAppNameMap.put("youku", "优酷");
+        mAppNameMap.put("powerword", "金山词霸");
+        mAppNameMap.put("Musiclrc", "华为音乐歌词");
+        mAppNameMap.put("wandoujia", "豌豆荚");
+    }
 
     private CacheRepository() {
         readConfig(BaseApplication.getAppContext());
@@ -248,12 +266,13 @@ public class CacheRepository {
         return INSTANCE;
     }
 
-    public void registerDataChange(Observer observer){
+    public void registerDataChange(Observer observer) {
         chatMessageObservable.addObserver(observer);
         friendViewObservable.addObserver(observer);
         lastChatMessageObservable.addObserver(observer);
     }
-    public void unRegisterDataChange(Observer observer){
+
+    public void unRegisterDataChange(Observer observer) {
         chatMessageObservable.deleteObserver(observer);
         friendViewObservable.deleteObserver(observer);
         lastChatMessageObservable.deleteObserver(observer);
@@ -296,7 +315,7 @@ public class CacheRepository {
         this.me = user;
     }
 
-    public User who(){
+    public User who() {
         return me;
     }
 
@@ -308,11 +327,24 @@ public class CacheRepository {
         isLogin = login;
     }
 
+
+    public String getRingUri() {
+        return ringUri;
+    }
+
+    public boolean isPhoneVibrate() {
+        return phoneVibrate;
+    }
+
+    public boolean isSilence() {
+        return isSilence;
+    }
+
     public void readConfig(Context context) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         setLogin(preferences.getBoolean(AppConfigure.IS_LOGIN, false));
 
-        if(me == null){
+        if (me == null) {
             me = new User();
         }
         me.setId(preferences.getInt(AppConfigure.KEY_USER_ID, 0));
@@ -321,14 +353,21 @@ public class CacheRepository {
         me.setAlias(preferences.getString(AppConfigure.KEY_USER_ALIAS, ""));
         me.setVerification(preferences.getString(AppConfigure.KEY_VERIFICATION, ""));
         me.setImgName(preferences.getString(AppConfigure.KEY_USER_IMG, ""));
+        me.setDeviceId(preferences.getString(AppConfigure.KEY_DEVICE_ID, Tools.getMobileDeviceId()));
+
         setLogin(preferences.getBoolean(AppConfigure.IS_LOGIN, false));
         String ip = preferences.getString(AppConfigure.KEY_PHONE_SERVER_IP, AppConfigure.DEFAULT_PHONE_SERVER_IP);
         deviceId = preferences.getString(AppConfigure.KEY_DEVICE_ID, Tools.getMobileDeviceId());
 
-        if(!Tools.isEmpty(ip) && !Tools.isEquals(ip, serverIp)){
+        if (!Tools.isEmpty(ip) && !Tools.isEquals(ip, serverIp)) {
             serverIp = ip;
-            SendMessageBroadcast.getInstance().connectServer(serverIp, ""+getServerPort());
+            SendMessageBroadcast.getInstance().connectServer(serverIp, "" + getServerPort());
         }
+
+        ringUri = preferences.getString(AppConfigure.KEY_PHONE_RING, "");
+        phoneVibrate = preferences.getBoolean(AppConfigure.KEY_PHONE_VIBRATE, false);
+        isSilence = preferences.getBoolean(AppConfigure.KEY_PHONE_SILENCE, false);
+
     }
 
     public void saveConfig(Context context) {
@@ -337,13 +376,14 @@ public class CacheRepository {
         }
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = preferences.edit();
-        if(me != null){
+        if (me != null) {
             editor.putInt(AppConfigure.KEY_USER_ID, me.getid());
             editor.putString(AppConfigure.KEY_USER_NAME, me.getName());
             editor.putString(AppConfigure.KEY_USER_ALIAS, me.getAlias());
             editor.putString(AppConfigure.KEY_PASSWORD, me.getPassword());
             editor.putString(AppConfigure.KEY_VERIFICATION, me.getVerification());
             editor.putString(AppConfigure.KEY_USER_IMG, me.getImgName());
+            editor.putString(AppConfigure.KEY_DEVICE_ID, me.getDeviceId());
         }
         editor.putBoolean(AppConfigure.KEY_IS_LOGIN, isLogin());
         editor.putString(AppConfigure.KEY_PHONE_SERVER_IP, serverIp);

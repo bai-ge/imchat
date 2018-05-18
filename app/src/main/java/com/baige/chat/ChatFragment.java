@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.view.menu.MenuBuilder;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -20,6 +21,7 @@ import android.widget.Toast;
 
 import com.baige.adapter.ChatMsgAdapter;
 import com.baige.data.entity.ChatMsgInfo;
+import com.baige.friend.FriendActivity;
 import com.baige.imchat.R;
 import com.baige.telephone.PhoneActivity;
 
@@ -28,7 +30,6 @@ import java.util.List;
 
 import rx.Observable;
 import rx.Subscriber;
-import rx.Subscription;
 
 
 /**
@@ -73,7 +74,7 @@ public class ChatFragment extends Fragment implements ChatContract.View {
         super.onCreate(savedInstanceState);
         mHandler = new Handler(Looper.getMainLooper());
         mToast = Toast.makeText(getContext(), "", Toast.LENGTH_LONG);
-        mChatAdapter = new ChatMsgAdapter(new ArrayList<ChatMsgInfo>(), mOnChatMsgItemListener);
+        mChatAdapter = new ChatMsgAdapter(getContext(), new ArrayList<ChatMsgInfo>(), mOnChatMsgItemListener);
     }
 
     @Nullable
@@ -141,13 +142,16 @@ public class ChatFragment extends Fragment implements ChatContract.View {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getContext(), PhoneActivity.class);
+                intent.putExtra("friend", mPresenter.getFriendView());
                 startActivity(intent);
             }
         });
         root.findViewById(R.id.btn__toolbar_user).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                Intent intent = new Intent(getContext(), FriendActivity.class);
+                intent.putExtra("friend", mPresenter.getFriendView());
+                startActivity(intent);
             }
         });
     }
@@ -288,7 +292,28 @@ public class ChatFragment extends Fragment implements ChatContract.View {
         public void onLongClickItem(ChatMsgInfo item) {
 
         }
+
+        @Override
+        public void onResendChat(ChatMsgInfo item) {
+            mPresenter.reSendMsg(item);
+        }
+
+        @Override
+        public void onDeleteChat(ChatMsgInfo item) {
+
+        }
+
+        @Override
+        public void onRepealChat(ChatMsgInfo item) {
+
+        }
     };
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        mPresenter.stop();
+    }
 
     @Override
     public void onDestroy() {

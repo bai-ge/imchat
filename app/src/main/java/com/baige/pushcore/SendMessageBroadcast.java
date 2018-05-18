@@ -16,7 +16,7 @@ public class SendMessageBroadcast {
 
     private static SendMessageBroadcast INSTANCE = null;
 
-    private final static String PACKAGE_NAME = "com.carefor.mainui";
+    private final static String PACKAGE_NAME = BaseApplication.PACKAGE_NAME;
 
     /**
      *

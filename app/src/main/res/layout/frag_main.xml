@@ -27,7 +27,7 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_centerHorizontal="true"
-            android:text="标题"
+            android:text="消息"
             android:textColor="@color/white"
             android:textSize="20sp"/>
         <ProgressBar

@@ -61,9 +61,8 @@ public class UserResponseBinder extends AbstractResponseBinder {
                         }else{
                             callBack.notFind();
                         }
-                    } else{
-                        callbackCode(callBack, codeNum);
                     }
+                    callbackCode(callBack, codeNum);
                 }
             } catch (JSONException e) {
                 e.printStackTrace();

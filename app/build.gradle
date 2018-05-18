@@ -50,6 +50,11 @@ dependencies {
 
     compile 'io.reactivex:rxjava:1.0.14'
     compile 'io.reactivex:rxandroid:1.0.1'
+
+    //弹出窗口
+    compile 'me.kareluo.ui:popmenu:1.1.0'
+
+
 }
 
 /*

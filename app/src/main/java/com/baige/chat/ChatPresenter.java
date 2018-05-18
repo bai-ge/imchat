@@ -10,6 +10,7 @@ import com.baige.common.State;
 import com.baige.data.entity.ChatMsgInfo;
 import com.baige.data.entity.FriendView;
 import com.baige.data.entity.User;
+import com.baige.data.observer.BaseObserver;
 import com.baige.data.observer.ChatMessageObservable;
 import com.baige.data.source.Repository;
 import com.baige.data.source.cache.CacheRepository;
@@ -20,8 +21,6 @@ import com.baige.util.Tools;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -57,7 +56,7 @@ public class ChatPresenter implements ChatContract.Presenter {
         Log.d(TAG, "friend =" + mFriendView);
         List<ChatMsgInfo> chats = filter(CacheRepository.getInstance().getChatMessageObservable().loadCache());
         mChatFragment.showMsg(chats);
-        CacheRepository.getInstance().getChatMessageObservable().addObserver(chatMsgObserver);
+        CacheRepository.getInstance().getChatMessageObservable().addObserver(baseObserver);
         if (chats.size() > 0) {
             Collections.sort(chats);
             loadMsgAfterTime(chats.get(chats.size() - 1).getSendTime());
@@ -65,14 +64,14 @@ public class ChatPresenter implements ChatContract.Presenter {
             loadMsg();
         }
         readBeforeTime();
-        pullService.onStart();
+//        pullService.onStart();
     }
 
     @Override
     public void stop() {
         readBeforeTime();
         pullService.onDestroy();
-        CacheRepository.getInstance().getChatMessageObservable().remote(chatMsgObserver);
+        CacheRepository.getInstance().getChatMessageObservable().remote(baseObserver);
     }
 
     public FriendView getFriendView() {
@@ -129,6 +128,20 @@ public class ChatPresenter implements ChatContract.Presenter {
                 }
 
                 @Override
+                public void timeout() {
+                    super.timeout();
+                    chatMsgInfo.setSendState(Parm.MSG_IS_SEND_FAIL);
+                    mChatFragment.notifyChange();
+                }
+
+                @Override
+                public void error(Exception e) {
+                    super.error(e);
+                    chatMsgInfo.setSendState(Parm.MSG_IS_SEND_FAIL);
+                    mChatFragment.notifyChange();
+                }
+
+                @Override
                 public void loadMsg(ChatMsgInfo responseChat) {
                     super.loadMsg(chatMsgInfo);
                     chatMsgInfo.setSendTime(responseChat.getSendTime());
@@ -145,7 +158,7 @@ public class ChatPresenter implements ChatContract.Presenter {
         User user = CacheRepository.getInstance().who();
         chatMsgInfo.setSendState(Parm.MSG_IS_SENDING);
         chatMsgInfo.setSendTime(System.currentTimeMillis());
-        CacheRepository.getInstance().getChatMessageObservable().put(chatMsgInfo);
+//        CacheRepository.getInstance().getChatMessageObservable().put(chatMsgInfo);
         mRepository.sendMsg(chatMsgInfo, user.getVerification(), new HttpBaseCallback() {
             @Override
             public void success() {
@@ -160,6 +173,19 @@ public class ChatPresenter implements ChatContract.Presenter {
                 chatMsgInfo.setSendTime(responseChat.getSendTime());
                 chatMsgInfo.setId(responseChat.getId());
                 chatMsgInfo.setSendState(Parm.MSG_IS_SEND_SUCESS);
+                mChatFragment.notifyChange();
+            }
+            @Override
+            public void timeout() {
+                super.timeout();
+                chatMsgInfo.setSendState(Parm.MSG_IS_SEND_FAIL);
+                mChatFragment.notifyChange();
+            }
+
+            @Override
+            public void error(Exception e) {
+                super.error(e);
+                chatMsgInfo.setSendState(Parm.MSG_IS_SEND_FAIL);
                 mChatFragment.notifyChange();
             }
         });
@@ -273,31 +299,30 @@ public class ChatPresenter implements ChatContract.Presenter {
         return chats;
     }
 
-    private Observer chatMsgObserver = new Observer() {
+
+    private BaseObserver baseObserver = new BaseObserver(){
         @Override
-        public void update(Observable o, Object arg) {
-            Log.d(TAG, "update" + arg);
-            if (o instanceof ChatMessageObservable) {
-                ChatMessageObservable chatMessageObservable = (ChatMessageObservable) o;
-                if (arg == null) {
-                    List<ChatMsgInfo> chatMsgInfos = filter(chatMessageObservable.loadCache());
+        public void update(ChatMessageObservable observable, Object arg) {
+            super.update(observable, arg);
+            if (arg == null) {
+                List<ChatMsgInfo> chatMsgInfos = filter(observable.loadCache());
+                initChatInfo(chatMsgInfos);
+                mChatFragment.showMsg(chatMsgInfos);
+            } else {
+                Log.d(TAG, "2update");
+                if (arg instanceof List) { //arg.getClass().isArray() 或arg instanceof List
+                    List<ChatMsgInfo> chatMsgInfos = filter((List<ChatMsgInfo>) arg);
                     initChatInfo(chatMsgInfos);
-                    mChatFragment.showMsg(chatMsgInfos);
+                    Log.d(TAG, "3update");
+                    mChatFragment.addMsg(chatMsgInfos);
+                    Log.d(TAG, "4update");
                 } else {
-                    Log.d(TAG, "2update");
-                    if (arg instanceof List) { //arg.getClass().isArray() 或arg instanceof List
-                        List<ChatMsgInfo> chatMsgInfos = filter((List<ChatMsgInfo>) arg);
-                        initChatInfo(chatMsgInfos);
-                        Log.d(TAG, "3update");
-                        mChatFragment.addMsg(chatMsgInfos);
-                        Log.d(TAG, "4update");
-                    } else {
-                        Log.d(TAG, "5update");
-                        ChatMsgInfo chatMsgInfo = (ChatMsgInfo) arg;
-                        if (isNeed(chatMsgInfo)) {
-                            Log.d(TAG, "6update");
-                            mChatFragment.showMsg(chatMsgInfo);
-                        }
+                    Log.d(TAG, "5update");
+                    ChatMsgInfo chatMsgInfo = (ChatMsgInfo) arg;
+                    if (isNeed(chatMsgInfo)) {
+                        Log.d(TAG, "6update");
+                        initChatInfo(chatMsgInfo);
+                        mChatFragment.showMsg(chatMsgInfo);
                     }
                 }
             }

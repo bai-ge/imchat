@@ -25,6 +25,8 @@ import com.baige.util.Tools;
 
 public class LoginFragment extends Fragment implements LoginContract.View{
 
+    private final static String TAG = LoginFragment.class.getCanonicalName();
+
     private LoginContract.Presenter mPresenter;
 
     private EditText mTxtName;
@@ -40,6 +42,9 @@ public class LoginFragment extends Fragment implements LoginContract.View{
     private Toast mToast;
 
     private Handler mHandler;
+
+    private int clickCount;
+    private long onClickTime;
 
     @Override
     public void setPresenter(LoginContract.Presenter presenter) {
@@ -108,6 +113,27 @@ public class LoginFragment extends Fragment implements LoginContract.View{
                     user.setPassword(psw);
                     CacheRepository.getInstance().setLogin(true);
                     getActivity().onBackPressed();
+                }
+            }
+        });
+
+        root.findViewById(R.id.icon_name).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                long now = System.currentTimeMillis();
+                if(now - onClickTime <= 500){
+                    clickCount ++;
+                }else{
+                    clickCount = 0;
+                }
+                onClickTime = now;
+                if(clickCount >= 5){
+                    if(mBtmHome.getVisibility() == View.VISIBLE){
+                        mBtmHome.setVisibility(View.INVISIBLE);
+                    }else{
+                        mBtmHome.setVisibility(View.VISIBLE);
+                    }
+                    clickCount = 0;
                 }
             }
         });

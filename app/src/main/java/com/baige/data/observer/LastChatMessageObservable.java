@@ -53,6 +53,43 @@ public class LastChatMessageObservable extends BaseObservable<LastChatMsgInfo> {
 
     }
 
+    public void analyze(ChatMsgInfo chat, int uid){
+        int friendId = 0;
+        FriendView friendView;
+        LastChatMsgInfo lastChatMsgInfo = null;
+        if (chat.getSenderId() == uid) {
+            friendId = chat.getReceiveId();
+        }
+        if (chat.getReceiveId() == uid) {
+            friendId = chat.getSenderId();
+        }
+        friendView = CacheRepository.getInstance().getFriendViewObservable().get(friendId);
+        if(friendView.isFriend()){
+            lastChatMsgInfo = get(friendId);
+
+            if (lastChatMsgInfo == null ) {
+                lastChatMsgInfo = new LastChatMsgInfo();
+                lastChatMsgInfo.setUid(friendId);
+                if (friendView != null) {
+                    lastChatMsgInfo.setName(friendView.getFriendName());
+                    lastChatMsgInfo.setAlias(friendView.getAlias());
+                    lastChatMsgInfo.setFriendAlias(friendView.getFriendAlias());
+                    lastChatMsgInfo.setImagName(friendView.getFriendImgName());
+                }
+            }
+            if (lastChatMsgInfo.getLastTime() == 0 || lastChatMsgInfo.getLastTime() < chat.getSendTime()) {
+                lastChatMsgInfo.setLastMessage(chat.getContext());
+                lastChatMsgInfo.setMsgType(chat.getContextType());
+                lastChatMsgInfo.setLastTime(chat.getSendTime());
+            }
+            if (chat.isReceive() && chat.getContextState() != null && chat.getContextState() == State.MSG_STATE_UNREAD) {
+                lastChatMsgInfo.setMsgCount(lastChatMsgInfo.getMsgCount() + 1);
+            }
+            getCacheMap().put(lastChatMsgInfo.getUid(), lastChatMsgInfo);
+        }else{
+            getCacheMap().remove(friendId);
+        }
+    }
     public void analyze(List<ChatMsgInfo> chatMsgInfos, int uid) {
         int friendId = 0;
         FriendView friendView;

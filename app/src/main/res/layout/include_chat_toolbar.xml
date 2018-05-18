@@ -45,21 +45,25 @@
                 android:textColor="@color/white"
                 android:text="@string/network"/>
         </LinearLayout>
-        <Button
+        <ImageButton
             android:id="@+id/btn__toolbar_user"
-            android:layout_width="40dp"
-            android:layout_height="45dp"
-            android:layout_alignParentRight="true"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:background="@drawable/ic_user"
+            android:layout_marginLeft="@dimen/fab_margin"
+            android:layout_marginRight="@dimen/fab_margin"
+            android:layout_alignTop="@+id/btn__toolbar_phone"
             android:layout_alignParentEnd="true"
-            android:layout_margin="10dp"
-            android:background="@drawable/ic_user"/>
-        <Button
+            android:src="@drawable/selector_normal_bg"
+            android:layout_marginEnd="14dp"/>
+        <ImageButton
             android:id="@+id/btn__toolbar_phone"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:background="@drawable/ic_phone"
             android:layout_toLeftOf="@id/btn__toolbar_user"
             android:layout_toStartOf="@id/btn__toolbar_user"
-            android:layout_margin="10dp"/>
+            android:src="@drawable/selector_normal_bg"
+            android:layout_margin="@dimen/fab_margin"/>
     </RelativeLayout>
 </LinearLayout>

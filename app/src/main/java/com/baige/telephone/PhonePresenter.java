@@ -2,6 +2,7 @@ package com.baige.telephone;
 
 
 
+import com.baige.data.entity.FriendView;
 import com.baige.data.source.Repository;
 
 
@@ -14,21 +15,33 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class PhonePresenter implements PhoneContract.Presenter {
 
     private final static String TAG = PhonePresenter.class.getCanonicalName();
+
     private PhoneFragment mPhonefragment;
+
     private Repository mRepository;
+
+    private FriendView mFriendView;
 
 
     public PhonePresenter(Repository repository, PhoneFragment phoneFragment) {
         mRepository = checkNotNull(repository);
         mPhonefragment = checkNotNull(phoneFragment);
         mPhonefragment.setPresenter(this);
-
     }
 
+    public FriendView getFriendView() {
+        return mFriendView;
+    }
+
+    public void setFriendView(FriendView friendView) {
+        this.mFriendView = friendView;
+    }
 
     @Override
     public void start() {
-
+        if(mFriendView != null){
+            mPhonefragment.showFriend(mFriendView);
+        }
     }
 
 
