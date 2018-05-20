@@ -16,6 +16,7 @@ import com.baige.data.entity.User;
 import com.baige.data.source.DataSource;
 import com.baige.data.source.cache.CacheRepository;
 import com.baige.data.source.local.LocalRepository;
+import com.baige.util.Tools;
 import com.baige.util.UploadTools;
 
 import org.json.JSONException;
@@ -439,6 +440,7 @@ public class RemoteRepository implements DataSource, ServerHelper {
         params.put(UserDAO.VERIFICATION, user.getVerification());
         params.put(FileDAO.FILE_SIZE, String.valueOf(f.length()));
         params.put(FileDAO.FILE_TYPE, String.valueOf(file.getFileType()));
+        params.put(FileDAO.REMARK, Tools.ramdom());
         uploadOneFileWithParams(url, params, f, "upload", "application/octet-stream", callback);
 //        UploadTools.uploadFile(f, url, "upload");
         // doPost(url, file);

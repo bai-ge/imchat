@@ -71,6 +71,7 @@ public class FileSharePresenter implements FileShareContract.Presenter {
             @Override
             public void loadFiles(List<FileView> fileViews) {
                 super.loadFiles(fileViews);
+                Log.d(TAG, "文件个数："+fileViews.size());
                 CacheRepository.getInstance().getFileViewObservable().put(fileViews);
             }
 

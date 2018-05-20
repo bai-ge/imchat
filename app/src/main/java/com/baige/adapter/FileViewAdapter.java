@@ -86,13 +86,13 @@ public class FileViewAdapter extends BaseAdapter {
         ViewHolder holder = null;
         if (convertView == null) {
             LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-            convertView = inflater.inflate(R.layout.item_filelocal, parent, false);
+            convertView = inflater.inflate(R.layout.item_fileshare, parent, false);
             holder = new ViewHolder();
             holder.viewGroup = convertView.findViewById(R.id.linear_item);
             holder.imgView = (ImageView) convertView.findViewById(R.id.img_file_format);
             holder.nameView = (TextView) convertView.findViewById(R.id.txt_file_name);
             holder.tagDivView = convertView.findViewById(R.id.tag_div);
-            holder.describeView = (TextView) convertView.findViewById(R.id.txt_file_path);
+            holder.describeView = (TextView) convertView.findViewById(R.id.txt_file_describe);
             holder.infoView = (TextView) convertView.findViewById(R.id.txt_info);
             holder.timeView = (TextView) convertView.findViewById(R.id.txt_file_create_time);
             holder.tagView = (TextView) convertView.findViewById(R.id.txt_file_tag);
@@ -140,7 +140,13 @@ public class FileViewAdapter extends BaseAdapter {
         holder.imgView.setImageResource(FileType.getResourceIdByType(item.getFileType()));
 
         holder.nameView.setText(item.getFileName());
-        holder.tagView.setText(item.getUserName());
+        if(Tools.isEmpty(item.getUserName())){
+            holder.tagDivView.setVisibility(View.INVISIBLE);
+            holder.tagView.setText("");
+        }else{
+            holder.tagDivView.setVisibility(View.VISIBLE);
+            holder.tagView.setText(item.getUserName());
+        }
 
         holder.describeView.setText(item.getFileDescribe());
 //        holder.tagDivView.setVisibility(View.INVISIBLE);
@@ -148,6 +154,7 @@ public class FileViewAdapter extends BaseAdapter {
 
         // 创建时间
         holder.timeView.setText(Tools.formatTime(item.getUploadTime()));
+        holder.downloadView.setText("下载量："+ item.getDownloadCount());
         holder.checkView.setChecked(item.isCheck());
 
         holder.viewGroup.setOnClickListener(new View.OnClickListener() {
