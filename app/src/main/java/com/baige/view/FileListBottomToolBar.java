@@ -16,10 +16,10 @@ public class FileListBottomToolBar extends LinearLayout implements OnClickListen
 
     private View mRootView = null;
 
-    private View mToolBarNew = null;
+    private View mToolBarShare = null;
     private View mTollBarSort = null;
     private View mToolBarRefresh = null;
-    private View mToolBarSetting = null;
+    private View mToolBarMore = null;
 
     private IOnMenuItemClickListener mOnItemClickListener = null;
 
@@ -45,15 +45,15 @@ public class FileListBottomToolBar extends LinearLayout implements OnClickListen
     private void init(Context context) {
         mRootView = LayoutInflater.from(context).inflate(R.layout.file_list_bottom_menu, this, true);
 
-        mToolBarNew = mRootView.findViewById(R.id.mToolBarNew);
+        mToolBarShare = mRootView.findViewById(R.id.mToolBarShare);
         mTollBarSort = mRootView.findViewById(R.id.mToolBarSort);
         mToolBarRefresh = mRootView.findViewById(R.id.mToolBarRefresh);
-        mToolBarSetting = mRootView.findViewById(R.id.mToolBarSetting);
+        mToolBarMore = mRootView.findViewById(R.id.mToolBarMore);
 
-        mToolBarNew.setOnClickListener(this);
+        mToolBarShare.setOnClickListener(this);
         mTollBarSort.setOnClickListener(this);
         mToolBarRefresh.setOnClickListener(this);
-        mToolBarSetting.setOnClickListener(this);
+        mToolBarMore.setOnClickListener(this);
 
         DisplayMetrics outMetrics = new DisplayMetrics();
         ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getMetrics(outMetrics);
@@ -62,14 +62,33 @@ public class FileListBottomToolBar extends LinearLayout implements OnClickListen
 
     @Override
     public void onClick(View view) {
-        if (mOnItemClickListener != null) {
-            mOnItemClickListener.onItemClick(mRootView, view);
+        if (mOnItemClickListener == null) {
+            return;
+        }
+        switch (view.getId()) {
+            case R.id.mToolBarShare:
+                mOnItemClickListener.onShare();
+                break;
+            case R.id.mToolBarSort:
+                mOnItemClickListener.onShare();
+                break;
+            case R.id.mToolBarRefresh:
+                mOnItemClickListener.onRefresh();
+                break;
+            case R.id.mToolBarMore:
+                mOnItemClickListener.onMore();
+                break;
         }
     }
 
     public interface IOnMenuItemClickListener {
-        public void onItemClick(View rootView, View view);
-        public void onSelecteAll(View view, boolean selecteAll);
+        void onShare();
+
+        void onSore();
+
+        void onRefresh();
+
+        void onMore();
     }
 
 }

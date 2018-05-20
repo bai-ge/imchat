@@ -6,7 +6,7 @@
     android:orientation="horizontal" >
 
     <LinearLayout
-        android:id="@+id/mToolBarNew"
+        android:id="@+id/mToolBarShare"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_gravity="center"
@@ -20,14 +20,14 @@
             android:layout_gravity="center"
             android:layout_marginBottom="2dp"
             android:layout_marginTop="2dp"
-            android:src="@drawable/toolbar_new_node" />
+            android:src="@drawable/op_share_holo_dark" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginBottom="2dp"
-            android:text="新建"
+            android:text="分享"
             android:textColor="@color/text_color_white" />
     </LinearLayout>
     
@@ -87,7 +87,7 @@
 
 
     <LinearLayout
-        android:id="@+id/mToolBarSetting"
+        android:id="@+id/mToolBarMore"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
@@ -100,14 +100,14 @@
             android:layout_gravity="center"
             android:layout_marginBottom="2dp"
             android:layout_marginTop="2dp"
-            android:src="@drawable/toolbar_setting" />
+            android:src="@drawable/op_more" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginBottom="2dp"
-            android:text="设置"
+            android:text="更多"
             android:textColor="@color/text_color_white" />
     </LinearLayout>
 

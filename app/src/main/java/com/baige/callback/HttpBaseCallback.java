@@ -2,6 +2,7 @@ package com.baige.callback;
 
 
 import com.baige.data.entity.ChatMsgInfo;
+import com.baige.data.entity.FileView;
 import com.baige.data.entity.FriendView;
 import com.baige.data.entity.User;
 import com.baige.data.source.remote.ServerHelper;
@@ -124,6 +125,16 @@ public class HttpBaseCallback extends BaseCallback implements ServerHelper.Prima
 
     @Override
     public void loadMsgList(List<ChatMsgInfo> chatMsgInfos) {
+
+    }
+
+    @Override
+    public void loadFile(FileView fileView) {
+
+    }
+
+    @Override
+    public void loadFiles(List<FileView> fileViews) {
 
     }
 

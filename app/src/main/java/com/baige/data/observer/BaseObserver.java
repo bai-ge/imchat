@@ -20,6 +20,8 @@ public  class BaseObserver implements Observer{
             update((FriendViewObservable) o, arg);
         }else if(o instanceof LastChatMessageObservable){
             update((LastChatMessageObservable) o, arg);
+        }else if(o instanceof FileViewObservable){
+            update((FileViewObservable) o, arg);
         }
     }
 
@@ -35,6 +37,10 @@ public  class BaseObserver implements Observer{
 
 
     public void update(LastChatMessageObservable observable, Object arg) {
+
+    }
+
+    public void update(FileViewObservable observable, Object arg) {
 
     }
 }

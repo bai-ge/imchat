@@ -24,6 +24,7 @@ import com.baige.data.entity.ChatMsgInfo;
 import com.baige.friend.FriendActivity;
 import com.baige.imchat.R;
 import com.baige.telephone.PhoneActivity;
+import com.baige.util.Tools;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -318,6 +319,7 @@ public class ChatFragment extends Fragment implements ChatContract.View {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        Tools.HideKeyboard(mInputText);
         mPresenter.stop();
     }
 }

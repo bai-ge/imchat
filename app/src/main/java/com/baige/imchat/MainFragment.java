@@ -3,13 +3,11 @@ package com.baige.imchat;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
 import android.database.DataSetObserver;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.ContactsContract;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
@@ -17,7 +15,6 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.NotificationCompat;
-import android.support.v7.view.menu.MenuPopupHelper;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -28,7 +25,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -45,15 +41,14 @@ import com.ashokvarma.bottomnavigation.BottomNavigationItem;
 import com.baige.BaseApplication;
 import com.baige.adapter.FriendAdapter;
 import com.baige.adapter.LastChatMsgAdapter;
-import com.baige.adapter.UserAdapter;
 import com.baige.chat.ChatActivity;
 import com.baige.common.Parm;
 import com.baige.data.entity.FriendView;
 import com.baige.data.entity.LastChatMsgInfo;
 import com.baige.data.entity.User;
 import com.baige.data.source.cache.CacheRepository;
-import com.baige.filelist.FileListActivity;
-import com.baige.filelist.FileListContract;
+import com.baige.filelocal.FileLocalActivity;
+import com.baige.fileshare.FileShareActivity;
 import com.baige.friend.FriendActivity;
 import com.baige.login.LoginActivity;
 import com.baige.search.SearchActivity;
@@ -63,15 +58,12 @@ import com.baige.util.GlideImageLoader;
 import com.baige.util.ImageLoader;
 import com.baige.util.Tools;
 import com.baige.view.CircleImageView;
-import com.google.common.collect.BiMap;
 import com.lzy.imagepicker.ImagePicker;
 import com.lzy.imagepicker.bean.ImageItem;
 import com.lzy.imagepicker.ui.ImageGridActivity;
 import com.lzy.imagepicker.view.CropImageView;
-import com.setting.SettingActivity;
 
 import java.io.File;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -148,6 +140,10 @@ public class MainFragment extends Fragment implements MainContract.View, BottomN
     private ImageButton mBtnDownloadFiles;
 
     private ImageButton mBtnShareFiles;
+
+    private ImageButton mBtnShareHome;
+
+    private ImageButton mBtnShare;
 
     /*个人信息*/
 
@@ -417,11 +413,46 @@ public class MainFragment extends Fragment implements MainContract.View, BottomN
         mBtnSystemFiles = view.findViewById(R.id.btn_system_files);
         mBtnDownloadFiles = view.findViewById(R.id.btn_download_files);
         mBtnShareFiles = view.findViewById(R.id.btn_share_files);
+        mBtnShareHome = view.findViewById(R.id.btn_share_home);
+        mBtnShare = view.findViewById(R.id.btn_share);
 
         mBtnSystemFiles.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getActivity(), FileListActivity.class);
+                Intent intent = new Intent(getActivity(), FileLocalActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        mBtnDownloadFiles.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), FileShareActivity.class);
+                intent.putExtra("title", "已下载文件");
+                startActivity(intent);
+            }
+        });
+        mBtnShareFiles.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), FileShareActivity.class);
+                intent.putExtra("title", "已分享文件");
+                startActivity(intent);
+            }
+        });
+        mBtnShareHome.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), FileShareActivity.class);
+                intent.putExtra("title", "分享社区");
+                startActivity(intent);
+            }
+        });
+        mBtnShare.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), FileShareActivity.class);
+                intent.putExtra("title", "文件互传");
                 startActivity(intent);
             }
         });

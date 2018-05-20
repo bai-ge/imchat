@@ -53,7 +53,7 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name="com.baige.filelist.FileListActivity"
+        <activity android:name="com.baige.filelocal.FileLocalActivity"
                   android:launchMode="singleInstance"/>
         <activity android:name="com.baige.telephone.PhoneActivity"
                   android:launchMode="singleInstance">
@@ -70,6 +70,7 @@
                   android:launchMode="singleInstance"
                   android:windowSoftInputMode="adjustPan|stateHidden"/>
 
+        <activity android:name="com.baige.fileshare.FileShareActivity"/>
         <service android:name="com.baige.service.PullService"
                  android:enabled="false"
                  android:exported="false">

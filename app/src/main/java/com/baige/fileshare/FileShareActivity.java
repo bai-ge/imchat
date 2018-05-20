@@ -1,17 +1,13 @@
-package com.baige.filelist;
+package com.baige.fileshare;
 
 import android.Manifest;
-import android.content.res.Resources;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 import com.baige.BaseActivity;
-import com.baige.adapter.FileInfoAdapter;
 import com.baige.data.source.Repository;
-import com.baige.data.source.cache.CacheRepository;
 import com.baige.data.source.local.LocalRepository;
 import com.baige.imchat.R;
 import com.baige.util.ActivityUtils;
@@ -22,11 +18,11 @@ import java.util.List;
  * Created by baige on 2018/5/5.
  */
 
-public class FileListActivity extends BaseActivity {
+public class FileShareActivity extends BaseActivity {
 
     private Toolbar mToolbar;
 
-    private FileListPresenter mFileListPresenter;
+    private FileSharePresenter fileSharePresenter;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,8 +51,15 @@ public class FileListActivity extends BaseActivity {
             }
         });
 
+        Bundle bundle = getIntent().getExtras();
+        String title = "文件浏览";
+        if(bundle.containsKey("title")){
+            title = bundle.getString("title");
+        }
+
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        mToolbar.setTitle("文件浏览");
+        mToolbar.setTitle(title);
+
         //为activity窗口设置活动栏
         setSupportActionBar(mToolbar);
         final ActionBar actionBar = getSupportActionBar();
@@ -66,21 +69,17 @@ public class FileListActivity extends BaseActivity {
         mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FileListActivity.super.onBackPressed();
+                FileShareActivity.super.onBackPressed();
             }
         });
 
-        FileListFragment fileListFragment  = (FileListFragment) getSupportFragmentManager().findFragmentById(R.id.content_frame);
-        if(fileListFragment == null){
-            fileListFragment = FileListFragment.newInstance();
-            ActivityUtils.addFragmentToActivity(getSupportFragmentManager(), fileListFragment, R.id.content_frame);
+        FileShareFragment fileShareFragment  = (FileShareFragment) getSupportFragmentManager().findFragmentById(R.id.content_frame);
+        if(fileShareFragment == null){
+            fileShareFragment = FileShareFragment.newInstance();
+            ActivityUtils.addFragmentToActivity(getSupportFragmentManager(), fileShareFragment, R.id.content_frame);
         }
-        mFileListPresenter = new FileListPresenter(Repository.getInstance(LocalRepository.getInstance(getApplicationContext())), fileListFragment);
+        fileSharePresenter = new FileSharePresenter(Repository.getInstance(LocalRepository.getInstance(getApplicationContext())), fileShareFragment);
     }
 
-    @Override
-    public void onBackPressed() {
-//        super.onBackPressed();
-        mFileListPresenter.rebackPack();
-    }
+
 }

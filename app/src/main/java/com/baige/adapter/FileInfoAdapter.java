@@ -20,11 +20,12 @@ import com.baige.BaseApplication;
 import com.baige.data.entity.AppPackgeInfo;
 import com.baige.data.entity.FileInfo;
 import com.baige.data.entity.FileType;
-import com.baige.filelist.FileComparator;
+import com.baige.filelocal.FileComparator;
 import com.baige.imchat.R;
 import com.baige.util.ImageLoader;
 import com.baige.util.Tools;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -95,13 +96,22 @@ public class FileInfoAdapter extends BaseAdapter implements AbsListView.OnScroll
     public long getItemId(int i) {
         return i;
     }
+    public List<FileInfo> getSelectItems(){
+        List<FileInfo> list = new ArrayList<>();
+        for (FileInfo fileInfo : mList){
+            if(fileInfo.isChecked()){
+                list.add(fileInfo);
+            }
+        }
+        return list;
+    }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder holder = null;
         if (convertView == null) {
             LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-            convertView = inflater.inflate(R.layout.item_filelist, parent, false);
+            convertView = inflater.inflate(R.layout.item_filelocal, parent, false);
             holder = new ViewHolder();
             holder.viewGroup = convertView.findViewById(R.id.linear_item);
             holder.imgView = (ImageView) convertView.findViewById(R.id.img_file_format);

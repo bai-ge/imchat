@@ -1,6 +1,8 @@
 package com.baige.util;
 
 
+import android.util.Log;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -105,6 +107,7 @@ public class JsonTools {
                     if (name.startsWith("set")) {
                         key = name.substring(3);
                     }
+                    Log.e("JsonTools", key+" 1");
                     //格式化Key字符串
                     if (key.length() > 0
                             && Character.isUpperCase(key.charAt(0))
@@ -118,8 +121,11 @@ public class JsonTools {
                         if(jsonObject.has(key)){
                             try {
                                 Object value = jsonObject.get(key);
+                                Log.e("JsonTools", key+" 2");
                                 if(value != null && !value.equals(null)){
+                                    Log.e("JsonTools", key+" 3"+ ", value:"+value);
                                     method.invoke(object, value);
+                                    Log.e("JsonTools", key+" 4");
                                     invalid = false; //只有设置了至少一项，才会返回非空值
                                 }
 //                                setValue(object, value, method);

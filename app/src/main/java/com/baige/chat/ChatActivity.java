@@ -11,6 +11,7 @@ import com.baige.data.source.local.LocalRepository;
 import com.baige.imchat.R;
 import com.baige.service.PullService;
 import com.baige.util.ActivityUtils;
+import com.baige.util.Tools;
 
 
 /**
@@ -45,5 +46,10 @@ public class ChatActivity extends BaseActivity {
     protected void onSaveInstanceState(Bundle outState) {
 //        outState.put("friend", mChatPresenter.getFriendView());
         super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 }

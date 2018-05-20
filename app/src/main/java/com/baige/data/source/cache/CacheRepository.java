@@ -10,6 +10,7 @@ import com.baige.BaseApplication;
 import com.baige.data.entity.Candidate;
 import com.baige.data.entity.User;
 import com.baige.data.observer.ChatMessageObservable;
+import com.baige.data.observer.FileViewObservable;
 import com.baige.data.observer.FriendViewObservable;
 import com.baige.data.observer.LastChatMessageObservable;
 import com.baige.pushcore.SendMessageBroadcast;
@@ -39,6 +40,8 @@ public class CacheRepository {
     private FriendViewObservable friendViewObservable;
 
     private LastChatMessageObservable lastChatMessageObservable;
+
+    private FileViewObservable fileViewObservable;
 
     private int fileSortType;
 
@@ -253,6 +256,7 @@ public class CacheRepository {
         chatMessageObservable = new ChatMessageObservable();
         friendViewObservable = new FriendViewObservable();
         lastChatMessageObservable = new LastChatMessageObservable();
+        fileViewObservable = new FileViewObservable();
     }
 
     public static CacheRepository getInstance() {
@@ -270,12 +274,14 @@ public class CacheRepository {
         chatMessageObservable.addObserver(observer);
         friendViewObservable.addObserver(observer);
         lastChatMessageObservable.addObserver(observer);
+        fileViewObservable.addObserver(observer);
     }
 
     public void unRegisterDataChange(Observer observer) {
         chatMessageObservable.deleteObserver(observer);
         friendViewObservable.deleteObserver(observer);
         lastChatMessageObservable.deleteObserver(observer);
+        fileViewObservable.deleteObserver(observer);
     }
 
     public ChatMessageObservable getChatMessageObservable() {
@@ -288,6 +294,14 @@ public class CacheRepository {
 
     public LastChatMessageObservable getLastChatMessageObservable() {
         return lastChatMessageObservable;
+    }
+
+    public FileViewObservable getFileViewObservable() {
+        return fileViewObservable;
+    }
+
+    public void setFileViewObservable(FileViewObservable fileViewObservable) {
+        this.fileViewObservable = fileViewObservable;
     }
 
     public int getFileSortType() {

@@ -3,11 +3,13 @@ package com.baige.data.source;
 import android.support.annotation.NonNull;
 
 import com.baige.callback.ChatMessageResponseBinder;
+import com.baige.callback.FileResponseBinder;
 import com.baige.callback.FriendResponseBinder;
 import com.baige.callback.HttpBaseCallback;
 import com.baige.callback.SimpleResponseBinder;
 import com.baige.callback.UserResponseBinder;
 import com.baige.data.entity.ChatMsgInfo;
+import com.baige.data.entity.FileInfo;
 import com.baige.data.entity.User;
 import com.baige.data.source.local.LocalRepository;
 import com.baige.data.source.remote.RemoteRepository;
@@ -45,6 +47,8 @@ public class Repository implements DataSource, ServerHelper{
 
     private ChatMessageResponseBinder mChatMessageResponseBinder;
 
+    private FileResponseBinder mFileResponseBinder;
+
     private Repository(LocalRepository localRepository) {
         mLocalRepository =  checkNotNull(localRepository);
         mRemoteRepository = RemoteRepository.getInstance(localRepository);
@@ -52,6 +56,7 @@ public class Repository implements DataSource, ServerHelper{
         mUserResponseBinder = new UserResponseBinder();
         mFriendResponseBinder = new FriendResponseBinder();
         mChatMessageResponseBinder = new ChatMessageResponseBinder();
+        mFileResponseBinder = new FileResponseBinder();
         fixedThreadPool = Executors.newFixedThreadPool(5);//创建最多能并发运行5个线程的线程池
     }
 
@@ -118,7 +123,7 @@ public class Repository implements DataSource, ServerHelper{
     }
 
     @Override
-    public void uploadFile(final User user, final String file, final HttpBaseCallback callback) {
+    public void uploadFile(final User user, final FileInfo file, final HttpBaseCallback callback) {
         checkNotNull(user);
         checkNotNull(file);
         checkNotNull(callback);
@@ -423,6 +428,22 @@ public class Repository implements DataSource, ServerHelper{
                 @Override
                 public void run() {
                     mRemoteRepository.readMsgBeforeTime(uid, verification, friendId, time, callback);
+                }
+            });
+        }else{
+            callback.fail();
+        }
+    }
+
+    @Override
+    public void searchAllFile(final HttpBaseCallback callback) {
+        checkNotNull(callback);
+        callback.setResponseBinder(mFileResponseBinder);
+        if (fixedThreadPool != null) {
+            fixedThreadPool.submit(new Runnable() {
+                @Override
+                public void run() {
+                    mRemoteRepository.searchAllFile(callback);
                 }
             });
         }else{

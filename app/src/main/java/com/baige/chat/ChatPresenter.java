@@ -55,6 +55,7 @@ public class ChatPresenter implements ChatContract.Presenter {
         }
         Log.d(TAG, "friend =" + mFriendView);
         List<ChatMsgInfo> chats = filter(CacheRepository.getInstance().getChatMessageObservable().loadCache());
+        initChatInfo(chats);
         mChatFragment.showMsg(chats);
         CacheRepository.getInstance().getChatMessageObservable().addObserver(baseObserver);
         if (chats.size() > 0) {

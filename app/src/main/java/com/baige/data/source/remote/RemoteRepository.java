@@ -6,9 +6,11 @@ import com.baige.BaseApplication;
 import com.baige.callback.HttpBaseCallback;
 import com.baige.common.Parm;
 import com.baige.data.dao.ChatMessageDAO;
+import com.baige.data.dao.FileDAO;
 import com.baige.data.dao.FriendDAO;
 import com.baige.data.dao.UserDAO;
 import com.baige.data.entity.ChatMsgInfo;
+import com.baige.data.entity.FileInfo;
 import com.baige.data.entity.FriendView;
 import com.baige.data.entity.User;
 import com.baige.data.source.DataSource;
@@ -259,13 +261,13 @@ public class RemoteRepository implements DataSource, ServerHelper {
             int res = conn.getResponseCode();
             Log.e(TAG, "response code:" + res);
             if(res == 200){
+                Log.e(TAG, "request success");
                 callback.uploadFinish(file.getName());
             }else{
+                Log.e(TAG, "request fail");
                 callback.fail(file.getName());
             }
-            // if(res==200)
-            // {
-            Log.e(TAG, "request success");
+
             //读取响应
             reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
             String lines;
@@ -428,14 +430,17 @@ public class RemoteRepository implements DataSource, ServerHelper {
     }
 
     @Override
-    public void uploadFile(User user, String file, HttpBaseCallback callback) {
+    public void uploadFile(User user, FileInfo file, HttpBaseCallback callback) {
         String url = getServerAddress() + "/imchat/file/upload.action";
-        String urlgotc = "http://192.168.1.102:8082/gotcModule/uploadFiles.action";
-        String eclipseUrl = "http://192.168.1.102:8080/struts/upload";
-        File f = new File(file);
+        File f = new File(file.getPath());
 //        UploadUtil.uploadFile(f, url);
-
-        UploadTools.uploadFile(f, url, "upload");
+        Map<String, String> params = new HashMap<>();
+        params.put(Parm.UID, String.valueOf(user.getId()));
+        params.put(UserDAO.VERIFICATION, user.getVerification());
+        params.put(FileDAO.FILE_SIZE, String.valueOf(f.length()));
+        params.put(FileDAO.FILE_TYPE, String.valueOf(file.getFileType()));
+        uploadOneFileWithParams(url, params, f, "upload", "application/octet-stream", callback);
+//        UploadTools.uploadFile(f, url, "upload");
         // doPost(url, file);
     }
 
@@ -669,5 +674,12 @@ public class RemoteRepository implements DataSource, ServerHelper {
             e.printStackTrace();
             callback.error(e);
         }
+    }
+
+    @Override
+    public void searchAllFile(HttpBaseCallback callback) {
+        Log.d(TAG, "获取文件列表");
+        String url = getServerAddress() + "/imchat/file/search.action";
+        HttpURLPost(url, "{}", callback);
     }
 }

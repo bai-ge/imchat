@@ -4,6 +4,8 @@ package com.baige.data.source.remote;
 
 import com.baige.callback.HttpBaseCallback;
 import com.baige.data.entity.ChatMsgInfo;
+import com.baige.data.entity.FileInfo;
+import com.baige.data.entity.FileView;
 import com.baige.data.entity.FriendView;
 import com.baige.data.entity.User;
 
@@ -69,6 +71,10 @@ public interface ServerHelper {
 
         void loadMsgList(List<ChatMsgInfo> chatMsgInfos);
 
+        void loadFile(FileView fileView);
+
+        void loadFiles(List<FileView> fileViews);
+
     }
     interface FileCallback{
         void progress(String fileName, long finishSize, long totalSize);
@@ -85,7 +91,7 @@ public interface ServerHelper {
 
     void updateAlias(int id, String verification, String alias, HttpBaseCallback callback);
 
-    void uploadFile(User user, String file, HttpBaseCallback callback);
+    void uploadFile(User user, FileInfo file, HttpBaseCallback callback);
 
     void changeHeadImg(int id, String verification, File headImg, HttpBaseCallback callback);
 
@@ -122,4 +128,6 @@ public interface ServerHelper {
     void readMsgBeforeTime(int uid, String verification, long time, HttpBaseCallback callback);
 
     void readMsgBeforeTime(int uid, String verification, int friendId, long time, HttpBaseCallback callback);
+
+    void searchAllFile(HttpBaseCallback callback);
 }

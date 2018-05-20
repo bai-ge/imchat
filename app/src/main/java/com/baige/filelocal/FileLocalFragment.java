@@ -1,4 +1,4 @@
-package com.baige.filelist;
+package com.baige.filelocal;
 
 import android.database.DataSetObserver;
 import android.os.Bundle;
@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,8 +18,6 @@ import android.widget.Toast;
 import com.baige.adapter.FileInfoAdapter;
 import com.baige.data.entity.FileInfo;
 import com.baige.data.entity.FileType;
-import com.baige.data.entity.NaviInfo;
-import com.baige.data.source.cache.CacheRepository;
 import com.baige.imchat.R;
 import com.baige.util.FileUtils;
 import com.baige.util.Tools;
@@ -34,11 +33,11 @@ import java.util.List;
  * Created by baige on 2018/5/5.
  */
 
-public class FileListFragment extends Fragment implements FileListContract.View {
+public class FileLocalFragment extends Fragment implements FileLocalContract.View {
 
-    private static final String TAG = FileListFragment.class.getSimpleName();
+    private static final String TAG = FileLocalFragment.class.getSimpleName();
 
-    private FileListContract.Presenter mPresenter;
+    private FileLocalContract.Presenter mPresenter;
 
     private Handler mHandler;
 
@@ -65,7 +64,7 @@ public class FileListFragment extends Fragment implements FileListContract.View 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.frag_filelist, container, false);
+        View root = inflater.inflate(R.layout.frag_filelocal, container, false);
         initView(root);
         return root;
     }
@@ -81,6 +80,7 @@ public class FileListFragment extends Fragment implements FileListContract.View 
 
         mListView.setOnScrollListener(mAdapter);//异步加载的关键
 
+        mBottomToolBar.setOnItemClickListener(onMenuItemClickListener);
         mAdapter.registerDataSetObserver(new DataSetObserver() {
             @Override
             public void onChanged() {
@@ -103,12 +103,12 @@ public class FileListFragment extends Fragment implements FileListContract.View 
 
 
     @Override
-    public void setPresenter(FileListContract.Presenter presenter) {
+    public void setPresenter(FileLocalContract.Presenter presenter) {
         mPresenter = presenter;
     }
 
-    public static FileListFragment newInstance() {
-        return new FileListFragment();
+    public static FileLocalFragment newInstance() {
+        return new FileLocalFragment();
     }
 
 
@@ -150,7 +150,7 @@ public class FileListFragment extends Fragment implements FileListContract.View 
         }
     }
 
-    /* 设置底部导航条 */
+    /* 设置顶部导航条 */
     private void addToNaviList(String path) {
         final View naviItemView = LayoutInflater.from(getContext()).inflate(R.layout.file_navi_item, null);
         final TextView tv = (TextView) naviItemView.findViewById(R.id.txt_file_name);
@@ -204,6 +204,31 @@ public class FileListFragment extends Fragment implements FileListContract.View 
         @Override
         public void onLongClickItem(FileInfo item) {
 
+        }
+    };
+
+    private FileListBottomToolBar.IOnMenuItemClickListener onMenuItemClickListener = new FileListBottomToolBar.IOnMenuItemClickListener() {
+        @Override
+        public void onShare() {
+            Log.d(TAG, "onShare()");
+            Log.d(TAG, ""+mAdapter.getSelectItems());
+            List<FileInfo> fileInfos = mAdapter.getSelectItems();
+            mPresenter.uploadFile(fileInfos);
+        }
+
+        @Override
+        public void onSore() {
+            Log.d(TAG, "onSore()");
+        }
+
+        @Override
+        public void onRefresh() {
+            Log.d(TAG, "onRefresh()");
+        }
+
+        @Override
+        public void onMore() {
+            Log.d(TAG, "onMore()");
         }
     };
 

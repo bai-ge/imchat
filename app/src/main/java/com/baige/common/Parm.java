@@ -17,6 +17,9 @@ public class Parm {
     public final static String CHAT = "chat";
     public final static String CHAT_LIST = "chat_list";
 
+    public final static String FILE = "file";
+    public final static String FILES = "files";
+
     public static final int SUCCESS_CODE = 200;
     public static final int FAIL_CODE = 500;
     public static final int UNKNOWN_CODE = 999;
