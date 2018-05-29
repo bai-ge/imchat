@@ -321,6 +321,20 @@ public class SocketPacket {
         return len;
     }
 
+
+    /**不完全统计长度，仅统计头部和内容
+     * @return
+     */
+    public int size(){
+        int size = 0;
+        if(getHeaderBuf() != null){
+           size += getHeaderBuf().length;
+        }
+        if(getContentBuf() != null){
+           size += getContentBuf().length;
+        }
+        return size;
+    }
     @Override
     public String toString() {
         StringBuffer stringBuffer = new StringBuffer();

@@ -11,13 +11,16 @@ import android.widget.BaseAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.baige.data.entity.FileType;
 import com.baige.data.entity.FileView;
+import com.baige.data.source.cache.CacheRepository;
 import com.baige.imchat.R;
 import com.baige.util.Tools;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -46,9 +49,9 @@ public class FileViewAdapter extends BaseAdapter {
 
     @Override
     public void notifyDataSetChanged() {
-//        super.notifyDataSetChanged();
-        mHandler.removeCallbacks(mNotifyRunnable);
-        mHandler.postDelayed(mNotifyRunnable, 20);
+        super.notifyDataSetChanged();
+//        mHandler.removeCallbacks(mNotifyRunnable);
+//        mHandler.postDelayed(mNotifyRunnable, 20);
     }
 
 
@@ -80,6 +83,15 @@ public class FileViewAdapter extends BaseAdapter {
         return i;
     }
 
+    public List<FileView> getSelectItems(){
+        List<FileView> list = new ArrayList<>();
+        for (FileView fileView : mList){
+            if(fileView.isCheck()){
+                list.add(fileView);
+            }
+        }
+        return list;
+    }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
@@ -98,6 +110,9 @@ public class FileViewAdapter extends BaseAdapter {
             holder.tagView = (TextView) convertView.findViewById(R.id.txt_file_tag);
             holder.downloadView = (TextView) convertView.findViewById(R.id.txt_download_count);
             holder.checkView = convertView.findViewById(R.id.checkbox);
+            holder.progressBarLayout = convertView.findViewById(R.id.layout_progress);
+            holder.progressBarView = convertView.findViewById(R.id.progress_file);
+            holder.imageHeadView = convertView.findViewById(R.id.img_head_tag);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
@@ -130,7 +145,7 @@ public class FileViewAdapter extends BaseAdapter {
      * @param holder
      * @param position
      */
-    private void setHolder(ViewHolder holder, int position) {
+    private void setHolder(ViewHolder holder, final int position) {
         final FileView item = getItem(position);
         Log.d(TAG, item.toString() );
 
@@ -138,6 +153,12 @@ public class FileViewAdapter extends BaseAdapter {
         int type = item.getFileType();
 
         holder.imgView.setImageResource(FileType.getResourceIdByType(item.getFileType()));
+
+        if(item.isRemote()){
+            holder.imageHeadView.setVisibility(View.VISIBLE);
+        }else{
+            holder.imageHeadView.setVisibility(View.INVISIBLE);
+        }
 
         holder.nameView.setText(item.getFileName());
         if(Tools.isEmpty(item.getUserName())){
@@ -157,6 +178,25 @@ public class FileViewAdapter extends BaseAdapter {
         holder.downloadView.setText("下载量："+ item.getDownloadCount());
         holder.checkView.setChecked(item.isCheck());
 
+        if(item.isShowProgress()){
+            holder.progressBarLayout.setVisibility(View.VISIBLE);
+            holder.downloadView.setText(Tools.fromatPercent(item.getProgressPercent()));
+            holder.progressBarView.setProgress((int) (100 * item.getProgressPercent()));
+            if(item.getProgressPercent() == 1){
+                mHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        //隐藏进度条
+                        item.setShowProgress(false);
+                        CacheRepository.getInstance().getFileViewObservable().put(item);
+                    }
+                }, 1000);
+            }
+        }else{
+            holder.progressBarLayout.setVisibility(View.INVISIBLE);
+            holder.downloadView.setText("下载量："+ item.getDownloadCount());
+        }
+
         holder.viewGroup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -174,10 +214,19 @@ public class FileViewAdapter extends BaseAdapter {
                 return true;
             }
         });
+        holder.checkView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+               item.setCheck(!item.isCheck());
+            }
+        });
         holder.checkView.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                item.setCheck(b);
+                //视图更换时会被刷新
+//                item.setCheck(b);
+//                mList.get(position).setCheck(b);
+//                Log.d(TAG, "多选框"+b);
             }
         });
     }
@@ -196,6 +245,10 @@ public class FileViewAdapter extends BaseAdapter {
         TextView tagView;      //文件用户名
         TextView downloadView; //下载量
         CheckBox checkView;
+        ViewGroup progressBarLayout;
+        ProgressBar progressBarView;
+        ImageView imageHeadView;
+
     }
 
     public interface OnFileViewItemListener {

@@ -44,5 +44,7 @@ public interface PhoneContract {
 
         void setSpeakerphoneOn(boolean on);
 
+        void close();
+
     }
 }

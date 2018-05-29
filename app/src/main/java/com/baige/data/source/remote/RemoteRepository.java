@@ -11,6 +11,7 @@ import com.baige.data.dao.FriendDAO;
 import com.baige.data.dao.UserDAO;
 import com.baige.data.entity.ChatMsgInfo;
 import com.baige.data.entity.FileInfo;
+import com.baige.data.entity.FileView;
 import com.baige.data.entity.FriendView;
 import com.baige.data.entity.User;
 import com.baige.data.source.DataSource;
@@ -75,7 +76,7 @@ public class RemoteRepository implements DataSource, ServerHelper {
     }
 
     public String getServerAddress() {
-        return "http://"+CacheRepository.getInstance().getServerIp()+":8080";
+        return "http://"+CacheRepository.getInstance().getServerIp()+":12060";
     }
 
     private void HttpURLPost(String url, String json, PrimaryCallback callBack) {
@@ -179,6 +180,8 @@ public class RemoteRepository implements DataSource, ServerHelper {
     /**
      * Android上传单个文件并带参数到服务端
      *
+     *
+     * @param remark     用于提示FileView 信息更新
      * @param requestUrl 请求的url
      * @param params     参数列表
      * @param file       需要上传的文件
@@ -186,7 +189,7 @@ public class RemoteRepository implements DataSource, ServerHelper {
      * @param fileType   文件类型(image/png, image/gif, image/jpeg, image/pjpeg, image/x-png, application/octet-stream)
      * @param callback
      */
-    public static void uploadOneFileWithParams(String requestUrl, Map<String, String> params, File file, String fileKey, String fileType, HttpBaseCallback callback) {
+    public static void uploadOneFileWithParams(String remark, String requestUrl, Map<String, String> params, File file, String fileKey, String fileType, HttpBaseCallback callback) {
         StringBuffer response = new StringBuffer();
         BufferedReader reader = null;
         String BOUNDARY = UUID.randomUUID().toString().replace("-", "");// 边界标识 随机生成
@@ -247,7 +250,7 @@ public class RemoteRepository implements DataSource, ServerHelper {
                 while ((len = is.read(bytes)) != -1) {
                     outStream.write(bytes, 0, len);
                     countSize += len;
-                    callback.progress(file.getName(), countSize, totalSize);
+                    callback.progress(remark, file.getName(), countSize, totalSize);
                 }
                 is.close();
                 outStream.write(LINE_END.getBytes());
@@ -263,10 +266,10 @@ public class RemoteRepository implements DataSource, ServerHelper {
             Log.e(TAG, "response code:" + res);
             if(res == 200){
                 Log.e(TAG, "request success");
-                callback.uploadFinish(file.getName());
+                callback.uploadFinish(remark, file.getName());
             }else{
                 Log.e(TAG, "request fail");
-                callback.fail(file.getName());
+                callback.fail(remark, file.getName());
             }
 
             //读取响应
@@ -282,10 +285,10 @@ public class RemoteRepository implements DataSource, ServerHelper {
             callback.response(response.toString());
         } catch (MalformedURLException e) {
             e.printStackTrace();
-            callback.error(file.getName(), e);
+            callback.error(remark, file.getName(), e);
         } catch (IOException e) {
             e.printStackTrace();
-            callback.error(file.getName(), e);
+            callback.error(remark, file.getName(), e);
         } finally {
             if(reader != null){
                 try {
@@ -299,7 +302,7 @@ public class RemoteRepository implements DataSource, ServerHelper {
 
     //TODO 保留，但不用
     @Override
-    public void downloadFile(String url, String path, String fileName, HttpBaseCallback callback) {
+    public void downloadFile(String remark, String url, String path, String fileName, HttpBaseCallback callback) {
         HttpURLConnection conn = null;
         InputStream inputStream = null;
         BufferedOutputStream bos = null;
@@ -329,20 +332,20 @@ public class RemoteRepository implements DataSource, ServerHelper {
                 while( (len = inputStream.read(buffer)) != -1){
                     bos.write(buffer, 0, len);
                     totalSize += len;
-                    callback.progress(fileName, countSize, totalSize); //TODO 未知
+                    callback.progress(remark, fileName, countSize, totalSize); //TODO 未知
                 }
                 bos.flush();
                 Log.i(TAG, "下载文件成功："+fileName);
-                callback.downloadFinish(fileName);
+                callback.downloadFinish(remark, fileName);
             }else{
-                callback.fail(fileName);
+                callback.fail(remark, fileName);
             }
         } catch (MalformedURLException e) {
             e.printStackTrace();
-            callback.error(fileName, e);
+            callback.error(remark, fileName, e);
         } catch (IOException e) {
             e.printStackTrace();
-            callback.error(fileName, e);
+            callback.error(remark, fileName, e);
         }finally {
             if(conn != null ){
                 conn.disconnect();
@@ -421,7 +424,7 @@ public class RemoteRepository implements DataSource, ServerHelper {
         Map<String, String> params = new HashMap<>();
         params.put(UserDAO.ID, String.valueOf(id));
         params.put(UserDAO.VERIFICATION, verification);
-        uploadOneFileWithParams(url, params, headImg, "headImg", "image/jpeg", callback);
+        uploadOneFileWithParams(headImg.getName(), url, params, headImg, "headImg", "image/jpeg", callback);
     }
 
     @Override
@@ -431,7 +434,7 @@ public class RemoteRepository implements DataSource, ServerHelper {
     }
 
     @Override
-    public void uploadFile(User user, FileInfo file, HttpBaseCallback callback) {
+    public void uploadFile(String remark, User user, FileInfo file, HttpBaseCallback callback) {
         String url = getServerAddress() + "/imchat/file/upload.action";
         File f = new File(file.getPath());
 //        UploadUtil.uploadFile(f, url);
@@ -440,8 +443,8 @@ public class RemoteRepository implements DataSource, ServerHelper {
         params.put(UserDAO.VERIFICATION, user.getVerification());
         params.put(FileDAO.FILE_SIZE, String.valueOf(f.length()));
         params.put(FileDAO.FILE_TYPE, String.valueOf(file.getFileType()));
-        params.put(FileDAO.REMARK, Tools.ramdom());
-        uploadOneFileWithParams(url, params, f, "upload", "application/octet-stream", callback);
+        params.put(FileDAO.REMARK, remark);
+        uploadOneFileWithParams(remark, url, params, f, "upload", "application/octet-stream", callback);
 //        UploadTools.uploadFile(f, url, "upload");
         // doPost(url, file);
     }
@@ -683,5 +686,26 @@ public class RemoteRepository implements DataSource, ServerHelper {
         Log.d(TAG, "获取文件列表");
         String url = getServerAddress() + "/imchat/file/search.action";
         HttpURLPost(url, "{}", callback);
+    }
+
+    @Override
+    public void shareFile(int uid, String verification, FileView fileView, HttpBaseCallback callback) {
+        Log.d(TAG, "分享文件");
+        String url = getServerAddress() + "/imchat/file/share.action";
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put(Parm.UID, uid);
+            jsonObject.put(UserDAO.VERIFICATION, verification);
+            jsonObject.put(FileDAO.FILE_NAME, fileView.getFileName());
+            jsonObject.put(FileDAO.FILE_PATH, fileView.getFilePath());
+            jsonObject.put(FileDAO.FILE_DESCRIBE, fileView.getFileDescribe());
+            jsonObject.put(FileDAO.FILE_TYPE, fileView.getFileType());
+            jsonObject.put(FileDAO.FILE_SIZE, fileView.getFileSize());
+            jsonObject.put(FileDAO.REMARK, fileView.getRemark());
+            HttpURLPost(url, jsonObject.toString(), callback);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            callback.error(e);
+        }
     }
 }

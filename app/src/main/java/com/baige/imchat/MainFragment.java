@@ -631,7 +631,7 @@ public class MainFragment extends Fragment implements MainContract.View, BottomN
 
     @Override
     public void showUserImg(final String imgName) {
-        Log.d(TAG, imgName);
+        Log.d(TAG, ""+imgName);
         if (!Tools.isEquals(mCircleImageView.getTag(), imgName)) {
             Log.d(TAG, "加载"+imgName);
             String url = BaseApplication.headImgPath + File.separator + imgName;

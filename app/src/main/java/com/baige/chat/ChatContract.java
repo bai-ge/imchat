@@ -25,6 +25,7 @@ public interface ChatContract {
         FriendView getFriendView();
 
         void readBeforeTime();
+        void callTo();
     }
 
     interface View extends BaseView<Presenter> {

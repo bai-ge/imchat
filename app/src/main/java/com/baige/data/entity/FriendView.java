@@ -11,24 +11,24 @@ import org.json.JSONObject;
 
 public class FriendView implements Parcelable{
     private int id; //Friend 表中的ID
-    private int uid; //用户ID
-    private String friendName; //用户名
+    private int userId; //用户ID
     private int friendId;
+    private String name; //用户名
     private String alias; //用户别名
     private String friendAlias;//好友设置的用户备注
     private long relateTime;
     private int state;
     private int readState; //自己是否已读
     private String remake;
-    private String friendImgName;
-    private String friendDeviceId;
+    private String imgName;  //好友的头像名称
+    private String deviceId; //好友的设备ID
 
     public FriendView(){};
 
     private FriendView(Parcel in) {
         id = in.readInt();
-        uid = in.readInt();
-        friendName = in.readString();
+        userId = in.readInt();
+        name = in.readString();
         friendId = in.readInt();
         alias = in.readString();
         friendAlias = in.readString();
@@ -37,15 +37,15 @@ public class FriendView implements Parcelable{
         state = in.readInt();
         readState = in.readInt();
         remake = in.readString();
-        friendImgName = in.readString();
-        friendDeviceId = in.readString();
+        imgName = in.readString();
+        deviceId = in.readString();
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(id);
-        dest.writeInt(uid);
-        dest.writeString(friendName);
+        dest.writeInt(userId);
+        dest.writeString(name);
         dest.writeInt(friendId);
         dest.writeString(alias);
         dest.writeString(friendAlias);
@@ -53,8 +53,8 @@ public class FriendView implements Parcelable{
         dest.writeInt(state);
         dest.writeInt(readState);
         dest.writeString(remake);
-        dest.writeString(friendImgName);
-        dest.writeString(friendDeviceId);
+        dest.writeString(imgName);
+        dest.writeString(deviceId);
 
     }
     @Override
@@ -80,7 +80,7 @@ public class FriendView implements Parcelable{
 
     public FriendView(String friendAlias, String name, String alias){
         this.friendAlias = friendAlias;
-        this.friendName = name;
+        this.name = name;
         this.alias = alias;
     }
 
@@ -89,23 +89,23 @@ public class FriendView implements Parcelable{
         if(Tools.isEmpty(name)){
             name = getAlias();
             if(Tools.isEmpty(name)){
-                name = getFriendName();
+                name = getName();
             }
         }
         return name;
     }
 
     public boolean isFriend(){
-        int realState = state % 10;
-        return realState == State.RELATETION_AGREE;
+        return state == State.RELATETION_FRIEND;
     }
 
-    public String getFriendName() {
-        return friendName;
+
+    public String getName() {
+        return name;
     }
 
-    public void setFriendName(String friendName) {
-        this.friendName = friendName;
+    public void setName(String friendName) {
+        this.name = friendName;
     }
 
     public int getId() {
@@ -116,12 +116,12 @@ public class FriendView implements Parcelable{
         this.id = id;
     }
 
-    public int getUid() {
-        return uid;
+    public int getUserId() {
+        return userId;
     }
 
-    public void setUid(int uid) {
-        this.uid = uid;
+    public void setUserId(int uid) {
+        this.userId = uid;
     }
 
     public int getFriendId() {
@@ -180,20 +180,20 @@ public class FriendView implements Parcelable{
         this.remake = remake;
     }
 
-    public String getFriendImgName() {
-        return friendImgName;
+    public String getImgName() {
+        return imgName;
     }
 
-    public void setFriendImgName(String friendImgName) {
-        this.friendImgName = friendImgName;
+    public void setImgName(String friendImgName) {
+        this.imgName = friendImgName;
     }
 
-    public String getFriendDeviceId() {
-        return friendDeviceId;
+    public String getDeviceId() {
+        return deviceId;
     }
 
-    public void setFriendDeviceId(String friendDeviceId) {
-        this.friendDeviceId = friendDeviceId;
+    public void setDeviceId(String friendDeviceId) {
+        this.deviceId = friendDeviceId;
     }
 
     public static FriendView createByJson(JSONObject friendJson) {
@@ -204,8 +204,8 @@ public class FriendView implements Parcelable{
     public String toString() {
         return "FriendView{" +
                 "id=" + id +
-                ", uid=" + uid +
-                ", friendName='" + friendName + '\'' +
+                ", uid=" + userId +
+                ", friendName='" + name + '\'' +
                 ", friendId=" + friendId +
                 ", alias='" + alias + '\'' +
                 ", friendAlias='" + friendAlias + '\'' +
@@ -213,8 +213,8 @@ public class FriendView implements Parcelable{
                 ", state=" + state +
                 ", readState=" + readState +
                 ", remake='" + remake + '\'' +
-                ", friendImgName='" + friendImgName + '\'' +
-                ", friendDeviceId='" + friendDeviceId + '\'' +
+                ", friendImgName='" + imgName + '\'' +
+                ", friendDeviceId='" + deviceId + '\'' +
                 '}';
     }
 }

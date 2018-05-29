@@ -1,23 +1,32 @@
 package com.baige.connect.msg;
 
 import com.baige.common.Parm;
-
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import com.baige.util.Tools;
 
 /**
  * Created by baige on 2018/3/26.
  */
 
 public class ResponseMessage {
-    private int code;
-    private Object data;
+    private String to;
+    private String from;
+    private Object response; //一般是Json, 包含数据，callback, code, 以及 data_type
+    
+    
 
     public String toJson(){
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put(Parm.CODE, code);
-            jsonObject.put(Parm.DATA, data);
+        	if(!Tools.isEmpty(from)){
+        		jsonObject.put(Parm.FROM, from);
+        	}
+        	if(!Tools.isEmpty(to)){
+        		jsonObject.put(Parm.TO, to);
+        	}
+            jsonObject.put(Parm.RESPONSE, response);
             return jsonObject.toString();
         } catch (JSONException e) {
             e.printStackTrace();
@@ -25,19 +34,27 @@ public class ResponseMessage {
         return null;
     }
 
-    public int getCode() {
-        return code;
+    public String getTo() {
+        return to;
     }
 
-    public void setCode(int code) {
-        this.code = code;
+    public void setTo(String to) {
+        this.to = to;
     }
 
-    public Object getData() {
-        return data;
+    public String getFrom() {
+        return from;
     }
 
-    public void setData(Object data) {
-        this.data = data;
+    public void setFrom(String from) {
+        this.from = from;
+    }
+
+    public Object getResponse() {
+        return response;
+    }
+
+    public void setResponse(Object response) {
+        this.response = response;
     }
 }

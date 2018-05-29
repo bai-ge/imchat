@@ -1,7 +1,8 @@
 package com.baige.connect;
 
 
-import android.support.annotation.NonNull;
+
+
 import android.util.Log;
 
 import com.baige.util.Loggerx;
@@ -99,14 +100,18 @@ public class ConnectedByTCP extends BaseConnector {
         this(new SocketClientAddress());
     }
 
+    /**
+     * @param socket
+     */
     public ConnectedByTCP(Socket socket){
         if(socket == null || socket.isClosed()){
             throw new IllegalArgumentException("we need a Socket to connect");
         }
-        setAddress(new SocketClientAddress(socket.getRemoteSocketAddress().toString().substring(1), socket.getPort()));
+        Log.d(TAG, socket.getInetAddress().toString().substring(1));
+        setAddress(new SocketClientAddress(socket.getInetAddress().toString().substring(1), socket.getPort()));
         setRunningSocket(socket);
-        setState(ConnectedByTCP.State.Connected);
-
+        setState(State.Connected);
+        Log.d(TAG, "Connetor:"+this.toString());
         setLastSendHeartBeatMessageTime(System.currentTimeMillis());
         setLastReceiveMessageTime(System.currentTimeMillis());
         setLastSendMessageTime(NoSendingTime);
@@ -114,9 +119,10 @@ public class ConnectedByTCP extends BaseConnector {
         setSendingPacket(null);
         setReceivingResponsePacket(null);
         mOnConnectedListener.onConnected(this);
-        getSendThread().start();
-        getReceiveThread().start();
-        startHeartBeatTask();
+        /*处理太早*/
+//        getSendThread().start();
+//        getReceiveThread().start();
+//        startHeartBeatTask();
     }
 
     public ConnectedByTCP(SocketClientAddress address) {
@@ -194,6 +200,12 @@ public class ConnectedByTCP extends BaseConnector {
         this.socketInputReader = socketInputReader;
         return this;
     }
+    
+    protected  ConnectedByTCP setSocketInputStream(InputStream inputStream){
+        this.socketInputStream = inputStream;
+        return this;
+    }
+    
     protected SocketInputReader getSocketInputReader() throws IOException {
         if (this.socketInputReader == null) {
             this.socketInputReader = new SocketInputReader(getRunningSocket().getInputStream());
@@ -201,20 +213,22 @@ public class ConnectedByTCP extends BaseConnector {
         return this.socketInputReader;
     }
 
-    protected InputStream getSocketInputStream() throws IOException {
+    protected InputStream getSocketInputStream() throws IOException{
         if (this.socketInputStream == null) {
             this.socketInputStream = getRunningSocket().getInputStream();
         }
         return this.socketInputStream;
     }
-
-    /**
-     * @param inputStream
-     * @return
-     */
-    protected  ConnectedByTCP setSocketInputStream(InputStream inputStream){
-        this.socketInputStream = inputStream;
-        return this;
+    
+    public void read(int res){
+    	if(isConnected()){
+    		try {
+				getRunningSocket().getOutputStream().write(Tools.toByte(res));
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    	}
     }
 
     public boolean isConnected() {
@@ -228,14 +242,6 @@ public class ConnectedByTCP extends BaseConnector {
 
     public boolean isDisconnected() {
         return getState() == State.Disconnected;
-    }
-
-    @Override
-    public boolean isConnected(int lastReceiveTime) {
-        if(System.currentTimeMillis() - getLastReceiveMessageTime() > lastReceiveTime){
-            return false;
-        }
-        return isDisconnected();
     }
 
     public boolean isConnecting() {
@@ -265,23 +271,16 @@ public class ConnectedByTCP extends BaseConnector {
         return this.receivingListeners;
     }
 
-    private long lastConnectTime = 0;
     @Override
     public void connect() {
         if (!isDisconnected()) {
             return;
         }
-
         if (getAddress() == null) {
             throw new IllegalArgumentException("we need a SocketClientAddress to connect");
         }
-        if(System.currentTimeMillis() - lastConnectTime <= 8000){
-            return;
-        }
-        lastConnectTime = System.currentTimeMillis();
         getAddress().checkValidation();
         setState(State.Connecting);
-        tryConnectCount ++;
         getConnectionThread().start();
     }
 
@@ -292,6 +291,18 @@ public class ConnectedByTCP extends BaseConnector {
         }
         setDisconnecting(true);
         getDisconnectionThread().start();
+    }
+
+    /**
+     * 开始处理接收数据
+     */
+    @Override
+    public void start() {
+        setSendingPacket(null);
+        setReceivingResponsePacket(null);
+        getSendThread().start();
+        getReceiveThread().start();
+        startHeartBeatTask();
     }
 
     @Override
@@ -321,6 +332,7 @@ public class ConnectedByTCP extends BaseConnector {
             synchronized (conListenerLock) {
                 if (!getConnectedListeners().contains(listener)) {
                     getConnectedListeners().add(listener);
+                    System.out.println("添加，监听器个数："+getConnectedListeners().size());
                 }
             }
         }
@@ -331,6 +343,7 @@ public class ConnectedByTCP extends BaseConnector {
     public BaseConnector unRegisterConnectedListener(OnConnectedListener listener) {
         synchronized (conListenerLock) {
             getConnectedListeners().remove(listener);
+            System.out.println("删除，监听器个数："+getConnectedListeners().size());
         }
         return this;
     }
@@ -488,7 +501,7 @@ public class ConnectedByTCP extends BaseConnector {
         }
 
         @Override
-        public void onResponse(BaseConnector connector, @NonNull SocketPacket responsePacket) {
+        public void onResponse(BaseConnector connector,  SocketPacket responsePacket) {
             for (OnConnectedListener listener : getConnectedListeners()){
                 listener.onResponse(connector, responsePacket);
             }
@@ -642,15 +655,10 @@ public class ConnectedByTCP extends BaseConnector {
                 if(Thread.interrupted()){
                     return;
                 }
-                Socket socket = self.getRunningSocket();
-                Log.d(TAG, "套接字："+socket);
-                Log.d(TAG, "服务器地址"+address.getStringRemoteAddress());
-                Log.d(TAG, "超时："+address.getConnectionTimeout());
-                socket.connect(address.getInetSocketAddress(), address.getConnectionTimeout());
+                self.getRunningSocket().connect(address.getInetSocketAddress(), address.getConnectionTimeout());
                 if(Thread.interrupted()){
                     return;
                 }
-                setTryConnectCount(0);
                 self.setState(ConnectedByTCP.State.Connected);
                 self.setLastSendHeartBeatMessageTime(System.currentTimeMillis());
                 self.setLastReceiveMessageTime(System.currentTimeMillis());
@@ -780,7 +788,6 @@ public class ConnectedByTCP extends BaseConnector {
                     }
                 }
             }catch (InterruptedException e){
-                Log.d(TAG, "发送线程异常"+e.getMessage());
                 e.printStackTrace();
                 if (self.getSendingPacket() != null) {
                     mOnSendingListener.onSendPacketCancel(self, self.getSendingPacket());
@@ -896,7 +903,6 @@ public class ConnectedByTCP extends BaseConnector {
             }
         }
     }
-
     @Override
     public String toString() {
         StringBuffer stringBuffer = new StringBuffer();

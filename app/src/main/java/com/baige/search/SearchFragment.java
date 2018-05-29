@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +19,7 @@ import com.baige.adapter.UserAdapter;
 import com.baige.data.entity.FriendView;
 import com.baige.data.entity.User;
 import com.baige.data.source.cache.CacheRepository;
+import com.baige.data.source.remote.ServerHelper;
 import com.baige.friend.FriendActivity;
 import com.baige.imchat.R;
 import com.baige.util.Tools;
@@ -32,6 +34,7 @@ import java.util.List;
 
 public class SearchFragment extends Fragment implements SearchContract.View {
 
+    private final static String TAG = SearchFragment.class.getSimpleName();
     private SearchContract.Presenter mPresenter;
 
     private Handler mHandler;
@@ -142,19 +145,27 @@ public class SearchFragment extends Fragment implements SearchContract.View {
         public void onClickItem(User user) {
             showTip("点击"+user.getName());
 //            mPresenter.relate(user);
-            FriendView friendView = new FriendView();
-            friendView.setUid(CacheRepository.getInstance().who().getId());
-            friendView.setFriendId(user.getId());
-            friendView.setFriendName(user.getName());
-            friendView.setAlias(user.getAlias());
-            friendView.setFriendName(user.getName());
-            friendView.setFriendDeviceId(user.getDeviceId());
-            friendView.setFriendImgName(user.getImgName());
-            Intent intent = new Intent(getContext(), FriendActivity.class);
-            intent.putExtra("friend", friendView);
-            startActivity(intent);
-        }
+            User own = CacheRepository.getInstance().who();
+            if(own.getId() == user.getId()){
+                getActivity().onBackPressed();
+                Log.d(TAG, "后退");
+            }else{
+                FriendView friendView = CacheRepository.getInstance().getFriendViewObservable().get(user.getId());
+                if(friendView == null){
+                    friendView = new FriendView();
+                    friendView.setUserId(CacheRepository.getInstance().who().getId());
+                    friendView.setFriendId(user.getId());
+                    friendView.setAlias(user.getAlias());
+                    friendView.setName(user.getName());
+                    friendView.setDeviceId(user.getDeviceId());
+                    friendView.setImgName(user.getImgName());
+                }
+                Intent intent = new Intent(getContext(), FriendActivity.class);
+                intent.putExtra("friend", friendView);
+                startActivity(intent);
+            }
 
+        }
         @Override
         public void onLongClickItem(User item) {
 
@@ -164,5 +175,11 @@ public class SearchFragment extends Fragment implements SearchContract.View {
     @Override
     public void setRefreshing(boolean refresh) {
 
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+//        Tools.HideKeyboard(mEtSearchWord);
     }
 }

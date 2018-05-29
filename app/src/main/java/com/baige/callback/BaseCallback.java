@@ -1,8 +1,8 @@
 package com.baige.callback;
 
 
-import com.baige.data.entity.User;
 
+import java.util.List;
 import java.util.TimerTask;
 
 /**
@@ -19,6 +19,10 @@ public abstract class BaseCallback {
     protected int taskcount; //对于多任务事件，可以设置任务完成数
 
     protected Object taskLock = new Object();
+
+    public void setTaskcount(int taskcount){
+        this.taskcount = taskcount;
+    }
 
     private TimerTask mTimerTask;
 
@@ -37,6 +41,12 @@ public abstract class BaseCallback {
                         @Override
                         public void run() {
                             timeout();
+
+                            synchronized (taskLock){
+                                if(taskcount != 0){
+                                    onFinish();
+                                }
+                            }
                             CallbackManager.getInstance().remote(id);
                         }
                     };
@@ -65,10 +75,14 @@ public abstract class BaseCallback {
     }
     public final int finishOneTask(){
         synchronized (taskLock){
-            taskcount ++;
+            taskcount --;
+            if(taskcount == 0){
+                onFinish();
+            }
         }
         return taskcount;
     }
+
     public final int getTaskcount(){
         return taskcount;
     }
@@ -79,4 +93,24 @@ public abstract class BaseCallback {
      * 要想取消调用，必须主动destroy()
      */
     public abstract void timeout();
+
+    public  abstract void response(String json);
+
+    public void onFinish() {
+
+    }
+
+    public void loadObject(Object obj){
+
+    }
+
+    public void loadList(List<Object> list){
+
+    }
+
+    public void loadFail(){
+
+    }
+
+
 }

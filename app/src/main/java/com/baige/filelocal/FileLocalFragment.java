@@ -24,6 +24,9 @@ import com.baige.util.Tools;
 import com.baige.view.BottomChooseBar;
 import com.baige.view.FileListBottomOperatorMenu;
 import com.baige.view.FileListBottomToolBar;
+import com.baige.view.IOnMenuItemClickListener;
+import com.baige.view.ShareDialog;
+import com.baige.view.SortDialog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -193,6 +196,22 @@ public class FileLocalFragment extends Fragment implements FileLocalContract.Vie
         });
     }
 
+    @Override
+    public void showSortDialog() {
+        SortDialog dialog = new SortDialog(getContext());
+        dialog.setOnSorDialogListener(mAdapter);
+        dialog.show();
+    }
+
+    @Override
+    public void showShareDialog(List<FileInfo> fileInfos) {
+        ShareDialog dialog = new ShareDialog(getContext(), fileInfos);
+        dialog.setOnShareDialogListener(mShareDialogListener);
+        dialog.show();
+    }
+
+
+
     private FileInfoAdapter.OnFileInfoItemListener mOnFileInfoItemListener = new FileInfoAdapter.OnFileInfoItemListener() {
         @Override
         public void onClickItem(FileInfo item) {
@@ -207,18 +226,24 @@ public class FileLocalFragment extends Fragment implements FileLocalContract.Vie
         }
     };
 
-    private FileListBottomToolBar.IOnMenuItemClickListener onMenuItemClickListener = new FileListBottomToolBar.IOnMenuItemClickListener() {
+    private IOnMenuItemClickListener onMenuItemClickListener = new IOnMenuItemClickListener.SimpleMenuItemClickListener() {
         @Override
         public void onShare() {
             Log.d(TAG, "onShare()");
             Log.d(TAG, ""+mAdapter.getSelectItems());
+
             List<FileInfo> fileInfos = mAdapter.getSelectItems();
-            mPresenter.uploadFile(fileInfos);
+            if(fileInfos == null || fileInfos.isEmpty()){
+                showTip("未选择分享文件");
+            }else{
+                showShareDialog(fileInfos);
+            }
         }
 
         @Override
         public void onSore() {
             Log.d(TAG, "onSore()");
+            showSortDialog();
         }
 
         @Override
@@ -230,6 +255,21 @@ public class FileLocalFragment extends Fragment implements FileLocalContract.Vie
         public void onMore() {
             Log.d(TAG, "onMore()");
         }
+    };
+
+    private ShareDialog.OnShareDialogListener mShareDialogListener = new ShareDialog.OnShareDialogListener() {
+        @Override
+        public void onShareLocal(List<FileInfo> list) {
+            Log.d(TAG, "onShareLocal()");
+            mPresenter.shareFile(list);
+        }
+
+        @Override
+        public void onShareRemove(List<FileInfo> list) {
+            Log.d(TAG, "onShareRemove()");
+            mPresenter.uploadFile(list);
+        }
+
     };
 
 }

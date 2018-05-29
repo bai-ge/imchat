@@ -2,6 +2,7 @@ package com.baige.data.entity;
 
 import android.util.Log;
 
+import com.baige.common.State;
 import com.baige.util.JsonTools;
 
 import org.json.JSONObject;
@@ -20,10 +21,21 @@ public class FileView {
     private String fileDescribe;
     private long uploadTime;
     private int downloadCount;
+    private int fileLocation;
     private String remark;
 
     String userName;
     boolean isCheck;
+
+    private boolean isShowProgress; //是否显示进度条
+    private float progressPercent; //进度条
+
+    private boolean isFail;
+    private int fileState; //TODO 正常 0，正在上传 1, 上传完成 2, 正在下载 3, 下载完成4, 失败 5;
+
+    public boolean isRemote(){
+        return fileLocation == State.REMOTE;
+    }
 
     public int getId() {
         return id;
@@ -97,6 +109,14 @@ public class FileView {
         this.downloadCount = downloadCount;
     }
 
+    public int getFileLocation() {
+        return fileLocation;
+    }
+
+    public void setFileLocation(int fileLocation) {
+        this.fileLocation = fileLocation;
+    }
+
     public String getRemark() {
         return remark;
     }
@@ -126,6 +146,22 @@ public class FileView {
         FileView fileView = (FileView) JsonTools.toJavaBean(FileView.class, fileJson);
         Log.e("FileView", fileView.toString());
         return fileView;
+    }
+
+    public boolean isShowProgress() {
+        return isShowProgress;
+    }
+
+    public void setShowProgress(boolean showProgress) {
+        isShowProgress = showProgress;
+    }
+
+    public float getProgressPercent() {
+        return progressPercent;
+    }
+
+    public void setProgressPercent(float progressPercent) {
+        this.progressPercent = progressPercent;
     }
 
     @Override

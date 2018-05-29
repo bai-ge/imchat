@@ -64,7 +64,7 @@
                   android:windowSoftInputMode="stateHidden"/>
         <activity android:name="com.baige.chat.ChatActivity"
                   android:launchMode="singleInstance"/>
-        <activity android:name="com.setting.SettingActivity"/>
+        <activity android:name="com.baige.setting.SettingActivity"/>
         <activity android:name="com.baige.search.SearchActivity"/>
         <activity android:name="com.baige.friend.FriendActivity"
                   android:launchMode="singleInstance"

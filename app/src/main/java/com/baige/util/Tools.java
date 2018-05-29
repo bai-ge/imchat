@@ -19,6 +19,7 @@ import android.view.inputmethod.InputMethodManager;
 
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -116,6 +117,12 @@ public class Tools {
     public static String formatTime(long time) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         return dateFormat.format(new Date(time));
+    }
+
+    public static String fromatPercent(float number){
+        double db = number;
+        DecimalFormat df = new DecimalFormat("#0.0%");
+        return df.format(db);
     }
 
     public static String getSizeSting(long size) {

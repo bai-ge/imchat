@@ -37,7 +37,7 @@ public class FriendResponseBinder extends AbstractResponseBinder {
                         }
                     }
 
-                    if(codeNum == Parm.SUCCESS_CODE && jsonObject.has(Parm.FRIEND)){
+                    if(codeNum == Parm.CODE_SUCCESS && jsonObject.has(Parm.FRIEND)){
                         friendJson = jsonObject.getJSONObject(Parm.FRIEND);
                         FriendView friendView = FriendView.createByJson(friendJson);
                         if(friendView != null){
@@ -45,7 +45,7 @@ public class FriendResponseBinder extends AbstractResponseBinder {
                         }else{
                             callBack.notFind();
                         }
-                    }else if(codeNum == Parm.SUCCESS_CODE && jsonObject.has(Parm.FRIENDS)){
+                    }else if(codeNum == Parm.CODE_SUCCESS && jsonObject.has(Parm.FRIENDS)){
                         JSONArray jsonArray = jsonObject.getJSONArray(Parm.FRIENDS);
                         List<FriendView> friendViews = new ArrayList<>();
                         for (int i = 0; i < jsonArray.length(); i++) {
@@ -69,5 +69,10 @@ public class FriendResponseBinder extends AbstractResponseBinder {
                 callBack.fail();
             }
         }
+    }
+
+    @Override
+    public void parse(String json, PushCallback callback) {
+
     }
 }

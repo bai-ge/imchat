@@ -70,7 +70,7 @@ public class FileListBottomToolBar extends LinearLayout implements OnClickListen
                 mOnItemClickListener.onShare();
                 break;
             case R.id.mToolBarSort:
-                mOnItemClickListener.onShare();
+                mOnItemClickListener.onSore();
                 break;
             case R.id.mToolBarRefresh:
                 mOnItemClickListener.onRefresh();
@@ -80,15 +80,4 @@ public class FileListBottomToolBar extends LinearLayout implements OnClickListen
                 break;
         }
     }
-
-    public interface IOnMenuItemClickListener {
-        void onShare();
-
-        void onSore();
-
-        void onRefresh();
-
-        void onMore();
-    }
-
 }

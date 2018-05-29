@@ -14,6 +14,7 @@ import com.baige.data.observer.BaseObserver;
 import com.baige.data.observer.ChatMessageObservable;
 import com.baige.data.source.Repository;
 import com.baige.data.source.cache.CacheRepository;
+import com.baige.telephone.TelePhone;
 import com.baige.util.PullService;
 import com.baige.util.Tools;
 
@@ -100,7 +101,7 @@ public class ChatPresenter implements ChatContract.Presenter {
             } else {
                 chatMsgInfo.setShowType(Parm.MSG_IS_RECEIVE);
                 chatMsgInfo.setUserName(mFriendView.getSuitableName());
-                chatMsgInfo.setUserImgName(mFriendView.getFriendImgName());
+                chatMsgInfo.setUserImgName(mFriendView.getImgName());
             }
         }
     }
@@ -266,7 +267,7 @@ public class ChatPresenter implements ChatContract.Presenter {
         }
         for (ChatMsgInfo chat : chatMsgInfos){
             if(chat.isReceive() && chat.getReceiveId() == mFriendView.getFriendId() && chat.getSendTime() <= time){
-                chat.setContextState(State.MSG_STATE_READED);
+                chat.setContextState(State.READ_STATE);
             }
         }
         CacheRepository.getInstance().getChatMessageObservable().notifyObservers();
@@ -282,9 +283,9 @@ public class ChatPresenter implements ChatContract.Presenter {
 
     private boolean isNeed(ChatMsgInfo chatMsgInfo) {
         if (mFriendView != null && chatMsgInfo != null) {
-            return (mFriendView.getUid() == chatMsgInfo.getSenderId()
+            return (mFriendView.getUserId() == chatMsgInfo.getSenderId()
                     && mFriendView.getFriendId() == chatMsgInfo.getReceiveId())
-                    || (mFriendView.getUid() == chatMsgInfo.getReceiveId()
+                    || (mFriendView.getUserId() == chatMsgInfo.getReceiveId()
                     && mFriendView.getFriendId() == chatMsgInfo.getSenderId());
         }
         return false;
@@ -300,6 +301,11 @@ public class ChatPresenter implements ChatContract.Presenter {
         return chats;
     }
 
+
+    @Override
+    public void callTo() {
+        TelePhone.getInstance().afxCallTo(mFriendView.getDeviceId(), mFriendView.getSuitableName());
+    }
 
     private BaseObserver baseObserver = new BaseObserver(){
         @Override
@@ -329,5 +335,6 @@ public class ChatPresenter implements ChatContract.Presenter {
             }
         }
     };
+
 
 }

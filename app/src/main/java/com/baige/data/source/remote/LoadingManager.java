@@ -117,7 +117,7 @@ public class LoadingManager {
                     while ((len = inputStream.read(buffer)) != -1) {
                         bos.write(buffer, 0, len);
                         totalSize += len;
-                        callback.progress(fileName, countSize, totalSize); //TODO 未知
+                        callback.progress(fileName, fileName, countSize, totalSize); //TODO 未知
                     }
                     bos.flush();
                     bos.close();
@@ -134,20 +134,20 @@ public class LoadingManager {
                     FileUtils.moveTo(saveFile, toFile);
                     setState(LoadingManager.State.Finished);
                     Log.i(TAG, "下载文件成功：" + fileName);
-                    callback.downloadFinish(fileName);
+                    callback.downloadFinish(fileName, fileName);
 
                 } else {
                     setState(LoadingManager.State.Failed);
-                    callback.fail(fileName);
+                    callback.fail(fileName, fileName);
                 }
             } catch (MalformedURLException e) {
                 e.printStackTrace();
                 setState(LoadingManager.State.Failed);
-                callback.error(fileName, e);
+                callback.error(fileName, fileName, e);
             } catch (IOException e) {
                 e.printStackTrace();
                 setState(LoadingManager.State.Failed);
-                callback.error(fileName, e);
+                callback.error(fileName, fileName, e);
             } finally {
                 if (conn != null) {
                     conn.disconnect();

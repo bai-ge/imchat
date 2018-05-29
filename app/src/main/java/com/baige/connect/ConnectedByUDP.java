@@ -48,42 +48,34 @@ public class ConnectedByUDP extends BaseConnector {
 
     /**
      * 当前连接状态
-     * 当设置状态为{@link ConnectedByUDP.State#Connected}
+     * 当设置状态为{@link State#Connected}
      * 此状态仅为一个标识
      */
-    private ConnectedByUDP.State state;
+    private State state;
 
     public enum State {
         Disconnected, Connecting, Connected
     }
 
-    protected ConnectedByUDP setState(ConnectedByUDP.State state) {
+    protected ConnectedByUDP setState(State state) {
         this.state = state;
         return this;
     }
 
-    public ConnectedByUDP.State getState() {
+    public State getState() {
         if (this.state == null) {
-            return ConnectedByUDP.State.Disconnected;
+            return State.Disconnected;
         }
         return this.state;
     }
     public boolean isConnected() {
-        return getState() == ConnectedByUDP.State.Connected;
-    }
-
-    @Override
-    public boolean isConnected(int lastReceiveTime) {
-        if(System.currentTimeMillis() - getLastReceiveMessageTime() > lastReceiveTime){
-            return false;
-        }
-        return isDisconnected();
+        return getState() == State.Connected;
     }
     public boolean isConnecting() {
-        return getState() == ConnectedByUDP.State.Connecting;
+        return getState() == State.Connecting;
     }
     public boolean isDisconnected() {
-        return getState() == ConnectedByUDP.State.Disconnected;
+        return getState() == State.Disconnected;
     }
 
     protected ConnectedByUDP setDisconnecting(boolean disconnecting) {
@@ -109,7 +101,7 @@ public class ConnectedByUDP extends BaseConnector {
     public DatagramSocketServer getRunningSocket() {
         return runningSocket;
     }
-
+  
     public ConnectedByUDP setRunningSocket(DatagramSocketServer runningSocket) {
         this.runningSocket = runningSocket;
         return this;
@@ -140,14 +132,21 @@ public class ConnectedByUDP extends BaseConnector {
 //        if(getRunningSocket() != null){
 //            getRunningSocket().remove(this);
 //        }
-        if(getRunningSocket() == null){
-            return;
-        }
         setDisconnecting(true);
-        sendDisconnectedPacket();
+        if(getRunningSocket() != null){
+            sendDisconnectedPacket();
+        }
         //不再发送信息
         setRunningSocket(null);
         //TODO 清除更多的数据
+    }
+
+    /**
+     * 无需操作
+     */
+    @Override
+    public void start() {
+
     }
 
     @Override
@@ -274,13 +273,8 @@ public class ConnectedByUDP extends BaseConnector {
             if(!packet.isPacket()){
                 packet.packet();
             }
-            DatagramPacket datagramPacket = null;
-            try {
-                datagramPacket = new DatagramPacket(packet.getAllBuf(), packet.getAllBuf().length, getAddress().getInetSocketAddress());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            if(getRunningSocket() != null && datagramPacket != null){
+            DatagramPacket datagramPacket = new DatagramPacket(packet.getAllBuf(), packet.getAllBuf().length, getAddress().getInetSocketAddress());
+            if(getRunningSocket() != null){
                 getRunningSocket().send(datagramPacket);
                 return packet;
             }
@@ -314,5 +308,15 @@ public class ConnectedByUDP extends BaseConnector {
     @Override
     public SocketPacket sendString(String message) {
         return sendData(Tools.stringToData(message, Tools.DEFAULT_ENCODE));
+    }
+    
+    @Override
+    public String toString() {
+        StringBuffer stringBuffer = new StringBuffer();
+        stringBuffer.append("{");
+        stringBuffer.append(" address:"+(getAddress() == null? "null" : getAddress().getStringRemoteAddress()));
+        stringBuffer.append(", isConnected:"+ isConnected());
+        stringBuffer.append(" }\n");
+        return stringBuffer.toString();
     }
 }

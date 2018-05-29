@@ -6,6 +6,8 @@ import android.util.Log;
 import com.baige.BaseApplication;
 import com.baige.callback.HttpBaseCallback;
 
+import com.baige.common.Parm;
+import com.baige.common.State;
 import com.baige.data.entity.FriendView;
 import com.baige.data.entity.User;
 import com.baige.data.observer.BaseObserver;
@@ -91,8 +93,8 @@ public class FriendPresenter implements FriendContract.Presenter {
         if(!Tools.isEmpty(imgName)){
             mRepository.downloadImg(imgName, new HttpBaseCallback(){
                 @Override
-                public void downloadFinish(String fileName) {
-                    super.downloadFinish(fileName);
+                public void downloadFinish(String remark, String fileName) {
+                    super.downloadFinish(remark, fileName);
                     mFragment.showFriendImg(fileName);
                 }
             });
@@ -107,6 +109,8 @@ public class FriendPresenter implements FriendContract.Presenter {
                 @Override
                 public void success() {
                     super.success();
+                    mFriendView.setState(State.RELATETION_WAITING);
+                    CacheRepository.getInstance().getFriendViewObservable().put(mFriendView);
                 }
 
                 @Override
@@ -132,6 +136,8 @@ public class FriendPresenter implements FriendContract.Presenter {
                 @Override
                 public void success() {
                     super.success();
+                    mFriendView.setState(State.RELATETION_FRIEND);
+                    CacheRepository.getInstance().getFriendViewObservable().put(mFriendView);
                 }
 
                 @Override
@@ -157,6 +163,8 @@ public class FriendPresenter implements FriendContract.Presenter {
                 @Override
                 public void success() {
                     super.success();
+                    mFriendView.setState(State.RELATETION_STRANGE);
+                    CacheRepository.getInstance().getFriendViewObservable().put(mFriendView);
                 }
 
                 @Override
@@ -182,6 +190,8 @@ public class FriendPresenter implements FriendContract.Presenter {
                 @Override
                 public void success() {
                     super.success();
+                    mFriendView.setState(State.RELATETION_STRANGE);
+                    CacheRepository.getInstance().getFriendViewObservable().put(mFriendView);
                 }
 
                 @Override
@@ -207,6 +217,35 @@ public class FriendPresenter implements FriendContract.Presenter {
                 @Override
                 public void success() {
                     super.success();
+                    mFriendView.setState(State.RELATETION_DEFRIEND);
+                    CacheRepository.getInstance().getFriendViewObservable().put(mFriendView);
+                }
+
+                @Override
+                public void fail() {
+                    super.fail();
+                    mFragment.showTip("操作失败");
+                }
+
+                @Override
+                public void meaning(String text) {
+                    super.meaning(text);
+                    mFragment.showTip(text);
+                }
+            });
+        }
+    }
+
+    @Override
+    public void cancelDefriend() {
+        User user = CacheRepository.getInstance().who();
+        if(user != null && !Tools.isEmpty(user.getVerification()) && mFriendView != null){
+            mRepository.operationFriend(mFriendView.getId(), user.getId(),  user.getVerification(), mFriendView.getFriendId(), "cancel_defriend", new HttpBaseCallback(){
+                @Override
+                public void success() {
+                    super.success();
+                    mFriendView.setState(State.RELATETION_STRANGE);
+                    CacheRepository.getInstance().getFriendViewObservable().put(mFriendView);
                 }
 
                 @Override
@@ -229,6 +268,11 @@ public class FriendPresenter implements FriendContract.Presenter {
         CacheRepository.getInstance().unRegisterDataChange(dataObserver);
     }
     private BaseObserver dataObserver = new BaseObserver() {
-
+        @Override
+        public void update(FriendViewObservable observable, Object arg) {
+            mFriendView = observable.get(mFriendView.getId());
+            mFragment.showFriendView(mFriendView);
+            super.update(observable, arg);
+        }
     };
 }

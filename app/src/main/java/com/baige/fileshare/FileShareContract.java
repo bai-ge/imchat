@@ -16,6 +16,7 @@ public interface FileShareContract {
 
     interface Presenter extends BasePresenter {
         void searchFiles();
+        void downloadFiles(List<FileView> fileViews);
     }
 
     interface View extends BaseView<Presenter> {

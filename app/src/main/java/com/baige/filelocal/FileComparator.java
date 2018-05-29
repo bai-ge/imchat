@@ -25,6 +25,7 @@ public class FileComparator implements Comparator<FileInfo> {
 
     public void setSortType(int sortType) {
         this.mSortType = sortType;
+        CacheRepository.getInstance().setFileSortType(sortType);
     }
 
     @Override

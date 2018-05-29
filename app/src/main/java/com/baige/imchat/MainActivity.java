@@ -19,7 +19,6 @@ import android.widget.TextView;
 
 
 import com.baige.BaseActivity;
-import com.baige.common.Parm;
 import com.baige.data.source.Repository;
 import com.baige.data.source.cache.CacheRepository;
 import com.baige.data.source.local.LocalRepository;
@@ -27,10 +26,9 @@ import com.baige.login.LoginActivity;
 import com.baige.pushcore.SendMessageBroadcast;
 import com.baige.service.DaemonService;
 import com.baige.service.IPush;
-import com.baige.service.PullService;
 import com.baige.util.ActivityUtils;
 import com.baige.view.CircleImageView;
-import com.setting.SettingActivity;
+import com.baige.setting.SettingActivity;
 
 public class MainActivity extends BaseActivity {
 

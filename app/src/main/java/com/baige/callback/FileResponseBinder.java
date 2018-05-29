@@ -37,7 +37,7 @@ public class FileResponseBinder extends AbstractResponseBinder {
                         }
                     }
 
-                    if(codeNum == Parm.SUCCESS_CODE && jsonObject.has(Parm.FILE)){
+                    if(codeNum == Parm.CODE_SUCCESS && jsonObject.has(Parm.FILE)){
                         fileJson = jsonObject.getJSONObject(Parm.FILE);
                         FileView fileView = FileView.createByJson(fileJson);
                         if(fileView != null){
@@ -45,7 +45,7 @@ public class FileResponseBinder extends AbstractResponseBinder {
                         }else{
                             callBack.notFind();
                         }
-                    }else if(codeNum == Parm.SUCCESS_CODE && jsonObject.has(Parm.FILES)){
+                    }else if(codeNum == Parm.CODE_SUCCESS && jsonObject.has(Parm.FILES)){
                         JSONArray jsonArray = jsonObject.getJSONArray(Parm.FILES);
                         List<FileView> friendViews = new ArrayList<>();
                         for (int i = 0; i < jsonArray.length(); i++) {
@@ -69,5 +69,10 @@ public class FileResponseBinder extends AbstractResponseBinder {
                 callBack.fail();
             }
         }
+    }
+
+    @Override
+    public void parse(String json, PushCallback callback) {
+
     }
 }

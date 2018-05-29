@@ -11,6 +11,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Environment;
 
 import com.baige.data.entity.AppPackgeInfo;
+import com.baige.data.entity.FileInfo;
 import com.baige.service.DaemonService;
 import com.baige.service.PullService;
 import com.baige.util.Loggerx;
@@ -31,6 +32,9 @@ public class BaseApplication extends Application {
     public static String headImgPath = "/head";
 
     public static String tmpPath = "/tmp";
+
+    public static String downloadPath = Environment.getExternalStorageDirectory()
+            + File.separator + "IMchat"+ File.separator + "download";
 
     public String getDiskCacheDir(Context context) {
         String cachePath = null;

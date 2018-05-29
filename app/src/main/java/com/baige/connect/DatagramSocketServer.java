@@ -34,7 +34,7 @@ public class DatagramSocketServer {
 
     private boolean isClosing;
 
-    private final static int DATA_LEN = 1024;
+    private final static int DATA_LEN = 1024 * 4;
 
     private DatagramSocket runningServerSocket;
 
@@ -67,7 +67,6 @@ public class DatagramSocketServer {
 
 
     public DatagramSocketServer() {
-        localPort = DEFAULT_LOCAL_PORT;
         connectedByUDPmap = Collections.synchronizedMap(new LinkedHashMap<String, ConnectedByUDP>());
     }
     public DatagramSocketServer(int localPort) {

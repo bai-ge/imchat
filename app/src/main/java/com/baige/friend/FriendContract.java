@@ -29,6 +29,8 @@ public interface FriendContract {
 
         void defriend();
 
+        void cancelDefriend();
+
         FriendView getFriend();
 
     }

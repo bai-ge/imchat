@@ -4,8 +4,10 @@ import android.os.Environment;
 import android.util.Log;
 
 import com.baige.callback.HttpBaseCallback;
+import com.baige.common.State;
 import com.baige.data.entity.FileInfo;
 import com.baige.data.entity.FileType;
+import com.baige.data.entity.FileView;
 import com.baige.data.entity.User;
 import com.baige.data.source.Repository;
 import com.baige.data.source.cache.CacheRepository;
@@ -172,24 +174,90 @@ public class FileLocalPresenter implements FileLocalContract.Presenter {
         HttpBaseCallback callback = new HttpBaseCallback(){
 
             @Override
-            public void progress(String fileName, long finishSize, long totalSize) {
+            public void progress(String remark, String fileName, long finishSize, long totalSize) {
                 Log.d(TAG, fileName + ", size ="+finishSize + ", totalSize" + totalSize);
+                FileView fileView = CacheRepository.getInstance().getFileViewObservable().get(remark);
+                if(fileView != null){
+                    fileView.setProgressPercent((float) (finishSize * 1.0 / totalSize));
+                    Log.d(TAG, fileName + ", progress ="+fileView.getProgressPercent());
+                    CacheRepository.getInstance().getFileViewObservable().put(fileView);
+                }
             }
 
             @Override
-            public void uploadFinish(String fileName) {
+            public void uploadFinish(String remark, String fileName) {
                 Log.d(TAG, fileName + "上传成功");
                 mFragment.showTip("文件上传成功");
+                FileView fileView = CacheRepository.getInstance().getFileViewObservable().get(remark);
+                if(fileView != null){
+                    fileView.setProgressPercent(1.0f);
+                    CacheRepository.getInstance().getFileViewObservable().put(fileView);
+                }
             }
 
             @Override
-            public void fail(String fileName) {
-                super.fail(fileName);
-                mFragment.showTip(fileName + "上传成功");
+            public void fail(String remark, String fileName) {
+                super.fail(remark, fileName);
+                mFragment.showTip(fileName + "上传失败");
             }
         };
         for (FileInfo fileInfo : fileInfos){
-            mRepository.uploadFile(user, fileInfo, callback);
+            String remark = Tools.ramdom();
+            FileView fileView = new FileView();
+            fileView.setRemark(remark);
+            fileView.setFileName(fileInfo.getName());
+            fileView.setFilePath(fileInfo.getPath());
+            fileView.setFileSize(fileInfo.getFileSize());
+            fileView.setFileType(fileInfo.getFileType());
+            fileView.setUserId(user.getId());
+            fileView.setUploadTime(System.currentTimeMillis());
+            fileView.setShowProgress(true);
+            fileView.setProgressPercent(0);
+            CacheRepository.getInstance().getFileViewObservable().put(fileView);
+            mRepository.uploadFile(remark, user, fileInfo, callback);
+        }
+    }
+
+    @Override
+    public void shareFile(List<FileInfo> fileInfos) {
+        User user = CacheRepository.getInstance().who();
+        HttpBaseCallback callback = new HttpBaseCallback(){
+            @Override
+            public void success() {
+                super.success();
+            }
+
+            @Override
+            public void fail() {
+                super.fail();
+            }
+
+            @Override
+            public void timeout() {
+                super.timeout();
+                mFragment.showTip("连接超时");
+            }
+
+            @Override
+            public void meaning(String text) {
+                super.meaning(text);
+                mFragment.showTip(text);
+            }
+        };
+
+        for (FileInfo fileInfo : fileInfos){
+            String remark = Tools.ramdom();
+            FileView fileView = new FileView();
+            fileView.setRemark(remark);
+            fileView.setFileName(fileInfo.getName());
+            fileView.setFilePath(fileInfo.getPath());
+            fileView.setFileSize(fileInfo.getFileSize());
+            fileView.setFileType(fileInfo.getFileType());
+            fileView.setUserId(user.getId());
+            fileView.setUploadTime(System.currentTimeMillis());
+            fileView.setFileLocation(State.LOCAL);
+            CacheRepository.getInstance().getFileViewObservable().put(fileView);
+            mRepository.shareFile(user.getId(), user.getVerification(), fileView, callback);
         }
     }
 }

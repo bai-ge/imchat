@@ -1,4 +1,4 @@
-package com.setting;
+package com.baige.setting;
 
 
 import android.content.SharedPreferences;

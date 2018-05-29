@@ -129,11 +129,11 @@ public class UserAdapter extends BaseAdapter {
             if (bitmap == null) {
                 holder.imgView.setImageResource(R.drawable.head_img);
                 Log.d(TAG, "从网络"+item.getImgName());
-                String url = "http://"+CacheRepository.getInstance().getServerIp() + ":8080/imchat/user/downloadImg.action?imgFileName="+item.getImgName();
+                String url = "http://"+CacheRepository.getInstance().getServerIp() + ":12060/imchat/user/downloadImg.action?imgFileName="+item.getImgName();
                 LoadingManager.getInstance().downloadFile(url, BaseApplication.headImgPath, item.getImgName(), new HttpBaseCallback(){
                     @Override
-                    public void downloadFinish(String fileName) {
-                        super.downloadFinish(fileName);
+                    public void downloadFinish(String remark, String fileName) {
+                        super.downloadFinish(remark, fileName);
                         mHandler.post(new Runnable() {
                             @Override
                             public void run() {

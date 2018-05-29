@@ -127,7 +127,7 @@ public class FriendAdapter extends BaseAdapter {
 
         holder.friendAliasView.setText(item.getSuitableName());//备注
 
-        holder.nameView.setText(item.getFriendName());//好友账号
+        holder.nameView.setText(item.getName());//好友账号
 
         if(!Tools.isEmpty(item.getAlias())){//好友别名
             holder.aliasView.setText("("+item.getAlias()+")");
@@ -136,11 +136,11 @@ public class FriendAdapter extends BaseAdapter {
         }
 
         //TODO 设置照片
-        if(!Tools.isEmpty(item.getFriendImgName())){
-            final String path = BaseApplication.headImgPath + File.separator + item.getFriendImgName();
+        if(!Tools.isEmpty(item.getImgName())){
+            final String path = BaseApplication.headImgPath + File.separator + item.getImgName();
             Bitmap bitmap = mImageLoader.getBitmapFromMemoryCache(path);
             if(bitmap == null){
-                Log.d(TAG, "从文件"+item.getFriendImgName());
+                Log.d(TAG, "从文件"+item.getImgName());
                 int size = holder.imgView.getWidth();
                 if(size <= 0){
                     size = 90;
@@ -150,12 +150,12 @@ public class FriendAdapter extends BaseAdapter {
             }
             if (bitmap == null) {
                 holder.imgView.setImageResource(R.drawable.head_img);
-                Log.d(TAG, "从网络"+item.getFriendImgName());
-                String url = "http://"+CacheRepository.getInstance().getServerIp() + ":8080/imchat/user/downloadImg.action?imgFileName="+item.getFriendImgName();
-                LoadingManager.getInstance().downloadFile(url, BaseApplication.headImgPath, item.getFriendImgName(), new HttpBaseCallback(){
+                Log.d(TAG, "从网络"+item.getImgName());
+                String url = "http://"+CacheRepository.getInstance().getServerIp() + ":12060/imchat/user/downloadImg.action?imgFileName="+item.getImgName();
+                LoadingManager.getInstance().downloadFile(url, BaseApplication.headImgPath, item.getImgName(), new HttpBaseCallback(){
                     @Override
-                    public void downloadFinish(String fileName) {
-                        super.downloadFinish(fileName);
+                    public void downloadFinish(String remark, String fileName) {
+                        super.downloadFinish(remark, fileName);
                         mHandler.post(new Runnable() {
                             @Override
                             public void run() {
@@ -174,7 +174,7 @@ public class FriendAdapter extends BaseAdapter {
                     }
                 });
             } else {
-                Log.d(TAG, "显示"+item.getFriendImgName());
+                Log.d(TAG, "显示"+item.getImgName());
                 ImageLoader.getInstance().addBitmapToMemoryCache(path, bitmap);
                 holder.imgView.setImageBitmap(bitmap);
             }

@@ -1,6 +1,8 @@
 package com.baige.data.observer;
 
 
+import android.util.Log;
+
 import com.baige.common.State;
 import com.baige.data.entity.ChatMsgInfo;
 import com.baige.data.entity.FriendView;
@@ -71,10 +73,10 @@ public class LastChatMessageObservable extends BaseObservable<LastChatMsgInfo> {
                 lastChatMsgInfo = new LastChatMsgInfo();
                 lastChatMsgInfo.setUid(friendId);
                 if (friendView != null) {
-                    lastChatMsgInfo.setName(friendView.getFriendName());
+                    lastChatMsgInfo.setName(friendView.getName());
                     lastChatMsgInfo.setAlias(friendView.getAlias());
                     lastChatMsgInfo.setFriendAlias(friendView.getFriendAlias());
-                    lastChatMsgInfo.setImagName(friendView.getFriendImgName());
+                    lastChatMsgInfo.setImagName(friendView.getImgName());
                 }
             }
             if (lastChatMsgInfo.getLastTime() == 0 || lastChatMsgInfo.getLastTime() < chat.getSendTime()) {
@@ -82,7 +84,7 @@ public class LastChatMessageObservable extends BaseObservable<LastChatMsgInfo> {
                 lastChatMsgInfo.setMsgType(chat.getContextType());
                 lastChatMsgInfo.setLastTime(chat.getSendTime());
             }
-            if (chat.isReceive() && chat.getContextState() != null && chat.getContextState() == State.MSG_STATE_UNREAD) {
+            if (chat.isReceive() && chat.getContextState() != null && chat.getContextState() == State.UNREAD_STATE) {
                 lastChatMsgInfo.setMsgCount(lastChatMsgInfo.getMsgCount() + 1);
             }
             getCacheMap().put(lastChatMsgInfo.getUid(), lastChatMsgInfo);
@@ -94,7 +96,6 @@ public class LastChatMessageObservable extends BaseObservable<LastChatMsgInfo> {
         int friendId = 0;
         FriendView friendView;
         LastChatMsgInfo lastChatMsgInfo = null;
-        int realState = 0;
         initCount();
         for (ChatMsgInfo chat : chatMsgInfos) {
             if (chat.getSenderId() == uid) {
@@ -106,15 +107,14 @@ public class LastChatMessageObservable extends BaseObservable<LastChatMsgInfo> {
             friendView = CacheRepository.getInstance().getFriendViewObservable().get(friendId);
             if(friendView.isFriend()){
                 lastChatMsgInfo = get(friendId);
-
                 if (lastChatMsgInfo == null ) {
                     lastChatMsgInfo = new LastChatMsgInfo();
                     lastChatMsgInfo.setUid(friendId);
                     if (friendView != null) {
-                        lastChatMsgInfo.setName(friendView.getFriendName());
+                        lastChatMsgInfo.setName(friendView.getName());
                         lastChatMsgInfo.setAlias(friendView.getAlias());
                         lastChatMsgInfo.setFriendAlias(friendView.getFriendAlias());
-                        lastChatMsgInfo.setImagName(friendView.getFriendImgName());
+                        lastChatMsgInfo.setImagName(friendView.getImgName());
                     }
                 }
                 if (lastChatMsgInfo.getLastTime() == 0 || lastChatMsgInfo.getLastTime() < chat.getSendTime()) {
@@ -122,7 +122,7 @@ public class LastChatMessageObservable extends BaseObservable<LastChatMsgInfo> {
                     lastChatMsgInfo.setMsgType(chat.getContextType());
                     lastChatMsgInfo.setLastTime(chat.getSendTime());
                 }
-                if (chat.isReceive() && chat.getContextState() != null && chat.getContextState() == State.MSG_STATE_UNREAD) {
+                if (chat.isReceive() && chat.getContextState() != null && chat.getContextState() == State.UNREAD_STATE) {
                     lastChatMsgInfo.setMsgCount(lastChatMsgInfo.getMsgCount() + 1);
                 }
                 getCacheMap().put(lastChatMsgInfo.getUid(), lastChatMsgInfo);
@@ -142,10 +142,10 @@ public class LastChatMessageObservable extends BaseObservable<LastChatMsgInfo> {
             LastChatMsgInfo l = get(friendId);
             if (l != null) {
                 l.setUid(f.getFriendId());
-                l.setName(f.getFriendName());
+                l.setName(f.getName());
                 l.setAlias(f.getAlias());
                 l.setFriendAlias(f.getFriendAlias());
-                l.setImagName(f.getFriendImgName());
+                l.setImagName(f.getImgName());
             }
         }
         setChanged();

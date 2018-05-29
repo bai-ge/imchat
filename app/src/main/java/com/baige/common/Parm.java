@@ -1,38 +1,46 @@
 package com.baige.common;
 
 public class Parm {
+
     public final static String USER = "user";
     public final static String USERS = "users";
     public final static String NAME = "name";
     public final static String PASSWORD = "password";
     public final static String CODE = "code";
     public final static String MEAN = "mean";
+    public final static String FILE = "file";
+    public final static String FILE_NAME = "file_name";
+    public final static String CONTENT_TYPE = "content_type";
     public final static String KEYWORD = "keyword";
+    public final static String RESPONSE = "response";
+
+
+    public final static String UID = "uid";
 
     public final static String FRIENDS = "friends";
     public final static String FRIEND = "friend";
-    public final static String UID = "uid";
     public final static String OPERATION = "operation";
-
+    public final static String DATA = "data";
     public final static String CHAT = "chat";
     public final static String CHAT_LIST = "chat_list";
 
-    public final static String FILE = "file";
     public final static String FILES = "files";
 
-    public static final int SUCCESS_CODE = 200;
-    public static final int FAIL_CODE = 500;
-    public static final int UNKNOWN_CODE = 999;
-    public static final int NOTFIND_CODE = 404;
-    public static final int TYPE_CONVERT_CODE = 1001;
-    public static final int EXIST_CODE = 1002;
-    public static final int BLANK_CODE = 1003;
-    public static final int TIMEOUT_CODE = 1004;
-    public static final int INVALID_CODE = 1005;
+    public static final int CODE_SUCCESS = 200;
+    public static final int CODE_FAIL = 500;
+    public static final int CODE_UNKNOWN = 999;
+    public static final int CODE_NOTFIND = 404;
+    public static final int CODE_TYPE_CONVERT = 1001;
+    public static final int CODE_EXIST = 1002;
+    public static final int CODE_BLANK = 1003;
+    public static final int CODE_TIMEOUT = 1004;
+    public static final int CODE_INVALID = 1005;
+    public static final int CODE_BUSY = 1008;
 
     public static final int MSG_TYPE_TEXT = 1;
     public static final int MSG_TYPE_IMG = 2;
     public static final int MSG_TYPE_FILE = 4;
+
 
     public static final int MSG_IS_RECEIVE = 1;
     public static final int MSG_IS_SEND = 2;
@@ -42,17 +50,15 @@ public class Parm {
     public static final int MSG_IS_SEND_SUCESS = 11;
     public static final int MSG_IS_SEND_FAIL = 12;
 
-
     public final static int CONNECTING = 1;
     public final static int CONNECTED = 2;
     public final static int LOGIN = 3;
     public final static int DISCONNECTED = 4;
 
-    /*code 一般作为服务器反馈的数字代码， */
     public final static String FROM = "from";
     public final static String TO = "to";
-    public final static String DATA = "data";
     public final static String DATA_TYPE = "data_type";
+    public final static String CONTENT_DATA_TYPE = "content_data_type";
 
     public final static String DEVICE_ID = "device_id";
     public final static String CALLBACK = "callback";
@@ -70,6 +76,11 @@ public class Parm {
     public final static String USERNAME = "username";
     public final static String SPEAKER_PHONE = "speaker_phone";
 
+    public final static String UUID = "uuid";
+    public final static String NUMBER = "number";
+    public final static String CURRENT = "current";
+
+
     private final static int MSG_TYPE = 0x0010;
     public final static int TYPE_LOGIN = MSG_TYPE + 1;
     public final static int TYPE_LOGOUT = MSG_TYPE + 2;
@@ -84,15 +95,16 @@ public class Parm {
     public final static int TYPE_HANG_UP = MSG_TYPE + 10;
     public final static int TYPE_TRY_PTP = MSG_TYPE + 11;
     public final static int TYPE_TRY_PTP_CONNECT = MSG_TYPE + 12;
-    public final static int TYPE_HELP_PICK_UP = MSG_TYPE + 13;
-    public final static int TYPE_HELP_SPEAKER_PHONE = MSG_TYPE + 14;
 
-    public final static int CODE_SUCCESS = 200;
-    public final static int CODE_FAIL = 500;
-    public final static int CODE_UNKNOWN = 999;
-    public final static int CODE_NOT_FIND = 404;
-    public final static int CODE_INVALID = 1005;
-    public final static int CODE_TIMEOUT = 1004;
-    public final static int CODE_BUSY = 1008;
+    public final static int TYPE_DOWNLOAD_FILE = MSG_TYPE + 16;
+    public final static int TYPE_RESPONE_AFFIRM = MSG_TYPE + 17; //回复确认数据包
+    public final static int TYPE_ASK_PACKET = MSG_TYPE + 18;
+    public final static int TYPE_START_DOWNLOAD = MSG_TYPE + 19; //开始下载
+    public final static int TYPE_FINISH_DOWNLOAD = MSG_TYPE + 20; //下载完成
+
+
+
+
+
 
 }

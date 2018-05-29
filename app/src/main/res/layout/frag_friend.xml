@@ -317,6 +317,23 @@
                     android:layout_height="wrap_content">
 
                     <LinearLayout
+                        android:id="@+id/layout_cancel_defriend"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <Button
+                            android:id="@+id/btn_cancel_defriend"
+                            android:layout_width="0dp"
+                            android:layout_height="45dp"
+                            android:layout_margin="@dimen/fab_margin"
+                            android:layout_weight="1"
+                            android:background="@drawable/selector_btn"
+                            android:text="取消拉黑"
+                            android:textColor="@color/white"/>
+                    </LinearLayout>
+
+                    <LinearLayout
                         android:id="@+id/layout_ask"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -396,6 +413,8 @@
                             android:text="发送信息"
                             android:textColor="@color/white"/>
                     </LinearLayout>
+
+
                 </RelativeLayout>
 
                 <LinearLayout

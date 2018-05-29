@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/share_local"
+        android:title="本地分享">
+    </item>
+    <item
+        android:id="@+id/share_remove"
+        android:title="云端分享">
+    </item>
+</menu>

@@ -38,7 +38,7 @@ public class UserResponseBinder extends AbstractResponseBinder {
                         }
                     }
 
-                    if(codeNum == Parm.SUCCESS_CODE && jsonObject.has(Parm.USER)){
+                    if(codeNum == Parm.CODE_SUCCESS && jsonObject.has(Parm.USER)){
                         userJson = jsonObject.getJSONObject(Parm.USER);
                         User user = User.createByJson(userJson);
                         if(user != null){
@@ -46,7 +46,7 @@ public class UserResponseBinder extends AbstractResponseBinder {
                         }else{
                             callBack.notFind();
                         }
-                    }else if(codeNum == Parm.SUCCESS_CODE && jsonObject.has(Parm.USERS)){
+                    }else if(codeNum == Parm.CODE_SUCCESS && jsonObject.has(Parm.USERS)){
                         JSONArray jsonArray = jsonObject.getJSONArray(Parm.USERS);
                         List<User> users = new ArrayList<>();
                         for (int i = 0; i < jsonArray.length(); i++) {
@@ -69,5 +69,10 @@ public class UserResponseBinder extends AbstractResponseBinder {
                 callBack.fail();
             }
         }
+    }
+
+    @Override
+    public void parse(String json, PushCallback callback) {
+
     }
 }

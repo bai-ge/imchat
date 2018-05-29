@@ -15,10 +15,11 @@
         android:layout_centerHorizontal="true">
 
         <!--文件图标-->
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="45dp"
             android:layout_height="45dp"
             android:layout_gravity="center_vertical">
+
 
             <ImageView
                 android:id="@+id/img_file_format"
@@ -28,7 +29,12 @@
                 android:focusable="false"
                 android:scaleType="centerCrop"
                 android:src="@drawable/icon_fm_unknow"/>
-        </LinearLayout>
+            <ImageView
+                android:id="@+id/img_head_tag"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@drawable/ic_remote"/>
+        </RelativeLayout>
 
         <!--文件属性与选择框-->
         <RelativeLayout
@@ -132,6 +138,20 @@
                         android:textSize="10sp"
                         android:text="下载量：1"/>
                 </RelativeLayout>
+                <LinearLayout
+                    android:id="@+id/layout_progress"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    <ProgressBar
+                        android:id="@+id/progress_file"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:progress="68"
+                        android:max="100"/>
+                </LinearLayout>
 
 
             </LinearLayout>

@@ -37,7 +37,7 @@ public class ChatMessageResponseBinder extends AbstractResponseBinder {
                         }
                     }
 
-                    if(codeNum == Parm.SUCCESS_CODE && jsonObject.has(Parm.CHAT)){
+                    if(codeNum == Parm.CODE_SUCCESS && jsonObject.has(Parm.CHAT)){
                         chatJson = jsonObject.getJSONObject(Parm.CHAT);
                         ChatMsgInfo chatMsgInfo = ChatMsgInfo.createByJson(chatJson);
                         if(chatMsgInfo != null){
@@ -45,7 +45,7 @@ public class ChatMessageResponseBinder extends AbstractResponseBinder {
                         }else{
                             callBack.notFind();
                         }
-                    }else if(codeNum == Parm.SUCCESS_CODE && jsonObject.has(Parm.CHAT_LIST)){
+                    }else if(codeNum == Parm.CODE_SUCCESS && jsonObject.has(Parm.CHAT_LIST)){
                         JSONArray jsonArray = jsonObject.getJSONArray(Parm.CHAT_LIST);
                         List<ChatMsgInfo> chatMsgInfos = new ArrayList<>();
                         for (int i = 0; i < jsonArray.length(); i++) {
@@ -69,5 +69,10 @@ public class ChatMessageResponseBinder extends AbstractResponseBinder {
                 callBack.fail();
             }
         }
+    }
+
+    @Override
+    public void parse(String json, PushCallback callback) {
+
     }
 }

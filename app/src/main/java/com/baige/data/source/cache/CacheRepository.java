@@ -7,7 +7,6 @@ import android.preference.PreferenceManager;
 
 import com.baige.AppConfigure;
 import com.baige.BaseApplication;
-import com.baige.data.entity.Candidate;
 import com.baige.data.entity.User;
 import com.baige.data.observer.ChatMessageObservable;
 import com.baige.data.observer.FileViewObservable;
@@ -16,7 +15,6 @@ import com.baige.data.observer.LastChatMessageObservable;
 import com.baige.pushcore.SendMessageBroadcast;
 import com.baige.util.Tools;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Observer;
@@ -87,7 +85,7 @@ public class CacheRepository {
 
     private int localUdpPort = 0;
 
-    private Map<String, Candidate> candidateMap;
+
 
     public String getServerIp() {
         if (Tools.isEmpty(serverIp)) {
@@ -183,19 +181,7 @@ public class CacheRepository {
         this.localUdpPort = localUdpPort;
     }
 
-    public Candidate add(Candidate candidate) {
-        if (candidate != null) {
-            candidateMap.put(candidate.getFrom(), candidate);
-        }
-        return candidate;
-    }
 
-    public ArrayList<Candidate> getCandidates() {
-        if (candidateMap != null && candidateMap.size() > 0) {
-            return new ArrayList<>(candidateMap.values());
-        }
-        return null;
-    }
 
     static {
         //文件名，应用名称
@@ -381,7 +367,7 @@ public class CacheRepository {
         ringUri = preferences.getString(AppConfigure.KEY_PHONE_RING, "");
         phoneVibrate = preferences.getBoolean(AppConfigure.KEY_PHONE_VIBRATE, false);
         isSilence = preferences.getBoolean(AppConfigure.KEY_PHONE_SILENCE, false);
-
+        saveConfig(context);
     }
 
     public void saveConfig(Context context) {
@@ -401,6 +387,6 @@ public class CacheRepository {
         }
         editor.putBoolean(AppConfigure.KEY_IS_LOGIN, isLogin());
         editor.putString(AppConfigure.KEY_PHONE_SERVER_IP, serverIp);
-        editor.apply();
+        editor.commit();
     }
 }

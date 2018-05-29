@@ -245,11 +245,11 @@ public class ServerConnector {
                 if(!Tools.isEmpty(msg)){
                     try {
                         JSONObject json = new JSONObject(msg);
-                        if (json.has(Parm.CODE) && json.has(Parm.DATA)) {
-                            if(json.getInt(Parm.CODE) != Parm.CODE_SUCCESS){
+                        if (json.has(Parm.RESPONSE)) {
+                            JSONObject dataJson = json.getJSONObject(Parm.RESPONSE);
+                            if(!dataJson.has(Parm.CODE) || dataJson.getInt(Parm.CODE) != Parm.CODE_SUCCESS){
                                 return;
                             }
-                            JSONObject dataJson = json.getJSONObject(Parm.DATA);
                             if(dataJson.has(Parm.DATA_TYPE)){
                                 int type = dataJson.getInt(Parm.DATA_TYPE);
                                 switch (type){

@@ -77,11 +77,11 @@ public interface ServerHelper {
 
     }
     interface FileCallback{
-        void progress(String fileName, long finishSize, long totalSize);
-        void uploadFinish(String fileName);
-        void downloadFinish(String fileName);
-        void error(String fileName, Exception e);
-        void fail(String fileName);
+        void progress(String remark, String fileName, long finishSize, long totalSize);
+        void uploadFinish(String remark, String fileName);
+        void downloadFinish(String remark, String fileName);
+        void error(String remark, String fileName, Exception e);
+        void fail(String remark, String fileName);
     }
     
 
@@ -91,11 +91,11 @@ public interface ServerHelper {
 
     void updateAlias(int id, String verification, String alias, HttpBaseCallback callback);
 
-    void uploadFile(User user, FileInfo file, HttpBaseCallback callback);
+    void uploadFile(String remark, User user, FileInfo file, HttpBaseCallback callback);
 
     void changeHeadImg(int id, String verification, File headImg, HttpBaseCallback callback);
 
-    void downloadFile(String url, String path, String fileName, HttpBaseCallback callback);
+    void downloadFile(String remark, String url, String path, String fileName, HttpBaseCallback callback);
 
     void downloadImg(String imgName, HttpBaseCallback callback);
 
@@ -130,4 +130,6 @@ public interface ServerHelper {
     void readMsgBeforeTime(int uid, String verification, int friendId, long time, HttpBaseCallback callback);
 
     void searchAllFile(HttpBaseCallback callback);
+
+    void shareFile(int uid, String verification, FileView fileView, HttpBaseCallback callback);
 }

@@ -6,6 +6,7 @@ package com.baige.data.dao;
 
 public interface UserDAO {
 
+    String TAB_NAME = "users";
     String ID = "id";
     String NAME = "name";
     String PASSWORD = "password";

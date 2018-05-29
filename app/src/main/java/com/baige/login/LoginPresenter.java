@@ -87,8 +87,8 @@ public class LoginPresenter implements LoginContract.Presenter {
                         if (imgFile.exists()) {
                             mRepository.changeHeadImg(me.getId(), user.getVerification(), imgFile, new HttpBaseCallback() {
                                 @Override
-                                public void uploadFinish(String fileName) {
-                                    super.uploadFinish(fileName);
+                                public void uploadFinish(String remark, String fileName) {
+                                    super.uploadFinish(remark, fileName);
                                 }
                             });
                         }

@@ -11,31 +11,31 @@ public abstract class AbstractResponseBinder {
 
     public void callbackCode(HttpBaseCallback callBack, int code) {
         switch (code) {
-            case Parm.SUCCESS_CODE:
+            case Parm.CODE_SUCCESS:
                 callBack.success();
                 break;
-            case Parm.FAIL_CODE:
+            case Parm.CODE_FAIL:
                 callBack.fail();
                 break;
-            case Parm.UNKNOWN_CODE:
+            case Parm.CODE_UNKNOWN:
                 callBack.unknown();
                 break;
-            case Parm.NOTFIND_CODE:
+            case Parm.CODE_NOTFIND:
                 callBack.notFind();
                 break;
-            case Parm.TYPE_CONVERT_CODE:
+            case Parm.CODE_TYPE_CONVERT:
                 callBack.typeConvert();
                 break;
-            case Parm.EXIST_CODE:
+            case Parm.CODE_EXIST:
                 callBack.exist();
                 break;
-            case Parm.BLANK_CODE:
+            case Parm.CODE_BLANK:
                 callBack.isBlank();
                 break;
-            case Parm.TIMEOUT_CODE:
+            case Parm.CODE_TIMEOUT:
                 callBack.timeout();
                 break;
-            case Parm.INVALID_CODE:
+            case Parm.CODE_INVALID:
                 callBack.invalid();
                 break;
             default:
@@ -43,5 +43,42 @@ public abstract class AbstractResponseBinder {
         }
     }
 
+    public void callbackCode(PushCallback callBack, int code) {
+        switch (code) {
+            case Parm.CODE_SUCCESS:
+                callBack.success();
+                break;
+            case Parm.CODE_FAIL:
+                callBack.fail();
+                break;
+            case Parm.CODE_UNKNOWN:
+                callBack.unknown();
+                break;
+            case Parm.CODE_NOTFIND:
+                callBack.notFind();
+                break;
+            case Parm.CODE_TYPE_CONVERT:
+                callBack.typeConvert();
+                break;
+            case Parm.CODE_EXIST:
+                callBack.exist();
+                break;
+            case Parm.CODE_BLANK:
+                callBack.isBlank();
+                break;
+            case Parm.CODE_TIMEOUT:
+                callBack.timeout();
+                break;
+            case Parm.CODE_INVALID:
+                callBack.invalid();
+                break;
+            default:
+                callBack.unknown();
+        }
+    }
+
+
     public abstract void parse(String json, HttpBaseCallback callBack);
+
+    public abstract void parse(String json, PushCallback callback);
 }

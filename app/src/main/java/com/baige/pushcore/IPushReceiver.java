@@ -4,15 +4,14 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 
 import com.baige.common.Parm;
 import com.baige.connect.ConnectedByUDP;
 import com.baige.connect.NetServerManager;
 import com.baige.data.entity.ChatMsgInfo;
-import com.baige.data.entity.User;
 import com.baige.data.source.cache.CacheRepository;
 import com.baige.util.JsonTools;
+import com.baige.util.Loggerx;
 import com.baige.util.Tools;
 
 import org.json.JSONException;
@@ -30,6 +29,8 @@ public class IPushReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
         Bundle bundle = intent.getExtras();
+        Loggerx.i(TAG, "action ="+action);
+        Loggerx.i(TAG, "bundle ="+printBundle(bundle));
         if(action.equals(SendMessageBroadcast.ACTION_RECEIVE_MSG)){
             if (bundle.containsKey(SendMessageBroadcast.KEY_RECEIVE_MSG)) {
                 String msg = bundle.getString(SendMessageBroadcast.KEY_RECEIVE_MSG);
@@ -42,8 +43,9 @@ public class IPushReceiver extends BroadcastReceiver {
                             if(chatMsgInfo != null){
                                 CacheRepository.getInstance().getChatMessageObservable().put(chatMsgInfo);
                             }
+                        }else{
+                            MessagePushProcess.receive(context, jsonObject);
                         }
-                        MessageProcess.receive(context, jsonObject);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }

@@ -10,6 +10,7 @@ import com.baige.callback.SimpleResponseBinder;
 import com.baige.callback.UserResponseBinder;
 import com.baige.data.entity.ChatMsgInfo;
 import com.baige.data.entity.FileInfo;
+import com.baige.data.entity.FileView;
 import com.baige.data.entity.User;
 import com.baige.data.source.local.LocalRepository;
 import com.baige.data.source.remote.RemoteRepository;
@@ -123,7 +124,7 @@ public class Repository implements DataSource, ServerHelper{
     }
 
     @Override
-    public void uploadFile(final User user, final FileInfo file, final HttpBaseCallback callback) {
+    public void uploadFile(final String remark, final User user, final FileInfo file, final HttpBaseCallback callback) {
         checkNotNull(user);
         checkNotNull(file);
         checkNotNull(callback);
@@ -132,7 +133,7 @@ public class Repository implements DataSource, ServerHelper{
             fixedThreadPool.submit(new Runnable() {
                 @Override
                 public void run() {
-                    mRemoteRepository.uploadFile(user, file, callback);
+                    mRemoteRepository.uploadFile(remark, user, file, callback);
                 }
             });
         }else{
@@ -159,7 +160,7 @@ public class Repository implements DataSource, ServerHelper{
     }
 
     @Override
-    public void downloadFile(final String url, final String path, final String fileName, final HttpBaseCallback callback) {
+    public void downloadFile(final String remark, final String url, final String path, final String fileName, final HttpBaseCallback callback) {
         checkNotNull(url);
         checkNotNull(path);
         checkNotNull(fileName);
@@ -169,11 +170,11 @@ public class Repository implements DataSource, ServerHelper{
             fixedThreadPool.submit(new Runnable() {
                 @Override
                 public void run() {
-                    mRemoteRepository.downloadFile(url, path, fileName, callback);
+                    mRemoteRepository.downloadFile(remark, url, path, fileName, callback);
                 }
             });
         }else{
-            callback.fail(fileName);
+            callback.fail(remark, fileName);
         }
     }
 
@@ -190,7 +191,7 @@ public class Repository implements DataSource, ServerHelper{
                 }
             });
         }else{
-            callback.fail(imgName);
+            callback.fail("", imgName);
         }
     }
 
@@ -444,6 +445,24 @@ public class Repository implements DataSource, ServerHelper{
                 @Override
                 public void run() {
                     mRemoteRepository.searchAllFile(callback);
+                }
+            });
+        }else{
+            callback.fail();
+        }
+    }
+
+    @Override
+    public void shareFile(final int uid, final String verification, final FileView fileView, final HttpBaseCallback callback) {
+        checkNotNull(callback);
+        checkNotNull(verification);
+        checkNotNull(fileView);
+        callback.setResponseBinder(mSimpleResponseBinder);
+        if (fixedThreadPool != null) {
+            fixedThreadPool.submit(new Runnable() {
+                @Override
+                public void run() {
+                    mRemoteRepository.shareFile(uid, verification, fileView, callback);
                 }
             });
         }else{

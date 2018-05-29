@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,8 @@ import android.widget.Toast;
 import com.baige.adapter.FileViewAdapter;
 import com.baige.data.entity.FileView;
 import com.baige.imchat.R;
+import com.baige.view.IOnMenuItemClickListener;
+import com.baige.view.ShareHomeBottomToolBar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,12 +37,13 @@ public class FileShareFragment extends Fragment implements FileShareContract.Vie
 
     private Toast mToast;
 
+
     /*组件*/
 
     private ListView mListView;
     private ViewGroup mNothingView = null;
     private FileViewAdapter mAdapter = null;
-
+    private ShareHomeBottomToolBar mShareHomeBottomToolBar;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -60,6 +64,8 @@ public class FileShareFragment extends Fragment implements FileShareContract.Vie
     private void initView(View root) {
         mListView = root.findViewById(R.id.list_view);
         mNothingView = root.findViewById(R.id.layout_null);
+        mShareHomeBottomToolBar = root.findViewById(R.id.bottom_toolbar);
+        mShareHomeBottomToolBar.setOnItemClickListener(mOnMenuItemClickListener);
         mListView.setAdapter(mAdapter);
 
 
@@ -138,6 +144,43 @@ public class FileShareFragment extends Fragment implements FileShareContract.Vie
         }
     };
 
+    private IOnMenuItemClickListener mOnMenuItemClickListener = new IOnMenuItemClickListener.SimpleMenuItemClickListener() {
+        @Override
+        public void onDownload() {
+            super.onDownload();
+            Log.d(TAG, "onDownload()");
+            List<FileView> fileViews = mAdapter.getSelectItems();
+            if(fileViews == null || fileViews.isEmpty()){
+                showTip("未选择文件");
+            }else{
+                mPresenter.downloadFiles(fileViews);
+            }
+        }
+
+        @Override
+        public void onShare() {
+            super.onShare();
+            Log.d(TAG, "onShare()");
+        }
+
+        @Override
+        public void onSore() {
+            super.onSore();
+            Log.d(TAG, "onSore()");
+        }
+
+        @Override
+        public void onRefresh() {
+            super.onRefresh();
+            Log.d(TAG, "onRefresh()");
+        }
+
+        @Override
+        public void onMore() {
+            super.onMore();
+            Log.d(TAG, "onMore()");
+        }
+    };
 
 
 }

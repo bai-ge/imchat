@@ -23,6 +23,7 @@ import com.baige.common.State;
 import com.baige.data.entity.FriendView;
 import com.baige.data.entity.User;
 import com.baige.data.source.cache.CacheRepository;
+import com.baige.imchat.MainContract;
 import com.baige.imchat.R;
 import com.baige.util.ImageLoader;
 import com.baige.util.Tools;
@@ -35,7 +36,7 @@ import java.io.File;
  * Created by baige on 2017/12/22.
  */
 
-public class FriendFragment extends Fragment implements FriendContract.View{
+public class FriendFragment extends Fragment implements FriendContract.View {
 
     private final static String TAG = FriendFragment.class.getSimpleName();
 
@@ -67,11 +68,15 @@ public class FriendFragment extends Fragment implements FriendContract.View{
 
     private Button mBtnSendMsg;
 
+    private Button mBtnCancelDefriend;
+
     private ViewGroup mLayoutAsk;
 
     private ViewGroup mLayoutAdd;
 
     private ViewGroup mLayoutFriend;
+
+    private ViewGroup mLayoutCancelDefriend;
 
     @Override
     public void setPresenter(FriendContract.Presenter presenter) {
@@ -92,7 +97,8 @@ public class FriendFragment extends Fragment implements FriendContract.View{
         initView(root);
         return root;
     }
-    private void initView(View root){
+
+    private void initView(View root) {
         mCircleImageView = root.findViewById(R.id.img_user);
         mTxtUserName = root.findViewById(R.id.txt_user_name);
         mTxtUserAlias = root.findViewById(R.id.txt_user_alias);
@@ -102,6 +108,7 @@ public class FriendFragment extends Fragment implements FriendContract.View{
         mLayoutAsk = root.findViewById(R.id.layout_ask);
         mLayoutAdd = root.findViewById(R.id.layout_add);
         mLayoutFriend = root.findViewById(R.id.layout_friend);
+        mLayoutCancelDefriend = root.findViewById(R.id.layout_cancel_defriend);
 
         mBtnReject = root.findViewById(R.id.btn_reject);
         mBtnAgree = root.findViewById(R.id.btn_agree);
@@ -109,6 +116,7 @@ public class FriendFragment extends Fragment implements FriendContract.View{
         mBtnAddFriend = root.findViewById(R.id.btn_add_friend);
         mBtnDeleteFriend = root.findViewById(R.id.btn_delete_friend);
         mBtnSendMsg = root.findViewById(R.id.btn_sendmsg);
+        mBtnCancelDefriend = root.findViewById(R.id.btn_cancel_defriend);
 
         mBtnReject.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -143,6 +151,13 @@ public class FriendFragment extends Fragment implements FriendContract.View{
                 mPresenter.defriend();
             }
         });
+
+        mBtnCancelDefriend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mPresenter.cancelDefriend();
+            }
+        });
         mBtnSendMsg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -156,12 +171,12 @@ public class FriendFragment extends Fragment implements FriendContract.View{
             @Override
             public void onClick(View v) {
                 mEditFriendAlias.setEnabled(!mEditFriendAlias.isEnabled());
-                if(mEditFriendAlias.isEnabled()){
+                if (mEditFriendAlias.isEnabled()) {
                     mEditFriendAlias.requestFocus();
                     Tools.showInputMethod(getContext(), mEditFriendAlias);
                     mEditFriendAlias.setSelection(mEditFriendAlias.getText().length());
-                }else{
-                   mPresenter.updateFriendAlias(mEditFriendAlias.getText().toString());
+                } else {
+                    mPresenter.updateFriendAlias(mEditFriendAlias.getText().toString());
                 }
             }
         });
@@ -189,8 +204,8 @@ public class FriendFragment extends Fragment implements FriendContract.View{
     @Override
     public void showFriendView(FriendView friendView) {
         Log.d(TAG, friendView.toString());
-        showFriendImg(friendView.getFriendImgName());
-        showFriendName(friendView.getFriendName());
+        showFriendImg(friendView.getImgName());
+        showFriendName(friendView.getName());
         showUserAlias(friendView.getAlias());
         showFriendAlias(friendView.getFriendAlias());
         showBtnLayoutByState(friendView.getState());
@@ -199,23 +214,23 @@ public class FriendFragment extends Fragment implements FriendContract.View{
     @Override
     public void showFriendImg(String imgName) {
         if (!Tools.isEquals(mCircleImageView.getTag(), imgName)) {
-            Log.d(TAG, "加载"+imgName);
+            Log.d(TAG, "加载" + imgName);
             String url = BaseApplication.headImgPath + File.separator + imgName;
             Bitmap bitmap = ImageLoader.getInstance().getBitmapFromMemoryCache(url);
-            if(bitmap == null){
-                Log.d(TAG, "从文件"+imgName);
+            if (bitmap == null) {
+                Log.d(TAG, "从文件" + imgName);
                 int size = mCircleImageView.getWidth();
-                Log.d(TAG, "图片宽度："+size);
-                if(size <= 10){
+                Log.d(TAG, "图片宽度：" + size);
+                if (size <= 10) {
                     size = 200;
                 }
                 bitmap = ImageLoader.decodeSampledBitmapFromResource(url, size);
             }
             if (bitmap == null) {
-                Log.d(TAG, "从网络"+imgName);
+                Log.d(TAG, "从网络" + imgName);
                 mPresenter.downloadImg(imgName);
             } else {
-                Log.d(TAG, "显示"+imgName);
+                Log.d(TAG, "显示" + imgName);
                 mCircleImageView.setTag(imgName);
                 ImageLoader.getInstance().addBitmapToMemoryCache(url, bitmap);
                 showFriendImg(bitmap);
@@ -238,9 +253,9 @@ public class FriendFragment extends Fragment implements FriendContract.View{
         mHandler.post(new Runnable() {
             @Override
             public void run() {
-                if(Tools.isEmpty(name)){
+                if (Tools.isEmpty(name)) {
                     mTxtUserName.setText("");
-                }else{
+                } else {
                     mTxtUserName.setText(name);
                 }
             }
@@ -252,9 +267,9 @@ public class FriendFragment extends Fragment implements FriendContract.View{
         mHandler.post(new Runnable() {
             @Override
             public void run() {
-                if(Tools.isEmpty(alias)){
+                if (Tools.isEmpty(alias)) {
                     mTxtUserAlias.setText("");
-                }else{
+                } else {
                     mTxtUserAlias.setText(alias);
                 }
             }
@@ -266,87 +281,79 @@ public class FriendFragment extends Fragment implements FriendContract.View{
         mHandler.post(new Runnable() {
             @Override
             public void run() {
-                if(Tools.isEmpty(friendAlias)){
+                if (Tools.isEmpty(friendAlias)) {
                     mEditFriendAlias.setText("");
-                }else{
+                } else {
                     mEditFriendAlias.setText(friendAlias);
                 }
             }
         });
     }
 
-    public void showLayoutAdd(){
+    public void showLayoutAdd() {
         mLayoutAdd.setVisibility(View.VISIBLE);
         mLayoutAsk.setVisibility(View.INVISIBLE);
         mLayoutFriend.setVisibility(View.INVISIBLE);
+        mLayoutCancelDefriend.setVisibility(View.INVISIBLE);
     }
-    public void showLayoutAsk(){
+
+    public void showLayoutAsk() {
         mLayoutAdd.setVisibility(View.INVISIBLE);
         mLayoutAsk.setVisibility(View.VISIBLE);
         mLayoutFriend.setVisibility(View.INVISIBLE);
+        mLayoutCancelDefriend.setVisibility(View.INVISIBLE);
     }
-    public void showLayoutFriend(){
+
+    public void showLayoutFriend() {
         mLayoutAdd.setVisibility(View.INVISIBLE);
         mLayoutAsk.setVisibility(View.INVISIBLE);
         mLayoutFriend.setVisibility(View.VISIBLE);
+        mLayoutCancelDefriend.setVisibility(View.INVISIBLE);
     }
-    public void showLayoutBtnNull(){
+
+    public void showLayoutBtnNull() {
+        mLayoutAdd.setVisibility(View.GONE);
+        mLayoutAsk.setVisibility(View.GONE);
+        mLayoutFriend.setVisibility(View.GONE);
+        mLayoutCancelDefriend.setVisibility(View.GONE);
+    }
+
+    public void showLayoutCancelDefriend(){
         mLayoutAdd.setVisibility(View.INVISIBLE);
         mLayoutAsk.setVisibility(View.INVISIBLE);
         mLayoutFriend.setVisibility(View.INVISIBLE);
+        mLayoutCancelDefriend.setVisibility(View.VISIBLE);
     }
+
     @Override
     public void showBtnLayoutByState(final int state) {
-        final int uid = state / 10;
-        final int realState = state % 10;
-        final User user = CacheRepository.getInstance().who();
         mHandler.post(new Runnable() {
             @Override
             public void run() {
-                if(state == 0 || user == null){
-                    showLayoutAdd();
-                }else{
-                    if(uid == user.getId()){
-                        switch (realState){
-                            case State.RELATETION_ADD:
-                                showLayoutAdd();
-                                break;
-                            case State.RELATETION_AGREE:
-                                showLayoutFriend();
-                                break;
-                            case State.RELATETION_REJECT:
-                                showLayoutAdd();
-                                break;
-                            case State.RELATETION_DELETE:
-                                showLayoutAdd();
-                                break;
-                            case State.RELATETION_DEFRIEND:
-                                showLayoutAdd();
-                                break;
-                        }
-                    }else{
-                        switch (realState){
-                            case State.RELATETION_ADD:
-                                showLayoutAsk();
-                                break;
-                            case State.RELATETION_AGREE:
-                                showLayoutFriend();
-                                break;
-                            case State.RELATETION_REJECT:
-                                showLayoutAdd();
-                                break;
-                            case State.RELATETION_DELETE:
-                                showLayoutAdd();
-                                break;
-                            case State.RELATETION_DEFRIEND:
-                                //您已被拉黑，无法添加该好友
-                                showLayoutBtnNull();
-                                break;
-                        }
-                    }
+                switch (state) {
+                    case State.RELATETION_STRANGE:
+                        showLayoutAdd();
+                        break;
+                    case State.RELATETION_FRIEND:
+                        showLayoutFriend();
+                        break;
+                    case State.RELATETION_WAITING:
+                        //TODO 提示正在等待对方回应
+                        showLayoutAdd();
+                        break;
+                    case State.RELATETION_BEADDED:
+                        showLayoutAsk();
+                        break;
+                    case State.RELATETION_DEFRIEND:
+                        showLayoutCancelDefriend();
+                        break;
+                    case State.RELATETION_BEDEFRIEND:
+                        //TODO 显示已经被好友拉黑
+                        showLayoutBtnNull();
+                        break;
                 }
-
             }
+
         });
     }
 

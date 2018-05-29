@@ -42,4 +42,22 @@ public class SimpleResponseBinder extends AbstractResponseBinder {
             }
         }
     }
+
+    @Override
+    public void parse(String json, PushCallback callback) {
+        checkNotNull(callback);
+        if(!Tools.isEmpty(json)){
+            try {
+                JSONObject jsonObject = new JSONObject(json);
+                if(jsonObject.has(Parm.CODE)){
+                    int codeNum = jsonObject.getInt(Parm.CODE);
+                    callbackCode(callback, codeNum);
+                    //TODO 暂时仅处理返回码
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+                callback.fail();
+            }
+        }
+    }
 }

@@ -24,6 +24,7 @@ import com.baige.filelocal.FileComparator;
 import com.baige.imchat.R;
 import com.baige.util.ImageLoader;
 import com.baige.util.Tools;
+import com.baige.view.SortDialog;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,7 +38,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * Created by baige on 2018/5/6.
  */
 
-public class FileInfoAdapter extends BaseAdapter implements AbsListView.OnScrollListener {
+public class FileInfoAdapter extends BaseAdapter implements AbsListView.OnScrollListener, SortDialog.OnSortDialogListener{
 
     private final static String TAG = FileInfoAdapter.class.getSimpleName();
     private List<FileInfo> mList;
@@ -224,12 +225,18 @@ public class FileInfoAdapter extends BaseAdapter implements AbsListView.OnScroll
                 return true;
             }
         });
-        holder.checkView.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        holder.checkView.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                item.setChecked(b);
+            public void onClick(View v) {
+                item.setChecked(!item.isChecked());
             }
         });
+//        holder.checkView.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+//                item.setChecked(b);
+//            }
+//        });
     }
 
     @Override
@@ -320,6 +327,60 @@ public class FileInfoAdapter extends BaseAdapter implements AbsListView.OnScroll
         TextView timeView;
         TextView tagView;
         CheckBox checkView;
+    }
+
+    @Override
+    public void onSortNameUp() {
+        if(mList != null){
+            mFileComparator.setSortType(FileComparator.SORT_TYPE_BY_NAME_UP);
+            Collections.sort(mList, mFileComparator);
+            notifyDataSetChanged();
+        }
+    }
+
+    @Override
+    public void onSortNameDown() {
+        if(mList != null){
+            mFileComparator.setSortType(FileComparator.SORT_TYPE_BY_NAME_DOWN);
+            Collections.sort(mList, mFileComparator);
+            notifyDataSetChanged();
+        }
+    }
+
+    @Override
+    public void onSortSizeUp() {
+        if(mList != null){
+            mFileComparator.setSortType(FileComparator.SORT_TYPE_BY_SIZE_UP);
+            Collections.sort(mList, mFileComparator);
+            notifyDataSetChanged();
+        }
+    }
+
+    @Override
+    public void onSortSizeDown() {
+        if(mList != null){
+            mFileComparator.setSortType(FileComparator.SORT_TYPE_BY_SIZE_DOWN);
+            Collections.sort(mList, mFileComparator);
+            notifyDataSetChanged();
+        }
+    }
+
+    @Override
+    public void onSortTimeUp() {
+        if(mList != null){
+            mFileComparator.setSortType(FileComparator.SORT_TYPE_BY_TIME_UP);
+            Collections.sort(mList, mFileComparator);
+            notifyDataSetChanged();
+        }
+    }
+
+    @Override
+    public void onSortTimeDown() {
+        if(mList != null){
+            mFileComparator.setSortType(FileComparator.SORT_TYPE_BY_TIME_DOWN);
+            Collections.sort(mList, mFileComparator);
+            notifyDataSetChanged();
+        }
     }
 
     public interface OnFileInfoItemListener {

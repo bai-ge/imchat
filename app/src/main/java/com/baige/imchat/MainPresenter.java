@@ -121,8 +121,8 @@ public class MainPresenter implements MainContract.Presenter {
         if(!Tools.isEmpty(imgName)){
             mRepository.downloadImg(imgName, new HttpBaseCallback(){
                 @Override
-                public void downloadFinish(String fileName) {
-                    super.downloadFinish(fileName);
+                public void downloadFinish(String remark, String fileName) {
+                    super.downloadFinish(remark, fileName);
                     mFragment.showUserImg(fileName);
                 }
             });

@@ -6,7 +6,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.view.menu.MenuBuilder;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -142,6 +141,7 @@ public class ChatFragment extends Fragment implements ChatContract.View {
         root.findViewById(R.id.btn__toolbar_phone).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                mPresenter.callTo();
                 Intent intent = new Intent(getContext(), PhoneActivity.class);
                 intent.putExtra("friend", mPresenter.getFriendView());
                 startActivity(intent);

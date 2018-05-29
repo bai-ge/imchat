@@ -4,10 +4,11 @@ package com.baige.connect;
 import android.util.Log;
 
 import com.baige.connect.msg.MessageManager;
+import com.baige.connect.msg.MessageProcess;
 import com.baige.data.entity.Candidate;
 import com.baige.data.entity.DeviceModel;
 import com.baige.data.source.cache.CacheRepository;
-import com.baige.pushcore.MessageProcess;
+import com.baige.pushcore.MessagePushProcess;
 import com.baige.util.IPUtil;
 import com.baige.util.Loggerx;
 import com.baige.util.Tools;
@@ -90,7 +91,8 @@ public class NetServerManager {
                 if(packet.getHeaderBuf() == null){
                     Log.v(TAG, "UDP 接收到数据:" + packet);
                 }else{
-                    Log.v("voice", "size ="+packet.getContentBuf().length+"connect ="+connector.getAddress().getStringRemoteAddress());
+//                    Log.v("voice", "size ="+packet.getContentBuf().length+"connect ="+connector.getAddress().getStringRemoteAddress());
+                    Log.v("header", packet.toString());
                 }
                 MessageProcess.receive(connector, packet);
             }
@@ -233,20 +235,20 @@ public class NetServerManager {
     }
 
 
-    public void tryUdpTest() {
+    public static void tryUdpTest() {
         CacheRepository cacheRepository = CacheRepository.getInstance();
         String localIp = IPUtil.getLocalIPAddress(true);
-        String localPort = datagramSocketServer.getLocalPort() + "";
+        String localPort = NetServerManager.getInstance().getUdpPort()+"";
         String msg = MessageManager.udpTest(cacheRepository.getDeviceId(), localIp, localPort);
         ConnectedByUDP connectedByUDP;
         if (!cacheRepository.getServerIp().equals("120.78.148.180") && !cacheRepository.getServerIp().equals("39.180.74.14")) {
-            connectedByUDP = getUDPConnectorByAddress(cacheRepository.getServerIp(), cacheRepository.getServerUdpPort());
+            connectedByUDP = NetServerManager.getInstance().getUDPConnectorByAddress(cacheRepository.getServerIp(), cacheRepository.getServerUdpPort());
             connectedByUDP.sendString(msg);
         }
-        connectedByUDP = getUDPConnectorByAddress("120.78.148.180", 12059);
+        connectedByUDP = NetServerManager.getInstance().getUDPConnectorByAddress("120.78.148.180", 12059);
         connectedByUDP.sendString(msg);
 
-        connectedByUDP = getUDPConnectorByAddress("39.180.74.14", 12059);
+        connectedByUDP = NetServerManager.getInstance().getUDPConnectorByAddress("39.180.74.14", 12059);
         connectedByUDP.sendString(msg);
     }
 
@@ -264,240 +266,5 @@ public class NetServerManager {
         connectedByUDP.sendString(msg);
     }
 
-    public void tryPTPConnect(List<Candidate> candidates, String deviceId) {
-        DeviceModel deviceModel = getDeviceModelById(deviceId);
-//        if (deviceModel != null && deviceModel.getConnectedByUDP() != null && deviceModel.getConnectedByUDP().isConnected(5000)) {
-//            Log.d(TAG, "已经建立P2P 连接：id ="+deviceId+", connetor ="+deviceModel.getConnectedByUDP().getAddress().getStringRemoteAddress() );
-//            TelePhone.getInstance().showLog("P2P 连接成功 " + deviceModel.getConnectedByUDP().getAddress().getStringRemoteAddress());
-//            return;
-//        }
-        ConnectedByUDP connectedByUDP = null;
-        Candidate candidate = null;
-        Candidate candidate1;
-        Candidate candidate2;
-        int port, port1, port2;
-        String msg = null;
-        CacheRepository cacheRepository = CacheRepository.getInstance();
-        JSONObject jsonObject = MessageManager.tryPTPConnect(cacheRepository.getDeviceId(), deviceId);
-        if(jsonObject != null){
-            msg = jsonObject.toString();
-        }
-        //判断自己的NAT类型
-//        1, 全锥型(Full Cone)
-//
-//        2,  受限锥型(Restricted Cone)， 或者说是IP受限锥型
-//
-//        3,  端口受限锥型(Port Restricted Cone), 或者说是IP + PORT受限锥型
-//
-//        4,  对称型(Symmetric)
-        List<Candidate> candidateList = CacheRepository.getInstance().getCandidates();
-        if (candidateList == null || candidateList.size() == 0) {
-            tryUdpTest();
-            return;
-        }
-        boolean isSymmetric = true;
-        boolean isOpSymmetric = true;
-        if (candidateList.size() == 1) {
-            candidate = candidateList.get(0);
-            if (Tools.isEquals(candidate.getLocalPort(), candidate.getRemotePort())) {
-                isSymmetric = false;
-            }
 
-        } else if (candidateList.size() > 1) {
-            candidate1 = candidateList.get(0);
-            candidate2 = candidateList.get(1);
-            if (Tools.isEquals(candidate1.getRemotePort(), candidate2.getRemotePort())) {
-                isSymmetric = false;
-            }
-        }
-
-        //判断对方NAT类型
-        if (candidates.size() == 1) {
-            candidate = candidates.get(0);
-            if (Tools.isEquals(candidate.getLocalPort(), candidate.getRemotePort())) {
-                isOpSymmetric = false;
-            }
-            //TODO 当Symmetric 处理
-        } else if (candidates.size() > 1) {
-            candidate1 = candidates.get(0);
-            candidate2 = candidates.get(1);
-            if (Tools.isEquals(candidate1.getRemotePort(), candidate2.getRemotePort())) {
-                isOpSymmetric = false;
-            }
-        }
-        if (isSymmetric && isOpSymmetric) {
-            //自己和对方都是对称型，不能随便发送数据
-            if (candidates.size() == 1 || candidateList.size() == 1) {
-                //假对称型，不确定
-                if(candidates.size() == 1){
-                    candidate = candidates.get(0);
-                    port = Integer.valueOf(candidate.getRelayPort());
-                    // 预测几条
-                    for (int i = 0; i < 10; i++) {
-                        port++;
-                        connectedByUDP = getUDPConnectorByAddress(candidate.getRemoteIp(), port);
-                        connectedByUDP.sendString(msg);
-                    }
-                    connectedByUDP = getUDPConnectorByAddress(candidate.getRemoteIp(), candidate.getRemotePort());
-                    connectedByUDP.sendString(msg);
-
-                    if (!Tools.isEquals(candidate.getLocalIp(), candidate.getRemoteIp())) {
-                        connectedByUDP = getUDPConnectorByAddress(candidate.getLocalIp(), candidate.getLocalPort());
-                        connectedByUDP.sendString(msg);
-                    }
-                }else if(candidates.size() > 1){
-                    candidate1 = candidates.get(0);
-                    candidate2 = candidates.get(1);
-                    port1 = Integer.valueOf(candidate1.getRemotePort());
-                    port2 = Integer.valueOf(candidate2.getRemotePort());
-
-                    if (Math.abs(port1 - port2) == 1) {//相差1
-                         port = Math.max(port1, port2);
-                        // 预测几条
-                        for (int i = 0; i < 10; i++) {
-                            port++;
-                            connectedByUDP = getUDPConnectorByAddress(candidate1.getRemoteIp(), port);
-                            connectedByUDP.sendString(msg);
-                        }
-
-                        if (!Tools.isEquals(candidate1.getLocalIp(), candidate1.getRemoteIp())) {
-                            connectedByUDP = getUDPConnectorByAddress(candidate1.getLocalIp(), candidate1.getLocalPort());
-                            connectedByUDP.sendString(msg);
-                        }
-
-                    } else if (Math.abs(port1 - port2) < 10) {
-                         port = Math.max(port1, port2);
-                        // 预测几条
-                        for (int i = 0; i < 10; i++) {
-                            port++;
-                            connectedByUDP = getUDPConnectorByAddress(candidate1.getRemoteIp(), port);
-                            connectedByUDP.sendString(msg);
-                        }
-                        if (!Tools.isEquals(candidate1.getLocalIp(), candidate1.getRemoteIp())) {
-                            connectedByUDP = getUDPConnectorByAddress(candidate1.getLocalIp(), candidate1.getLocalPort());
-                            connectedByUDP.sendString(msg);
-                        }
-                    } else { //不可能猜测
-                        Log.d(TAG, "Symmetric 端口分配相差过大");
-                        connectedByUDP = getUDPConnectorByAddress(candidate1.getLocalIp(), candidate1.getLocalPort());
-                        connectedByUDP.sendString(msg);
-                    }
-                }
-            } else {//真对称型
-                candidate1 = candidates.get(0);
-                candidate2 = candidates.get(1);
-                port1 = Integer.valueOf(candidate1.getRemotePort());
-                port2 = Integer.valueOf(candidate2.getRemotePort());
-
-                if (Math.abs(port1 - port2) == 1) {//相差1
-                    port = Math.max(port1, port2);
-                    // 预测几条
-                    for (int i = 0; i < 10; i++) {
-                        port++;
-                        connectedByUDP = getUDPConnectorByAddress(candidate1.getRemoteIp(), port);
-                        connectedByUDP.sendString(msg);
-                    }
-                    connectedByUDP = getUDPConnectorByAddress(candidate1.getRemoteIp(), port + 1);
-                    connectedByUDP.sendString(msg);
-
-                    if (!Tools.isEquals(candidate1.getLocalIp(), candidate1.getRemoteIp())) {
-                        connectedByUDP = getUDPConnectorByAddress(candidate1.getLocalIp(), candidate1.getLocalPort());
-                        connectedByUDP.sendString(msg);
-                    }
-
-                } else if (Math.abs(port1 - port2) < 10) {
-                    port = Math.max(port1, port2);
-                    // 预测几条
-                    for (int i = 0; i < 10; i++) {
-                        port++;
-                        connectedByUDP = getUDPConnectorByAddress(candidate1.getRemoteIp(), port);
-                        connectedByUDP.sendString(msg);
-                    }
-                    if (!Tools.isEquals(candidate1.getLocalIp(), candidate1.getRemoteIp())) {
-                        connectedByUDP = getUDPConnectorByAddress(candidate1.getLocalIp(), candidate1.getLocalPort());
-                        connectedByUDP.sendString(msg);
-                    }
-                } else { //不可能猜测
-                    Log.d(TAG, "Symmetric 端口分配相差过大");
-                    connectedByUDP = getUDPConnectorByAddress(candidate1.getLocalIp(), candidate1.getLocalPort());
-                    connectedByUDP.sendString(msg);
-                }
-
-            }
-        } else if (isSymmetric && !isOpSymmetric) {
-            //自己对称型，而对方不是，目标唯一
-            candidate = candidates.get(0);
-            connectedByUDP = getUDPConnectorByAddress(candidate.getRemoteIp(), candidate.getRemotePort());
-            connectedByUDP.sendString(msg);
-            if (!Tools.isEquals(candidate.getLocalIp(), candidate.getRemoteIp())) {
-                connectedByUDP = getUDPConnectorByAddress(candidate.getLocalIp(), candidate.getLocalPort());
-                connectedByUDP.sendString(msg);
-            }
-        } else if (!isSymmetric && isOpSymmetric) {
-            //自己非对称型，而对方是，自己可以随便发送数据
-            if (candidates.size() == 1) {
-                candidate = candidates.get(0);
-                port = Integer.valueOf(candidate.getRelayPort());
-                // 预测几条
-                for (int i = 0; i < 10; i++) {
-                    port++;
-                    connectedByUDP = getUDPConnectorByAddress(candidate.getRemoteIp(), port);
-                    connectedByUDP.sendString(msg);
-                }
-                connectedByUDP = getUDPConnectorByAddress(candidate.getRemoteIp(), candidate.getRemotePort());
-                connectedByUDP.sendString(msg);
-
-                if (!Tools.isEquals(candidate.getLocalIp(), candidate.getRemoteIp())) {
-                    connectedByUDP = getUDPConnectorByAddress(candidate.getLocalIp(), candidate.getLocalPort());
-                    connectedByUDP.sendString(msg);
-                }
-            } else if (candidates.size() > 1) {
-                candidate1 = candidates.get(0);
-                candidate2 = candidates.get(1);
-                port1 = Integer.valueOf(candidate1.getRemotePort());
-                port2 = Integer.valueOf(candidate2.getRemotePort());
-
-                if (Math.abs(port1 - port2) == 1) {//相差1
-                    port = Math.max(port1, port2);
-                    // 预测几条
-                    for (int i = 0; i < 10; i++) {
-                        port++;
-                        connectedByUDP = getUDPConnectorByAddress(candidate1.getRemoteIp(), port);
-                        connectedByUDP.sendString(msg);
-                    }
-
-                    if (!Tools.isEquals(candidate1.getLocalIp(), candidate1.getRemoteIp())) {
-                        connectedByUDP = getUDPConnectorByAddress(candidate1.getLocalIp(), candidate1.getLocalPort());
-                        connectedByUDP.sendString(msg);
-                    }
-
-                } else if (Math.abs(port1 - port2) < 10) {
-                     port = Math.max(port1, port2);
-                    // 预测几条
-                    for (int i = 0; i < 10; i++) {
-                        port++;
-                        connectedByUDP = getUDPConnectorByAddress(candidate1.getRemoteIp(), port);
-                        connectedByUDP.sendString(msg);
-                    }
-                    if (!Tools.isEquals(candidate1.getLocalIp(), candidate1.getRemoteIp())) {
-                        connectedByUDP = getUDPConnectorByAddress(candidate1.getLocalIp(), candidate1.getLocalPort());
-                        connectedByUDP.sendString(msg);
-                    }
-                } else { //不可能猜测
-                    Log.d(TAG, "Symmetric 端口分配相差过大");
-                    connectedByUDP = getUDPConnectorByAddress(candidate1.getLocalIp(), candidate1.getLocalPort());
-                    connectedByUDP.sendString(msg);
-                }
-            }
-
-        } else {
-            candidate = candidates.get(0);
-            connectedByUDP = getUDPConnectorByAddress(candidate.getRemoteIp(), candidate.getRemotePort());
-            connectedByUDP.sendString(msg);
-            if (!Tools.isEquals(candidate.getLocalIp(), candidate.getRemoteIp())) {
-                connectedByUDP = getUDPConnectorByAddress(candidate.getLocalIp(), candidate.getLocalPort());
-                connectedByUDP.sendString(msg);
-            }
-        }
-    }
 }

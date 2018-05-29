@@ -112,6 +112,7 @@ public class PhoneFragment extends Fragment implements PhoneContract.View , Sens
        // mWakelock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Telephone");
 
 
+
         mSensorManager = (SensorManager)getContext().getSystemService(Context.SENSOR_SERVICE);
         mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
 
@@ -257,10 +258,15 @@ public class PhoneFragment extends Fragment implements PhoneContract.View , Sens
 
 
     @Override
+    public void close() {
+        getActivity().finish();
+    }
+
+    @Override
     public void showFriend(FriendView friendView) {
         if(friendView != null){
             showName(friendView.getSuitableName());
-            showFriendImg(friendView.getFriendImgName());
+            showFriendImg(friendView.getImgName());
         }
     }
 
@@ -297,6 +303,7 @@ public class PhoneFragment extends Fragment implements PhoneContract.View , Sens
 
     @Override
     public void showName(final String name) {
+        Log.d(TAG, "showName()" + name);
         mHandler.post(new Runnable() {
             @Override
             public void run() {

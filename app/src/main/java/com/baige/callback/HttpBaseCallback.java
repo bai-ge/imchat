@@ -28,7 +28,7 @@ public class HttpBaseCallback extends BaseCallback implements ServerHelper.Prima
     }
 
     @Override
-    public void response(String json) {
+    public final void response(String json) { //不可重写
         /*
         * 通用解析器
         * 需要根据服务器返回的json 数据，调用本身不同的函数，解决持续通信问题
@@ -139,27 +139,43 @@ public class HttpBaseCallback extends BaseCallback implements ServerHelper.Prima
     }
 
     @Override
-    public void progress(String fileName, long finishSize, long totalSize) {
+    public void loadObject(Object obj) {
 
     }
 
     @Override
-    public void uploadFinish(String fileName) {
+    public void loadList(List<Object> list) {
 
     }
 
     @Override
-    public void downloadFinish(String fileName) {
+    public void loadFail() {
 
     }
 
     @Override
-    public void error(String fileName, Exception e) {
+    public void progress(String remark, String fileName, long finishSize, long totalSize) {
 
     }
 
     @Override
-    public void fail(String fileName) {
+    public void uploadFinish(String remark, String fileName) {
 
     }
+
+    @Override
+    public void downloadFinish(String remark, String fileName) {
+
+    }
+
+    @Override
+    public void error(String remark, String fileName, Exception e) {
+
+    }
+
+    @Override
+    public void fail(String remark, String fileName) {
+
+    }
+
 }

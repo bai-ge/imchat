@@ -12,8 +12,10 @@ import android.os.Vibrator;
 import android.util.Log;
 
 import com.baige.BaseApplication;
+import com.baige.callback.BaseResponseBinder;
 import com.baige.callback.PushCallback;
 import com.baige.data.entity.BaseEntity;
+import com.baige.p2pcore.ConnectorManager;
 import com.baige.pushcore.SendMessageBroadcast;
 import com.baige.callback.CallbackManager;
 import com.baige.connect.ConnectedByUDP;
@@ -331,47 +333,38 @@ public class TelePhone implements SpeexTalkRecorder.OnRecorderListener, SpeexTal
         showLog("server tcp port =" + CacheRepository.getInstance().getServerPort());
         showLog("server udp port =" + CacheRepository.getInstance().getServerUdpPort());
         NetServerManager netServerManager = NetServerManager.getInstance();
+        showLog("Local udp port =" + netServerManager.getUdpPort());
         CacheRepository cacheRepository = CacheRepository.getInstance();
-        PushCallback callback = new PushCallback(){
+        PushCallback callback = new PushCallback() {
             @Override
             public void timeout() {
                 super.timeout();
             }
 
             @Override
-            public void response(String json) {
-                super.response(json);
+            public synchronized void loadObject(Object obj) {
+                super.loadObject(obj);
+                if (obj instanceof Candidate) {
+                    Candidate candidate = (Candidate) obj;
+                    showLog("From " + candidate.getFrom());
+                    showLog("Local " + candidate.getLocalIp() + ":" + candidate.getLocalPort());
+                    showLog("Remote " + candidate.getRemoteIp() + ":" + candidate.getRemotePort());
+                    showLog("Relay " + candidate.getRelayIp() + ":" + candidate.getRelayPort());
+                    setDelayTime((long) (candidate.getDelayTime() * 1.0 / 2));
+                    if (mListener != null) {
+                        mListener.showDelay((long) (candidate.getDelayTime() * 1.0 / 2));
+                    }
+                    ConnectorManager.getInstance().add(candidate);
+                }
             }
         };
-//        SeniorCallBack callBack = new SeniorCallBack() {
-//            @Override
-//            public synchronized void loadCandidate(Candidate candidate) {
-//                showLog("From " + candidate.getFrom());
-//                showLog("Local " + candidate.getLocalIp() + ":" + candidate.getLocalPort());
-//                showLog("Remote " + candidate.getRemoteIp() + ":" + candidate.getRemotePort());
-//                showLog("Relay " + candidate.getRelayIp() + ":" + candidate.getRelayPort());
-//                setDelayTime((long) (candidate.getDelayTime() * 1.0 / 2));
-//                if (mListener != null) {
-//                    mListener.showDelay((long) (candidate.getDelayTime() * 1.0 / 2));
-//                }
-//                super.loadCandidate(candidate);
-//            }
-//        };
+       // callback.setResponseBinder(new BaseResponseBinder<Candidate>("candidate"));
         String callId = Tools.ramdom();
-        callback.setTimeout(5000);
+        callback.setTimeout(8000);
         callback.setId(callId);
         CallbackManager.getInstance().put(callback);
-        String msg = MessageManager.udpTest(cacheRepository.getDeviceId(), callId, IPUtil.getLocalIPAddress(true), cacheRepository.getLocalUdpPort() + "");
+        String msg = MessageManager.udpTest(cacheRepository.getDeviceId(), callId, IPUtil.getLocalIPAddress(true), netServerManager.getUdpPort() + "");
         netServerManager.tryUdpTest(msg);
-//        CacheRepository cacheRepository = CacheRepository.getInstance();
-//        SocketPacket socketPacket = new SocketPacket();
-//        String msg = MessageManager.udpTest(cacheRepository.who().getDeviceId(), IPUtil.getLocalIPAddress(true), ""+netServerManager.getUdpPort());
-//        socketPacket.setContentBuf(msg.getBytes());
-//        socketPacket.packet();
-//
-//        netServerManager.sendMessage(cacheRepository.getServerIp(), cacheRepository.getServerUdpPort(), socketPacket.getAllBuf());
-//            //TODO 检测NAT类型
-//        netServerManager.sendMessage("120.78.148.180", 12059, socketPacket.getAllBuf());
     }
 
     @Override
@@ -511,7 +504,7 @@ public class TelePhone implements SpeexTalkRecorder.OnRecorderListener, SpeexTal
             if (user != null) {
                 name = user.getName();
             }
-            String msg = MessageManager.callTo(deviceId, name);
+            String msg = MessageManager.callTo(deviceId, name, user.getId());
             SendMessageBroadcast.getInstance().sendMessage(msg);
         } else {
             showLog("错误状态, 当前" + mStatus);
