@@ -67,16 +67,16 @@ public class FileListBottomToolBar extends LinearLayout implements OnClickListen
         }
         switch (view.getId()) {
             case R.id.mToolBarShare:
-                mOnItemClickListener.onShare();
+                mOnItemClickListener.onShare(view);
                 break;
             case R.id.mToolBarSort:
-                mOnItemClickListener.onSore();
+                mOnItemClickListener.onSore(view);
                 break;
             case R.id.mToolBarRefresh:
-                mOnItemClickListener.onRefresh();
+                mOnItemClickListener.onRefresh(view);
                 break;
             case R.id.mToolBarMore:
-                mOnItemClickListener.onMore();
+                mOnItemClickListener.onMore(view);
                 break;
         }
     }

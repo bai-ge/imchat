@@ -52,5 +52,15 @@ public interface MainContract {
         void showFriends(List<FriendView> friendViewList);
 
         void showLastChatMsgs(List<LastChatMsgInfo> lastChatMsgInfos);
+
+        void showSystemFileCount(int count);
+
+        void showDownloadFileCount(int count);
+
+        void showShareFileCount(int count);
+
+        void showShareHomeCount(int count);
+
+        void showShareCount(int count);
     }
 }

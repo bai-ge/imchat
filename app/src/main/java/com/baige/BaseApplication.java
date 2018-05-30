@@ -9,6 +9,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.os.Environment;
+import android.widget.Toast;
 
 import com.baige.data.entity.AppPackgeInfo;
 import com.baige.data.entity.FileInfo;
@@ -87,6 +88,10 @@ public class BaseApplication extends Application {
             return self.getApplicationContext();
         }
         return null;
+    }
+
+    public static void showTip(String text){
+        Toast.makeText(getAppContext(), text, Toast.LENGTH_LONG).show();
     }
 
 

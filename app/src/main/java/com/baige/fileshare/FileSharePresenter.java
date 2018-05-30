@@ -27,6 +27,7 @@ import com.baige.util.Tools;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 import java.util.UUID;
@@ -44,6 +45,8 @@ public class FileSharePresenter implements FileShareContract.Presenter {
 
     private FileShareContract.View mFragment;
 
+    private boolean isShowOwnFile;
+
 
     private Stack<String> mLoadPathHistory = new Stack<>();
 
@@ -56,10 +59,35 @@ public class FileSharePresenter implements FileShareContract.Presenter {
     @Override
     public void start() {
         List<FileView> list = CacheRepository.getInstance().getFileViewObservable().loadCache();
-        initFileView(list);
-        mFragment.showFileViews(list);
+        List<FileView> showList = filter(list);
+        initFileView(showList);
+        mFragment.showFileViews(showList);
         CacheRepository.getInstance().registerDataChange(observer);
         searchFiles();
+    }
+
+    public boolean isShowOwnFile() {
+        return isShowOwnFile;
+    }
+
+    public void setShowOwnFile(boolean showOwnFile) {
+        isShowOwnFile = showOwnFile;
+    }
+
+    public List<FileView> filter(List<FileView> fileViews){
+        if(isShowOwnFile){
+            User user = CacheRepository.getInstance().who();
+            List<FileView> update = new ArrayList<>();
+            for (FileView file: fileViews) {
+                if(file.getUserId() == user.getId()){
+                    update.add(file);
+                }
+            }
+            return update;
+        }else{
+            return fileViews;
+        }
+
     }
 
     @Override
@@ -105,7 +133,7 @@ public class FileSharePresenter implements FileShareContract.Presenter {
             if (fileView.getUserId() == user.getId()) {
                 fileView.setUserName("我");
             } else {
-                FriendView friendView = friendViewObservable.get(fileView.getId());
+                FriendView friendView = friendViewObservable.get(fileView.getUserId());
                 if (friendView != null) {
                     fileView.setUserName(friendView.getSuitableName());
                 }
@@ -123,8 +151,9 @@ public class FileSharePresenter implements FileShareContract.Presenter {
         public void update(FileViewObservable observable, Object arg) {
             super.update(observable, arg);
             List<FileView> list = observable.loadCache();
-            initFileView(list);
-            mFragment.showFileViews(list);
+            List<FileView> showList = filter(list);
+            initFileView(showList);
+            mFragment.showFileViews(showList);
         }
     };
 
@@ -164,11 +193,12 @@ public class FileSharePresenter implements FileShareContract.Presenter {
                 }
             });
             FileReceiverSession fileReceiverSession = new FileReceiverSession(uuid, fileView.getRemark(), fileView.getFileName(), fileView.getFileSize());
+            fileReceiverSession.setSlipWindowCount(CacheRepository.getInstance().getSlipWindowCount());
             connectSession.put(FileReceiverSession.TAG, fileReceiverSession);
             ConnectorManager.getInstance().add(connectSession);
             String from = CacheRepository.getInstance().getDeviceId();
             String to = friendView.getDeviceId();
-            String msg = MessageManagerOfFile.askDownloadFile(fileView, uuid, from, to);
+            String msg = MessageManagerOfFile.askDownloadFile( from, to, fileView, uuid, fileReceiverSession.getSlipWindowCount());
             SendMessageBroadcast.getInstance().sendMessage(msg);
         }
     }

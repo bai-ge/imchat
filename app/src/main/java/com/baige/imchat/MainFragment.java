@@ -145,6 +145,17 @@ public class MainFragment extends Fragment implements MainContract.View, BottomN
 
     private ImageButton mBtnShare;
 
+    private TextView mTxtSystemFilesCount;
+
+    private TextView mTxtDownloadFilesCount;
+
+    private TextView mTxtShareFilesCount;
+
+    private TextView mTxtShareHomeCount;
+
+    private TextView mTxtShareCount;
+
+
     /*个人信息*/
 
     private CircleImageView mCircleImageView;
@@ -416,6 +427,12 @@ public class MainFragment extends Fragment implements MainContract.View, BottomN
         mBtnShareHome = view.findViewById(R.id.btn_share_home);
         mBtnShare = view.findViewById(R.id.btn_share);
 
+        mTxtSystemFilesCount = view.findViewById(R.id.txt_system_files_count);
+        mTxtDownloadFilesCount = view.findViewById(R.id.txt_download_count);
+        mTxtShareFilesCount = view.findViewById(R.id.txt_share_files_count);
+        mTxtShareHomeCount = view.findViewById(R.id.txt_share_square_count);
+        mTxtShareCount = view.findViewById(R.id.txt_share_count);
+
         mBtnSystemFiles.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -427,8 +444,9 @@ public class MainFragment extends Fragment implements MainContract.View, BottomN
         mBtnDownloadFiles.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), FileShareActivity.class);
+                Intent intent = new Intent(getActivity(), FileLocalActivity.class);
                 intent.putExtra("title", "已下载文件");
+                intent.putExtra("download", true);
                 startActivity(intent);
             }
         });
@@ -437,6 +455,7 @@ public class MainFragment extends Fragment implements MainContract.View, BottomN
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), FileShareActivity.class);
                 intent.putExtra("title", "已分享文件");
+                intent.putExtra("own", true);
                 startActivity(intent);
             }
         });
@@ -949,6 +968,61 @@ public class MainFragment extends Fragment implements MainContract.View, BottomN
             @Override
             public void run() {
                 mDrawerLayout.openDrawer(GravityCompat.START);
+            }
+        });
+    }
+
+    @Override
+    public void showSystemFileCount(final int count) {
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                String text = "("+count+")";
+                mTxtSystemFilesCount.setText(text);
+            }
+        });
+    }
+
+    @Override
+    public void showDownloadFileCount(final int count) {
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                String text = "("+count+")";
+                mTxtDownloadFilesCount.setText(text);
+            }
+        });
+    }
+
+    @Override
+    public void showShareFileCount(final int count) {
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                String text = "("+count+")";
+                mTxtShareFilesCount.setText(text);
+            }
+        });
+    }
+
+    @Override
+    public void showShareHomeCount(final int count) {
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                String text = "("+count+")";
+                mTxtShareHomeCount.setText(text);
+            }
+        });
+    }
+
+    @Override
+    public void showShareCount(final int count) {
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                String text = "("+count+")";
+                mTxtShareCount.setText(text);
             }
         });
     }

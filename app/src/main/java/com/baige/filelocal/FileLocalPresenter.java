@@ -3,6 +3,7 @@ package com.baige.filelocal;
 import android.os.Environment;
 import android.util.Log;
 
+import com.baige.BaseApplication;
 import com.baige.callback.HttpBaseCallback;
 import com.baige.common.State;
 import com.baige.data.entity.FileInfo;
@@ -36,6 +37,8 @@ public class FileLocalPresenter implements FileLocalContract.Presenter {
 
     private Stack<String> mLoadPathHistory = new Stack<>();
 
+    private boolean showDownloadPath = false;
+
     public FileLocalPresenter(Repository instance, FileLocalFragment fileListFragment) {
         mRepository = checkNotNull(instance);
         mFragment = checkNotNull(fileListFragment);
@@ -45,6 +48,22 @@ public class FileLocalPresenter implements FileLocalContract.Presenter {
     @Override
     public void start() {
         String path = CacheRepository.getInstance().getCurrentPath();
+        if(showDownloadPath){
+            path = BaseApplication.downloadPath;
+        }
+        if(Tools.isEmpty(path) || path.length() < CacheRepository.ExternalStoragePath.length()){
+            loadFileInfo(CacheRepository.ExternalStoragePath);
+        }else{
+            loadFileInfo(path);
+        }
+    }
+
+    @Override
+    public void refresh() {
+        String path = CacheRepository.getInstance().getCurrentPath();
+        if(showDownloadPath){
+            path = BaseApplication.downloadPath;
+        }
         if(Tools.isEmpty(path) || path.length() < CacheRepository.ExternalStoragePath.length()){
             loadFileInfo(CacheRepository.ExternalStoragePath);
         }else{
@@ -259,5 +278,9 @@ public class FileLocalPresenter implements FileLocalContract.Presenter {
             CacheRepository.getInstance().getFileViewObservable().put(fileView);
             mRepository.shareFile(user.getId(), user.getVerification(), fileView, callback);
         }
+    }
+
+    public void setShowDownloadPath(boolean showDownloadPath) {
+        this.showDownloadPath = showDownloadPath;
     }
 }

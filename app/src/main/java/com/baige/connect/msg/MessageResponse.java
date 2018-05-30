@@ -139,11 +139,13 @@ public class MessageResponse {
                                     }
                                     FileReceiverSession fileReceiverSession = (FileReceiverSession) session.get(FileReceiverSession.TAG);
                                     if(fileReceiverSession != null ){
-                                        if(session.isWaiting()){
-                                            session.start();
-                                            fileReceiverSession.start((ConnectedByUDP) connector);
+                                        synchronized (session){
+                                            if(session.isWaiting()){
+                                                session.start();
+                                                fileReceiverSession.start((ConnectedByUDP) connector);
+                                            }
+                                            fileReceiverSession.startDownload();
                                         }
-                                        fileReceiverSession.startDownload();
                                     }
                                 }
                             }

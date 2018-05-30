@@ -28,6 +28,10 @@
 
     <string name="input_type_digits">123456789qwertyuiopasdfghjklzxcvbnm</string>
     <string name="null_info">这里什么都没有</string>
+    <string name="add_friend">添加好友</string>
+    <string name="refresh">刷新</string>
+    <string name="show_inform">显示通知</string>
+    <string name="cancel_inform">取消通知</string>
 
     <string-array name="server_ip">
         <item>120.78.148.180</item>
@@ -39,6 +43,23 @@
         <item>192.168.1.104</item>
         <item>192.168.1.105</item>
         <item>其它</item>
+    </string-array>
+
+    <string-array name="slip_window_count_array">
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>8</item>
+        <item>10</item>
+        <item>12</item>
+        <item>15</item>
+        <item>18</item>
+        <item>20</item>
+        <item>25</item>
+        <item>30</item>
+        <item>40</item>
+        <item>50</item>
+        <item>60</item>
     </string-array>
 
 </resources>

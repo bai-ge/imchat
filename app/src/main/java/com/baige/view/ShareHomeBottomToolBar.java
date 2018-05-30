@@ -67,16 +67,16 @@ public class ShareHomeBottomToolBar extends LinearLayout implements OnClickListe
         }
         switch (view.getId()) {
             case R.id.mToolBarDownload:
-                mOnItemClickListener.onDownload();
+                mOnItemClickListener.onDownload(view);
                 break;
             case R.id.mToolBarSort:
-                mOnItemClickListener.onSore();
+                mOnItemClickListener.onSore(view);
                 break;
             case R.id.mToolBarRefresh:
-                mOnItemClickListener.onRefresh();
+                mOnItemClickListener.onRefresh(view);
                 break;
             case R.id.mToolBarMore:
-                mOnItemClickListener.onMore();
+                mOnItemClickListener.onMore(view);
                 break;
         }
     }

@@ -1,44 +1,46 @@
 package com.baige.view;
 
+import android.view.View;
+
 /**
  * Created by baige on 2018/5/29.
  */
 
  public interface IOnMenuItemClickListener {
 
-    void onDownload();
+    void onDownload(View view);
 
-    void onShare();
+    void onShare(View view);
 
-    void onSore();
+    void onSore(View view);
 
-    void onRefresh();
+    void onRefresh(View view);
 
-    void onMore();
+    void onMore(View view);
      class SimpleMenuItemClickListener implements IOnMenuItemClickListener{
 
         @Override
-        public void onDownload() {
+        public void onDownload(View view) {
 
         }
 
         @Override
-        public void onShare() {
+        public void onShare(View view) {
 
         }
 
         @Override
-        public void onSore() {
+        public void onSore(View view) {
 
         }
 
         @Override
-        public void onRefresh() {
+        public void onRefresh(View view) {
 
         }
 
         @Override
-        public void onMore() {
+        public void onMore(View view) {
 
         }
     }

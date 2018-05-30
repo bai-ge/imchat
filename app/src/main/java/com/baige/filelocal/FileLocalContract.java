@@ -18,6 +18,7 @@ public interface FileLocalContract {
         void rebackPack();
         void uploadFile(List<FileInfo> fileInfos);
         void shareFile(List<FileInfo> fileInfos);
+        void refresh();
     }
 
     interface View extends BaseView<Presenter> {

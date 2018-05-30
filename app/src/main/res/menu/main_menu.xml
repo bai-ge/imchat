@@ -6,21 +6,21 @@
         <item
             android:id="@+id/add_friend"
             android:icon="@drawable/ic_add_friends"
-            android:title="添加好友"/>
+            android:title="@string/add_friend"/>
         <item
             android:id="@+id/refresh"
             android:icon="@drawable/ic_refresh2"
-            android:title="刷新"/>
+            android:title="@string/refresh"/>
     </group>
 
     <group android:id="@+id/grp2" >
         <item
             android:id="@+id/add_notify"
             android:icon="@drawable/ic_notify"
-            android:title="显示通知"/>
+            android:title="@string/show_inform"/>
         <item
             android:id="@+id/cancel_notify"
             android:icon="@drawable/ic_cancel"
-            android:title="取消通知"/>
+            android:title="@string/cancel_inform"/>
     </group>
 </menu>

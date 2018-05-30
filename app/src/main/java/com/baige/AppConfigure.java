@@ -46,4 +46,7 @@ public class AppConfigure {
     public static final String DEFAULT_TCP_PORT = "12056";
     public static final String DEFAULT_UDP_PORT = "12059";
 
+    public static final String KEY_SLIP_WINDOW_COUNT = "key_slip_window_count";
+    public static final String KEY_FILE_SHARE = "key_file_share";
+
 }

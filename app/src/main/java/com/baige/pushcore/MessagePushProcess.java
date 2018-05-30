@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+import com.baige.BaseApplication;
 import com.baige.callback.BaseCallback;
 import com.baige.callback.CallbackManager;
 import com.baige.common.Parm;
@@ -211,19 +212,25 @@ public class MessagePushProcess {
                         case Parm.TYPE_DOWNLOAD_FILE:
                             String path = null;
                             String fileName = null;
+                            int slipWindowCount = 5;
                             if(json.has(FileDAO.FILE_NAME)){
                                 fileName = json.getString(FileDAO.FILE_NAME);
+                            }
+                            if(json.has(Parm.SLIP_WINDOW_COUNT)){
+                                slipWindowCount = json.getInt(Parm.SLIP_WINDOW_COUNT);
                             }
                             if(json.has(FileDAO.FILE_PATH)){
                                 path = json.getString(FileDAO.FILE_PATH);
                                 File file = new File(path);
-                                if(file.exists()){
+                                boolean isShareFile = CacheRepository.getInstance().isShareFile();
+                                if(file.exists() && isShareFile){
 
                                     NetServerManager.tryUdpTest();
                                     //新建会话
                                     ConnectSession connectSession = new ConnectSession();
                                     connectSession.setUUID(uuid);
                                     FileSenderSession fileSenderSession = new FileSenderSession(uuid, fileName, FileUtils.getParent(path));
+                                    fileSenderSession.setSlipWindowCount(slipWindowCount * 2); //发送端的滑动窗口是接收端的两倍
                                     connectSession.put(FileSenderSession.TAG, fileSenderSession);
                                     ConnectorManager.getInstance().add(connectSession);
 
@@ -387,7 +394,8 @@ public class MessagePushProcess {
 
                             }else{
                                 //TODO 文件不存在
-                                Log.d(TAG, "文件不存在");
+                                Log.d(TAG, "文件不存在或用户拒绝分享！");
+                                BaseApplication.showTip("文件不存在或对方拒绝分享!");
                             }
                         default:
                             break;

@@ -1,5 +1,6 @@
 package com.baige.filelocal;
 
+import android.content.Intent;
 import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.os.Handler;
@@ -8,10 +9,13 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,6 +23,7 @@ import com.baige.adapter.FileInfoAdapter;
 import com.baige.data.entity.FileInfo;
 import com.baige.data.entity.FileType;
 import com.baige.imchat.R;
+import com.baige.search.SearchActivity;
 import com.baige.util.FileUtils;
 import com.baige.util.Tools;
 import com.baige.view.BottomChooseBar;
@@ -28,6 +33,8 @@ import com.baige.view.IOnMenuItemClickListener;
 import com.baige.view.ShareDialog;
 import com.baige.view.SortDialog;
 
+import java.io.File;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -211,6 +218,55 @@ public class FileLocalFragment extends Fragment implements FileLocalContract.Vie
     }
 
 
+    private void showPopupMenu(View view) {
+        PopupMenu popupMenu = new PopupMenu(getContext(), view);
+        popupMenu.getMenuInflater().inflate(R.menu.file_more_menu, popupMenu.getMenu());
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.delete_file:
+
+                        List<FileInfo >fileInfos = mAdapter.getSelectItems();
+                        if(fileInfos == null || fileInfos.isEmpty()){
+                            showTip("未选择文件");
+                        }else{
+                            for (FileInfo fileInfo : fileInfos){
+                                File file = new File(fileInfo.getPath());
+                                if(!file.isDirectory() && file.exists()){
+                                     file.delete();
+                                }
+                            }
+                            mPresenter.refresh();
+                        }
+                        break;
+                    case R.id.file_information:
+                       showTip("详情");
+                        break;
+                }
+                return false;
+            }
+        });
+        setIconEnable(popupMenu.getMenu(), true);
+        popupMenu.show();
+    }
+
+    private void setIconEnable(Menu menu, boolean enable)
+    {
+        try
+        {
+            Class<?> clazz = Class.forName("com.android.internal.view.menu.MenuBuilder");
+            Method m = clazz.getDeclaredMethod("setOptionalIconsVisible", boolean.class);
+            m.setAccessible(true);
+            //传入参数
+            m.invoke(menu, enable);
+
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
 
     private FileInfoAdapter.OnFileInfoItemListener mOnFileInfoItemListener = new FileInfoAdapter.OnFileInfoItemListener() {
         @Override
@@ -228,7 +284,7 @@ public class FileLocalFragment extends Fragment implements FileLocalContract.Vie
 
     private IOnMenuItemClickListener onMenuItemClickListener = new IOnMenuItemClickListener.SimpleMenuItemClickListener() {
         @Override
-        public void onShare() {
+        public void onShare(View view) {
             Log.d(TAG, "onShare()");
             Log.d(TAG, ""+mAdapter.getSelectItems());
 
@@ -241,19 +297,20 @@ public class FileLocalFragment extends Fragment implements FileLocalContract.Vie
         }
 
         @Override
-        public void onSore() {
+        public void onSore(View view) {
             Log.d(TAG, "onSore()");
             showSortDialog();
         }
 
         @Override
-        public void onRefresh() {
+        public void onRefresh(View view) {
             Log.d(TAG, "onRefresh()");
         }
 
         @Override
-        public void onMore() {
+        public void onMore(View view) {
             Log.d(TAG, "onMore()");
+            showPopupMenu(view);
         }
     };
 

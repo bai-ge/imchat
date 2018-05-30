@@ -34,6 +34,8 @@ public class FileSenderSession {
     int packetSize = 2048; //默认包大小
     long currentIndex = 0;
 
+    int slipWindowCount = 10;
+
     /**
      * @param uuid
      * @param fileName
@@ -52,7 +54,7 @@ public class FileSenderSession {
         cacheFile = new CacheFile(this.filePath, fileName, true);
         fileFullSize = cacheFile.getFileSize();
         cacheFile.setFullsize(fileFullSize);
-        sendWindow = new SlipWindow().setUUID(uuid).setWindowCount(10).buildSendWindow(mPacketReader);
+        sendWindow = new SlipWindow().setUUID(uuid).setWindowCount(slipWindowCount).buildSendWindow(mPacketReader);
     }
 
     public void startSend() {
@@ -98,4 +100,11 @@ public class FileSenderSession {
         return fileFullSize - currentIndex;
     }
 
+    public int getSlipWindowCount() {
+        return slipWindowCount;
+    }
+
+    public void setSlipWindowCount(int slipWindowCount) {
+        this.slipWindowCount = slipWindowCount;
+    }
 }

@@ -24,6 +24,7 @@ import static com.baige.AppConfigure.DEFAULT_TCP_PORT;
 import static com.baige.AppConfigure.DEFAULT_UDP_PORT;
 import static com.baige.AppConfigure.KEY_ALERT;
 import static com.baige.AppConfigure.KEY_ALERT_VIBRATE;
+import static com.baige.AppConfigure.KEY_FILE_SHARE;
 import static com.baige.AppConfigure.KEY_PHONE_RING;
 import static com.baige.AppConfigure.KEY_PHONE_SERVER_IP;
 import static com.baige.AppConfigure.KEY_PHONE_SERVER_IP_ARRAY;
@@ -31,6 +32,7 @@ import static com.baige.AppConfigure.KEY_PHONE_SERVER_TCP_PORT;
 import static com.baige.AppConfigure.KEY_PHONE_SERVER_UDP_PORT;
 import static com.baige.AppConfigure.KEY_PHONE_SILENCE;
 import static com.baige.AppConfigure.KEY_PHONE_VIBRATE;
+import static com.baige.AppConfigure.KEY_SLIP_WINDOW_COUNT;
 
 
 public class SettingActivity extends PreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener, Preference.OnPreferenceChangeListener {
@@ -118,6 +120,11 @@ public class SettingActivity extends PreferenceActivity implements SharedPrefere
         }
         findPreference(KEY_PHONE_SERVER_UDP_PORT).setSummary(udp_port);
 
+        isCheck = sp.getBoolean(KEY_FILE_SHARE, true);
+        ((SwitchPreference)findPreference(KEY_FILE_SHARE)).setChecked(isCheck);
+        String slip_count = sp.getString(KEY_SLIP_WINDOW_COUNT, "5");
+        findPreference(KEY_SLIP_WINDOW_COUNT).setSummary(slip_count);
+
         //为了在输入框里默认显示
         SharedPreferences.Editor editor = sp.edit();
         editor.putString(KEY_PHONE_SERVER_IP, sp.getString(KEY_PHONE_SERVER_IP, DEFAULT_PHONE_SERVER_IP));
@@ -192,6 +199,12 @@ public class SettingActivity extends PreferenceActivity implements SharedPrefere
                 }
                 udp.setSummary(udp_port);
                // udp.setSummary(sharedPreferences.getInt(key, DEFAULT_UDP_PORT));
+                break;
+            case KEY_FILE_SHARE:
+                break;
+            case KEY_SLIP_WINDOW_COUNT:
+                String count = sharedPreferences.getString(KEY_SLIP_WINDOW_COUNT, "5");
+                findPreference(key).setSummary(count);
                 break;
         }
     }

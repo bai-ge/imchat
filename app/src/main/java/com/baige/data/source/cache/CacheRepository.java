@@ -85,6 +85,10 @@ public class CacheRepository {
 
     private int localUdpPort = 0;
 
+    //文件传输
+    private int slipWindowCount;
+    private boolean isShareFile;
+
 
 
     public String getServerIp() {
@@ -340,6 +344,22 @@ public class CacheRepository {
         return isSilence;
     }
 
+    public int getSlipWindowCount() {
+        return slipWindowCount;
+    }
+
+    public void setSlipWindowCount(int slipWindowCount) {
+        this.slipWindowCount = slipWindowCount;
+    }
+
+    public boolean isShareFile() {
+        return isShareFile;
+    }
+
+    public void setShareFile(boolean shareFile) {
+        isShareFile = shareFile;
+    }
+
     public void readConfig(Context context) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         setLogin(preferences.getBoolean(AppConfigure.IS_LOGIN, false));
@@ -367,6 +387,9 @@ public class CacheRepository {
         ringUri = preferences.getString(AppConfigure.KEY_PHONE_RING, "");
         phoneVibrate = preferences.getBoolean(AppConfigure.KEY_PHONE_VIBRATE, false);
         isSilence = preferences.getBoolean(AppConfigure.KEY_PHONE_SILENCE, false);
+
+        isShareFile = preferences.getBoolean(AppConfigure.KEY_FILE_SHARE, true);
+        slipWindowCount = Integer.valueOf(preferences.getString(AppConfigure.KEY_SLIP_WINDOW_COUNT, "5"));
         saveConfig(context);
     }
 
@@ -387,6 +410,8 @@ public class CacheRepository {
         }
         editor.putBoolean(AppConfigure.KEY_IS_LOGIN, isLogin());
         editor.putString(AppConfigure.KEY_PHONE_SERVER_IP, serverIp);
+        editor.putBoolean(AppConfigure.KEY_FILE_SHARE, isShareFile);
+        editor.putString(AppConfigure.KEY_SLIP_WINDOW_COUNT, String.valueOf(slipWindowCount));
         editor.commit();
     }
 }

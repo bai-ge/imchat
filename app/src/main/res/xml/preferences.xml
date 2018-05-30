@@ -78,4 +78,23 @@
             android:title="服务器UDP端口"/>
     </PreferenceCategory>
 
+    <PreferenceCategory
+        android:key="pre_key_file_download"
+        android:summary="文件共享"
+        android:title="文件共享设置">
+        <SwitchPreference
+            android:hint="分享"
+            android:key="key_file_share"
+            android:summary="是否分享"
+            android:title="分享"/>
+        <ListPreference
+            android:defaultValue="5"
+            android:dialogTitle="滑动窗口数量"
+            android:entries="@array/slip_window_count_array"
+            android:entryValues="@array/slip_window_count_array"
+            android:key="key_slip_window_count"
+            android:summary="请设置滑动窗口数量"
+            android:title="滑动窗口数量"/>
+    </PreferenceCategory>
+
 </PreferenceScreen>

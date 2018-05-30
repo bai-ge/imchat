@@ -71,6 +71,19 @@ public class CacheFile {
                     e.printStackTrace();
                     isEnable = false;
                 }
+            }else{
+                //TODO 利用上缓存
+                file.delete();
+                try {
+                    file.createNewFile();
+                    getFileSize();
+                    outputStream = new FileOutputStream(file);
+                    isEnable = true;
+                    setState(DOWNLOAD);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    isEnable = false;
+                }
             }
         }
     }

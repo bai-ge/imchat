@@ -3,19 +3,24 @@ package com.baige.imchat;
 import android.util.Log;
 import android.widget.ListView;
 
+import com.baige.BaseApplication;
 import com.baige.callback.HttpBaseCallback;
 import com.baige.data.entity.ChatMsgInfo;
+import com.baige.data.entity.FileView;
 import com.baige.data.entity.FriendView;
 import com.baige.data.entity.User;
 import com.baige.data.observer.BaseObserver;
 import com.baige.data.observer.ChatMessageObservable;
+import com.baige.data.observer.FileViewObservable;
 import com.baige.data.observer.FriendViewObservable;
 import com.baige.data.observer.LastChatMessageObservable;
 import com.baige.data.source.Repository;
 import com.baige.data.source.cache.CacheRepository;
+import com.baige.util.FileUtils;
 import com.baige.util.Tools;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -54,10 +59,16 @@ public class MainPresenter implements MainContract.Presenter {
             CacheRepository.getInstance().registerDataChange(dataObserver);
             List<FriendView> friendViewList = CacheRepository.getInstance().getFriendViewObservable().loadCache();
             List<ChatMsgInfo> chatMsgInfos = CacheRepository.getInstance().getChatMessageObservable().loadCache();
+            List<FileView> fileViews = CacheRepository.getInstance().getFileViewObservable().loadCache();
             CacheRepository.getInstance().getLastChatMessageObservable().analyze(chatMsgInfos, user.getId());
             CacheRepository.getInstance().getLastChatMessageObservable().analyze(friendViewList);
+            showFileViewCount(fileViews);
         }
-
+        int count = 0;
+        count = (int) FileUtils.getChildCount(CacheRepository.ExternalStoragePath);
+        mFragment.showSystemFileCount(count);
+        count = (int) FileUtils.getChildCount(BaseApplication.downloadPath);
+        mFragment.showDownloadFileCount(count);
     }
 
     @Override
@@ -177,6 +188,18 @@ public class MainPresenter implements MainContract.Presenter {
         }
     }
 
+    public void showFileViewCount(List<FileView> fileViews){
+        mFragment.showShareHomeCount(fileViews.size());
+        List<FileView> ownFiles = new ArrayList<>();
+        User user = CacheRepository.getInstance().who();
+        for (FileView file: fileViews) {
+            if(file.getUserId() == user.getId()){
+                ownFiles.add(file);
+            }
+        }
+        mFragment.showShareFileCount(ownFiles.size());
+    }
+
     @Override
     public void stop() {
         CacheRepository.getInstance().getChatMessageObservable().remote(dataObserver);
@@ -203,6 +226,13 @@ public class MainPresenter implements MainContract.Presenter {
         public void update(LastChatMessageObservable observable, Object arg){
             Log.d(TAG, "最近消息："+arg);
             mFragment.showLastChatMsgs(observable.loadCache());
+        }
+
+        @Override
+        public void update(FileViewObservable observable, Object arg) {
+            super.update(observable, arg);
+            Log.d(TAG, "文件："+arg);
+            showFileViewCount(observable.loadCache());
         }
     };
 }

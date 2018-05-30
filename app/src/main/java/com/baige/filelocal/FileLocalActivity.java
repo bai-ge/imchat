@@ -72,6 +72,14 @@ public class FileLocalActivity extends BaseActivity {
             ActivityUtils.addFragmentToActivity(getSupportFragmentManager(), fileListFragment, R.id.content_frame);
         }
         mFileListPresenter = new FileLocalPresenter(Repository.getInstance(LocalRepository.getInstance(getApplicationContext())), fileListFragment);
+        Bundle bundle = getIntent().getExtras();
+        if(bundle != null && bundle.containsKey("download")){
+            boolean isShowDownloadPath = bundle.getBoolean("download");
+            mFileListPresenter.setShowDownloadPath(isShowDownloadPath);
+        }
+        if(bundle != null && bundle.containsKey("title")){
+            mToolbar.setTitle(bundle.getString("title"));
+        }
     }
 
     @Override

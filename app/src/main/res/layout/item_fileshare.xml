@@ -33,7 +33,7 @@
                 android:id="@+id/img_head_tag"
                 android:layout_width="16dp"
                 android:layout_height="16dp"
-                android:src="@drawable/ic_remote"/>
+                android:src="@drawable/icon_cloud"/>
         </RelativeLayout>
 
         <!--文件属性与选择框-->
@@ -61,7 +61,8 @@
                         android:layout_gravity="start"
                         android:ellipsize="middle"
                         android:maxLines="1"
-                        android:text="文件名"
+                        android:maxLength="30"
+                        android:text="@string/chat_message"
                         android:textColor="@color/text_color_black"
                         android:textSize="@dimen/text_size_larg"/>
 
@@ -80,6 +81,9 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="2dp"
                         android:text="备份"
+                        android:ellipsize="middle"
+                        android:maxLines="1"
+                        android:maxLength="30"
                         android:textColor="@color/color_red_1"
                         android:textSize="@dimen/text_size_normal"/>
                 </LinearLayout>
@@ -94,6 +98,7 @@
                     android:layout_gravity="start"
                     android:layout_marginTop="3dp"
                     android:ellipsize="middle"
+                    android:maxLines="2"
                     android:text="/sdcard/baidu/henchang/fanlielong/haiyaochang/yaochang/文件.txt"
                     android:textColor="@color/text_color_light_black"
                     android:textSize="@dimen/text_size_small"/>

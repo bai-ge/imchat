@@ -146,8 +146,8 @@ public class FileShareFragment extends Fragment implements FileShareContract.Vie
 
     private IOnMenuItemClickListener mOnMenuItemClickListener = new IOnMenuItemClickListener.SimpleMenuItemClickListener() {
         @Override
-        public void onDownload() {
-            super.onDownload();
+        public void onDownload(View view) {
+            super.onDownload(view);
             Log.d(TAG, "onDownload()");
             List<FileView> fileViews = mAdapter.getSelectItems();
             if(fileViews == null || fileViews.isEmpty()){
@@ -158,26 +158,26 @@ public class FileShareFragment extends Fragment implements FileShareContract.Vie
         }
 
         @Override
-        public void onShare() {
-            super.onShare();
+        public void onShare(View view) {
+            super.onShare( view);
             Log.d(TAG, "onShare()");
         }
 
         @Override
-        public void onSore() {
-            super.onSore();
+        public void onSore(View view) {
+            super.onSore(view);
             Log.d(TAG, "onSore()");
         }
 
         @Override
-        public void onRefresh() {
-            super.onRefresh();
+        public void onRefresh(View view) {
+            super.onRefresh(view);
             Log.d(TAG, "onRefresh()");
         }
 
         @Override
-        public void onMore() {
-            super.onMore();
+        public void onMore(View view) {
+            super.onMore(view);
             Log.d(TAG, "onMore()");
         }
     };

@@ -20,7 +20,7 @@ import java.util.ArrayList;
 public class MessageManagerOfFile {
     //文件传输
 
-    public static String askDownloadFile(FileView fileView, String uuid, String from, String to){
+    public static String askDownloadFile(String from, String to, FileView fileView, String uuid, int slipWindowCount){
         try {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put(Parm.FROM, from);
@@ -29,6 +29,7 @@ public class MessageManagerOfFile {
             jsonObject.put(FileDAO.FILE_NAME, fileView.getFileName());
             jsonObject.put(FileDAO.FILE_PATH, fileView.getFilePath());
             jsonObject.put(Parm.UUID, uuid);
+            jsonObject.put(Parm.SLIP_WINDOW_COUNT, slipWindowCount);
             ArrayList<Candidate> candidates = ConnectorManager.getInstance().getCandidates();
             if (candidates != null && candidates.size() > 0) {
                 JSONArray jsonArray = new JSONArray();

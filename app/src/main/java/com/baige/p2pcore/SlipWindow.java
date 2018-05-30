@@ -37,6 +37,8 @@ public class SlipWindow {
 
     private PacketReader mPacketReader;
 
+    private int affirmCountDown;
+
     public SlipWindow() {
         windowCount = 5;
         currentPosition = 0;
@@ -51,6 +53,7 @@ public class SlipWindow {
         sendNum = 0;
         currentPosition = 0;
         startIndex = 0;
+        affirmCountDown = windowCount;
     }
 
     public SendWindow buildSendWindow(PacketReader packetReader) {
@@ -85,7 +88,7 @@ public class SlipWindow {
          */
         private void slip() {
             SocketPacket nowPacket = null;
-            Log.d(TAG, "保存数据包"+currentPosition);
+            Log.d(TAG, "保存数据包" + currentPosition);
             synchronized (windowLock) {
                 int newIndex = startIndex;
                 nowPacket = socketPackets[startIndex];
@@ -95,8 +98,8 @@ public class SlipWindow {
             }
 
             if (nowPacket != null) {
-               boolean isFinish = mPacketWriter.write(nowPacket);
-                if(isFinish){
+                boolean isFinish = mPacketWriter.write(nowPacket);
+                if (isFinish) {
                     mPacketWriter.finish();
                 }
             } else {
@@ -113,7 +116,7 @@ public class SlipWindow {
          */
         public boolean receivePacket(SocketPacket packet, String uuid, long num) {
             boolean res = false;
-            Log.d(TAG, "收到数据包"+num);
+            Log.d(TAG, "收到数据包" + num);
             if (Tools.isEquals(getUUID(), uuid)) {
                 synchronized (windowLock) {
                     if (num >= currentPosition && num < currentPosition + windowCount) {
@@ -123,23 +126,30 @@ public class SlipWindow {
                         res = true;
                     } else {
                         mPacketWriter.askPacket(getUUID(), currentPosition);
-                        Log.e(TAG, "错误数据包"+num);
+                        Log.e(TAG, "错误数据包" + num);
                     }
                     while (affirmTab[startIndex]) {
                         //需要向后偏移
                         slip();
                     }
-                }
-                if (res) {
-                    mPacketWriter.responeAffirm(getUUID(), num);
-                }
+                    /*每收到五个包确认一次*/
+                    affirmCountDown--;
+                    if (affirmCountDown == 0) {
+                        affirmCountDown = windowCount;
+                        mPacketWriter.responeAffirm(getUUID(), currentPosition-1);
+                    }
 
+                }
             }
             return res;
         }
 
         public String getUUID() {
             return uuid;
+        }
+
+        public void askPacket(){
+            mPacketWriter.askPacket(getUUID(), currentPosition);
         }
 
     }
@@ -156,12 +166,18 @@ public class SlipWindow {
          */
         public boolean affirmReceive(String uuid, long num) {
             boolean res = false;
-            Log.d(TAG, "确认收到数据包"+num);
+            Log.d(TAG, "确认收到数据包" + num);
             if (Tools.isEquals(getUUID(), uuid)) {
                 synchronized (windowLock) {
                     if (num >= currentPosition && num < currentPosition + windowCount) {
                         int realPosition = (int) ((num - currentPosition + startIndex) % windowCount);
                         affirmTab[realPosition] = true;
+                        for (int i = 0; i < windowCount; i++) {
+                            if (realNum[i] <= num) {
+                                affirmTab[i] = true;
+                                Log.i(TAG, "确认之前的包" + realNum[i]);
+                            }
+                        }
                         res = true;
                     }
                     while (affirmTab[startIndex]) {
@@ -176,36 +192,36 @@ public class SlipWindow {
 
         public boolean askPacket(String uuid, long num) {
             boolean res = false;
-            Log.d(TAG, "请求数据包"+num);
+            Log.d(TAG, "请求数据包" + num);
             if (Tools.isEquals(getUUID(), uuid)) {
                 synchronized (windowLock) {
                     if (num >= currentPosition && num < currentPosition + windowCount) {
                         int realPosition = (int) ((num - currentPosition + startIndex) % windowCount);
-                        if(realNum[realPosition] == num){
+                        if (realNum[realPosition] == num) {
                             mPacketReader.sendSocketPacket(socketPackets[realPosition]);
                             res = true;
-                        }else{
-                            Log.e(TAG, "请求数据包"+num+",realPosition 计算不准确，当前位置"+currentPosition+", realNum[realPosition]="+realNum[realPosition]);
-                            for(int i = 0; i < windowCount; i++){
-                                if(realNum[i] == num){
+                        } else {
+                            Log.e(TAG, "请求数据包" + num + ",realPosition 计算不准确，当前位置" + currentPosition + ", realNum[realPosition]=" + realNum[realPosition]);
+                            for (int i = 0; i < windowCount; i++) {
+                                if (realNum[i] == num) {
                                     mPacketReader.sendSocketPacket(socketPackets[i]);
                                     res = true;
                                     break;
                                 }
                             }
                         }
-                    }else{
-                        Log.e(TAG, "请求数据包"+num+",但内存中没有，当前位置"+currentPosition);
+                    } else {
+                        Log.e(TAG, "请求数据包" + num + ",但内存中没有，当前位置" + currentPosition);
                     }
                 }
             }
             return res;
         }
 
-        public synchronized boolean startSend(){
+        public synchronized boolean startSend() {
             boolean res = false;
-            Log.d(TAG, "开始发送数据包"+currentPosition);
-            if(currentPosition == 0){
+            Log.d(TAG, "开始发送数据包" + currentPosition);
+            if (sendNum == 0) {
                 res = true;
                 for (int i = 0; i < windowCount; i++) {
                     SocketPacket sendPacket = null;
@@ -216,11 +232,11 @@ public class SlipWindow {
                             socketPackets[i] = sendPacket;
                             realNum[i] = sendNum;
                             mPacketReader.sendSocketPacket(sendPacket);
-                            Log.i(TAG, "数据包已经发送"+sendNum);
-                            sendNum ++;
-                        }else{
+                            Log.i(TAG, "数据包已经发送" + sendNum);
+                            sendNum++;
+                        } else {
                             Log.d(TAG, "数据包已经发送结束，等待对方关闭连接");
-                            Log.i(TAG, "数据包为空"+i);
+                            Log.i(TAG, "数据包为空" + i);
                             break;
                         }
                     }
@@ -246,12 +262,12 @@ public class SlipWindow {
                     socketPackets[newIndex] = nextPacket;
                     realNum[newIndex] = sendNum;
                     mPacketReader.sendSocketPacket(nextPacket);
-                    Log.i(TAG, "数据包已经发送"+sendNum );
-                    sendNum ++;
-                }else{
+                    Log.i(TAG, "数据包已经发送" + sendNum);
+                    sendNum++;
+                } else {
                     //TODO 可能已经结束, 等待对方断开连接
                     Log.d(TAG, "数据包已经发送结束，等待对方关闭连接");
-                    Log.i(TAG, "数据包为空"+(sendNum));
+                    Log.i(TAG, "数据包为空" + (sendNum));
                 }
             }
         }

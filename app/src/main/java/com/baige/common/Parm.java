@@ -80,6 +80,8 @@ public class Parm {
     public final static String NUMBER = "number";
     public final static String CURRENT = "current";
 
+    public final static String SLIP_WINDOW_COUNT = "slip_window_count";
+
 
     private final static int MSG_TYPE = 0x0010;
     public final static int TYPE_LOGIN = MSG_TYPE + 1;

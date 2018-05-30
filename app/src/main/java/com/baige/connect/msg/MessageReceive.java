@@ -144,14 +144,17 @@ public class MessageReceive {
                                         session.start();
                                         fileSenderSession.start((ConnectedByUDP) connector);
                                     }
-                                    FileReceiverSession fileReceiverSession = (FileReceiverSession) session.get(FileReceiverSession.TAG);
-                                    if(fileReceiverSession != null ){
-                                        if(session.isWaiting()){
-                                            session.start();
-                                            fileReceiverSession.start((ConnectedByUDP) connector);
-                                        }
-                                        fileReceiverSession.startDownload();
-                                    }
+                                    //不能在此开始下载
+//                                    FileReceiverSession fileReceiverSession = (FileReceiverSession) session.get(FileReceiverSession.TAG);
+//                                    if(fileReceiverSession != null ){
+//                                        synchronized (session){
+//                                            if(session.isWaiting()){
+//                                                session.start();
+//                                                fileReceiverSession.start((ConnectedByUDP) connector);
+//                                            }
+//                                            fileReceiverSession.startDownload();
+//                                        }
+//                                    }
                                 }
                             }
                             TelePhone.getInstance().showLog("P2P 连接成功 " + connector.getAddress().getStringRemoteAddress());
@@ -167,10 +170,10 @@ public class MessageReceive {
                             ConnectSession session = ConnectorManager.getInstance().getSession(uuid);
                             if(session != null){
                                 FileSenderSession senderSession = (FileSenderSession) session.get(FileSenderSession.TAG);
-                                if(senderSession != null){
+                                if(senderSession != null && session.isRunning()){
                                     senderSession.startSend();
                                 }else{
-                                    Log.e(TAG, "发送文件的会话为空");
+                                    Log.e(TAG, "发送文件的会话为空,或没有建立P2P连接");
                                 }
                             }else{
                                 Log.e(TAG, "收到开始下载文件信号，但无法找到会话");

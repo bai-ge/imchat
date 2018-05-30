@@ -53,7 +53,7 @@ public class FileShareActivity extends BaseActivity {
 
         Bundle bundle = getIntent().getExtras();
         String title = "文件浏览";
-        if(bundle.containsKey("title")){
+        if(bundle != null && bundle.containsKey("title")){
             title = bundle.getString("title");
         }
 
@@ -79,6 +79,11 @@ public class FileShareActivity extends BaseActivity {
             ActivityUtils.addFragmentToActivity(getSupportFragmentManager(), fileShareFragment, R.id.content_frame);
         }
         fileSharePresenter = new FileSharePresenter(Repository.getInstance(LocalRepository.getInstance(getApplicationContext())), fileShareFragment);
+
+        if(bundle != null && bundle.containsKey("own")){
+            boolean isShowOwnFile = bundle.getBoolean("own");
+            fileSharePresenter.setShowOwnFile(isShowOwnFile);
+        }
     }
 
 
