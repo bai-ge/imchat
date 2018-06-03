@@ -20,7 +20,6 @@ import com.baige.data.entity.FriendView;
 import com.baige.data.source.cache.CacheRepository;
 import com.baige.p2pcore.ConnectSession;
 import com.baige.p2pcore.ConnectorManager;
-import com.baige.p2pcore.FileReceiverSession;
 import com.baige.p2pcore.FileSenderSession;
 import com.baige.telephone.PhoneActivity;
 import com.baige.telephone.TelePhone;
@@ -88,6 +87,10 @@ public class MessagePushProcess {
                                 uid = json.getInt(Parm.UID);
                             }
                             if (!TelePhone.getInstance().isLeisure()) {
+                                if(TelePhone.getInstance().getTalkWithId() != null && TelePhone.getInstance().getTalkWithId().equals(from)){
+                                    Log.e("Telephone", "多次发送电话请求");
+                                    return; //多次发送电话请求
+                                }
                                 ResponseMessage responseMessage = new ResponseMessage();
                                 json.put(Parm.CODE, Parm.CODE_BUSY);
                                 responseMessage.setResponse(json);
@@ -256,8 +259,6 @@ public class MessagePushProcess {
                                             ConnectorManager.tryPTPConnect(candidates, from, uuid);
                                         }
                                     }
-
-
                                 }else{
                                     responseMessage = new ResponseMessage();
                                     responseMessage.setFrom(to);
@@ -397,6 +398,7 @@ public class MessagePushProcess {
                                 Log.d(TAG, "文件不存在或用户拒绝分享！");
                                 BaseApplication.showTip("文件不存在或对方拒绝分享!");
                             }
+                            break;
                         default:
                             break;
                     }

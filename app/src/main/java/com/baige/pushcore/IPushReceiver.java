@@ -5,10 +5,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.baige.BaseApplication;
 import com.baige.common.Parm;
 import com.baige.connect.ConnectedByUDP;
 import com.baige.connect.NetServerManager;
 import com.baige.data.entity.ChatMsgInfo;
+import com.baige.data.entity.FriendView;
 import com.baige.data.source.cache.CacheRepository;
 import com.baige.util.JsonTools;
 import com.baige.util.Loggerx;
@@ -42,6 +44,15 @@ public class IPushReceiver extends BroadcastReceiver {
                             ChatMsgInfo chatMsgInfo = (ChatMsgInfo) JsonTools.toJavaBean(ChatMsgInfo.class, chatJson);
                             if(chatMsgInfo != null){
                                 CacheRepository.getInstance().getChatMessageObservable().put(chatMsgInfo);
+                                BaseApplication baseApplication = BaseApplication.getInstance();
+                                baseApplication.showChatInform(chatMsgInfo);
+                            }
+                        }else if(jsonObject.has(Parm.FRIEND)){
+                            JSONObject friendJson = jsonObject.getJSONObject(Parm.FRIEND);
+                            FriendView friendView = (FriendView) JsonTools.toJavaBean(FriendView.class, friendJson);
+                            if(friendView != null){
+                                BaseApplication baseApplication = BaseApplication.getInstance();
+                                baseApplication.showFriendInform(friendView);
                             }
                         }else{
                             MessagePushProcess.receive(context, jsonObject);

@@ -26,6 +26,8 @@ public class Parm {
 
     public final static String FILES = "files";
 
+    public final static String FN = "fn";
+
     public static final int CODE_SUCCESS = 200;
     public static final int CODE_FAIL = 500;
     public static final int CODE_UNKNOWN = 999;

@@ -9,10 +9,12 @@ import com.baige.util.FileUtils;
 import com.baige.util.Tools;
 
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -49,6 +51,7 @@ public class LoadingManager {
     }
 
     class LoadingThread extends Thread {
+        String remake;
         String path;
         String tmpFile;
         String fileName;
@@ -74,7 +77,8 @@ public class LoadingManager {
             this.state = state;
         }
 
-        public LoadingThread(String url, String path, String fileName, HttpBaseCallback callback) {
+        public LoadingThread(String remake, String url, String path, String fileName, HttpBaseCallback callback) {
+            this.remake = remake;
             this.url = url;
             this.path = path;
             this.fileName = fileName;
@@ -103,6 +107,7 @@ public class LoadingManager {
                 inputStream = conn.getInputStream();
                 if (conn.getResponseCode() == HttpURLConnection.HTTP_OK) {
                     Log.i(TAG, url + "连接成功!");
+                    Log.d(TAG, "ResponseMessage()" + conn.getResponseMessage());
 
                     File saveFile = new File(tmpFilePath, tmpFile);
                     //TODO 做文件缓存
@@ -116,8 +121,8 @@ public class LoadingManager {
                     int len = 0;
                     while ((len = inputStream.read(buffer)) != -1) {
                         bos.write(buffer, 0, len);
-                        totalSize += len;
-                        callback.progress(fileName, fileName, countSize, totalSize); //TODO 未知
+                        countSize += len;
+                        callback.progress(remake, fileName, countSize, totalSize); //TODO 未知
                     }
                     bos.flush();
                     bos.close();
@@ -134,20 +139,19 @@ public class LoadingManager {
                     FileUtils.moveTo(saveFile, toFile);
                     setState(LoadingManager.State.Finished);
                     Log.i(TAG, "下载文件成功：" + fileName);
-                    callback.downloadFinish(fileName, fileName);
-
+                    callback.downloadFinish(remake, fileName);
                 } else {
                     setState(LoadingManager.State.Failed);
-                    callback.fail(fileName, fileName);
+                    callback.fail(remake, fileName);
                 }
             } catch (MalformedURLException e) {
                 e.printStackTrace();
                 setState(LoadingManager.State.Failed);
-                callback.error(fileName, fileName, e);
+                callback.error(remake, fileName, e);
             } catch (IOException e) {
                 e.printStackTrace();
                 setState(LoadingManager.State.Failed);
-                callback.error(fileName, fileName, e);
+                callback.error(remake, fileName, e);
             } finally {
                 if (conn != null) {
                     conn.disconnect();
@@ -170,7 +174,7 @@ public class LoadingManager {
                 synchronized (LoadingManager.class) {
                     Object obj = loadingPools.get(url);
                     if (obj != null && obj.equals(this)) {
-                        loadingPools.remove(path + File.separator + fileName);
+                        loadingPools.remove(url);
                     }
                 }
             }
@@ -183,11 +187,11 @@ public class LoadingManager {
     }
 
 
-    public void downloadFile(String url, String path, String fileName, HttpBaseCallback callback) {
+    public void downloadFile(String remake, String url, String path, String fileName, HttpBaseCallback callback) {
         LoadingThread thread = loadingPools.get(url);
         LoadingThread loadingThread;
         if (thread == null) {
-            loadingThread = new LoadingThread(url, path, fileName, callback);
+            loadingThread = new LoadingThread(remake, url, path, fileName, callback);
             loadingPools.put(url, loadingThread);
             loadingThread.start();
         } else if (thread.isLoading()) {
@@ -195,7 +199,7 @@ public class LoadingManager {
         } else if (thread.isFailed()) {
             thread.interrupt();
             loadingPools.remove(url);
-            loadingThread = new LoadingThread(url, path, fileName, callback);
+            loadingThread = new LoadingThread(remake, url, path, fileName, callback);
             loadingPools.put(url, loadingThread);
             loadingThread.start();
         }

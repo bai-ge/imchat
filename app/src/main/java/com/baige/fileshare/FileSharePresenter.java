@@ -162,6 +162,7 @@ public class FileSharePresenter implements FileShareContract.Presenter {
         for (FileView f : fileViews) {
             if (f.isRemote()) {
                 //TODO 从服务器下载
+                downloadFileFromServer(f);
             } else {
                 //从用户本地下载
                 downloadFile(f);
@@ -169,8 +170,78 @@ public class FileSharePresenter implements FileShareContract.Presenter {
         }
     }
 
-    public void downloadFile(FileView fileView) {
-        FriendView friendView = CacheRepository.getInstance().getFriendViewObservable().get(fileView.getUserId());
+    public void downloadFileFromServer(final FileView fileView){
+        if(fileView != null){
+            fileView.setShowProgress(true);
+            if(fileView.getProgressPercent() == 1){
+                fileView.setProgressPercent(0);
+            }
+            CacheRepository.getInstance().getFileViewObservable().put(fileView);
+            mRepository.downloadFile(fileView.getRemark(), fileView.getId(), fileView.getFileName(), new HttpBaseCallback(){
+                @Override
+                public void downloadFinish(String remark, String fileName) {
+                    super.downloadFinish(remark, fileName);
+                    mFragment.showTip("下载完成"+fileName);
+                    FileView f = CacheRepository.getInstance().getFileViewObservable().get(remark);
+                    if(f != null){
+//                        f.setShowProgress(false);
+                        f.setProgressPercent(1);
+                        CacheRepository.getInstance().getFileViewObservable().put(f);
+                        updateDownloadCount(f);
+                    }
+
+                }
+
+                @Override
+                public void progress(String remark, String fileName, long finishSize, long totalSize) {
+                    super.progress(remark, fileName, finishSize, totalSize);
+                    FileView f = CacheRepository.getInstance().getFileViewObservable().get(remark);
+                    if(f != null){
+//                        f.setShowProgress(false);
+                        f.setProgressPercent((float) (finishSize * 1.0 / f.getFileSize()));
+                        CacheRepository.getInstance().getFileViewObservable().put(f);
+                    }
+                    Log.d(TAG, finishSize + ":"+f.getFileSize()+", ="+(finishSize * 1.0 / f.getFileSize()));
+                }
+
+                @Override
+                public void fail(String remark, String fileName) {
+                    super.fail(remark, fileName);
+                    FileView f = CacheRepository.getInstance().getFileViewObservable().get(remark);
+                    if(f != null){
+//                        f.setShowProgress(false);
+                    }
+                    mFragment.showTip( "下载失败"+fileName);
+                }
+
+                @Override
+                public void fail() {
+                    super.fail();
+                    mFragment.showTip("下载失败");
+                }
+
+                @Override
+                public void meaning(String text) {
+                    super.meaning(text);
+                    mFragment.showTip(text);
+                }
+
+                @Override
+                public void error(String remark, String fileName, Exception e) {
+                    super.error(remark, fileName, e);
+                    FileView f = CacheRepository.getInstance().getFileViewObservable().get(remark);
+                    if(f != null){
+//                        f.setShowProgress(false);
+                    }
+                    mFragment.showTip( "下载失败"+fileName);
+                }
+            });
+        }
+    }
+
+
+    public void downloadFile(final FileView fileView) {
+        final FriendView friendView = CacheRepository.getInstance().getFriendViewObservable().get(fileView.getUserId());
         if (friendView == null) {
             mFragment.showTip("用户拒绝分享文件" + fileView.getFileName());
         } else {
@@ -184,6 +255,8 @@ public class FileSharePresenter implements FileShareContract.Presenter {
                 @Override
                 public void run() {
                     mFragment.showTip("下载完成");
+
+                    updateDownloadCount(fileView);
                 }
             });
             connectSession.setStartRunnable(new Runnable() {
@@ -200,6 +273,44 @@ public class FileSharePresenter implements FileShareContract.Presenter {
             String to = friendView.getDeviceId();
             String msg = MessageManagerOfFile.askDownloadFile( from, to, fileView, uuid, fileReceiverSession.getSlipWindowCount());
             SendMessageBroadcast.getInstance().sendMessage(msg);
+        }
+    }
+
+    @Override
+    public void updateDownloadCount(FileView fileView) {
+
+        mRepository.updateDownloadCount(fileView.getId(), new HttpBaseCallback(){
+            @Override
+            public void loadFile(FileView fileView) {
+                super.loadFile(fileView);
+                FileView f = CacheRepository.getInstance().getFileViewObservable().get(fileView.getRemark());
+                if(f != null){
+                    f.setDownloadCount(fileView.getDownloadCount());
+                    CacheRepository.getInstance().getFileViewObservable().put(f);
+                }else{
+                    CacheRepository.getInstance().getFileViewObservable().put(fileView);
+                }
+
+            }
+        });
+    }
+
+    @Override
+    public void deleteFiles(List<FileView> fileViews) {
+        User user = CacheRepository.getInstance().who();
+        for (FileView f: fileViews) {
+            if(f.getUserId() == user.getId()){
+                CacheRepository.getInstance().getFileViewObservable().remote(f.getRemark());
+                mRepository.deleteFile(f.getId(), user.getId(), user.getVerification(), new HttpBaseCallback(){
+                    @Override
+                    public void meaning(String text) {
+                        super.meaning(text);
+                        mFragment.showTip(text);
+                    }
+                });
+            }else{
+                mFragment.showTip("无法删除文件");
+            }
         }
     }
 }

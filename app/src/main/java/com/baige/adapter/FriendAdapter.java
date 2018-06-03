@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.baige.BaseApplication;
 import com.baige.callback.HttpBaseCallback;
+import com.baige.common.State;
 import com.baige.data.entity.FriendView;
 import com.baige.data.source.cache.CacheRepository;
 import com.baige.data.source.remote.LoadingManager;
@@ -90,6 +91,7 @@ public class FriendAdapter extends BaseAdapter {
             holder.friendAliasView = (TextView) convertView.findViewById(R.id.txt_friend_alias);
             holder.nameView = (TextView) convertView.findViewById(R.id.txt_user_name);
             holder.aliasView = (TextView) convertView.findViewById(R.id.txt_user_alias);
+            holder.informView = (TextView) convertView.findViewById(R.id.txt_inform);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
@@ -134,6 +136,13 @@ public class FriendAdapter extends BaseAdapter {
         }else{
             holder.aliasView.setText("");
         }
+        if(item.getState() == State.RELATETION_BEADDED){
+            holder.informView.setText("好友请求");
+            holder.informView.setVisibility(View.VISIBLE);
+        }else{
+            holder.informView.setText("");
+            holder.informView.setVisibility(View.INVISIBLE);
+        }
 
         //TODO 设置照片
         if(!Tools.isEmpty(item.getImgName())){
@@ -152,7 +161,7 @@ public class FriendAdapter extends BaseAdapter {
                 holder.imgView.setImageResource(R.drawable.head_img);
                 Log.d(TAG, "从网络"+item.getImgName());
                 String url = "http://"+CacheRepository.getInstance().getServerIp() + ":12060/imchat/user/downloadImg.action?imgFileName="+item.getImgName();
-                LoadingManager.getInstance().downloadFile(url, BaseApplication.headImgPath, item.getImgName(), new HttpBaseCallback(){
+                LoadingManager.getInstance().downloadFile(url, url, BaseApplication.headImgPath, item.getImgName(), new HttpBaseCallback(){
                     @Override
                     public void downloadFinish(String remark, String fileName) {
                         super.downloadFinish(remark, fileName);
@@ -160,8 +169,8 @@ public class FriendAdapter extends BaseAdapter {
                             @Override
                             public void run() {
                                 int size = holder.imgView.getWidth();
-                                if(size <= 0){
-                                    size = 90;
+                                if(size <= 120){
+                                    size = 120;
                                 }
                                 Bitmap bm = ImageLoader.decodeSampledBitmapFromResource(path, size);
                                 if(bm != null){
@@ -219,6 +228,7 @@ public class FriendAdapter extends BaseAdapter {
         TextView friendAliasView;
         TextView nameView;
         TextView aliasView;
+        TextView informView;
     }
 
    public interface OnFriendItemListener{

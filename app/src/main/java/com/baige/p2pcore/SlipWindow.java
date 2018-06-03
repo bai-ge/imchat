@@ -215,6 +215,9 @@ public class SlipWindow {
                     }
                 }
             }
+            if(res){
+                affirmReceive(uuid, num - 1);
+            }
             return res;
         }
 

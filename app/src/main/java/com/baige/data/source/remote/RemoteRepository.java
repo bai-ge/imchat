@@ -430,7 +430,7 @@ public class RemoteRepository implements DataSource, ServerHelper {
     @Override
     public void downloadImg(String imgName, HttpBaseCallback callback) {
         String url = getServerAddress() + "/imchat/user/downloadImg.action?imgFileName="+imgName;
-        LoadingManager.getInstance().downloadFile(url, BaseApplication.headImgPath, imgName, callback);
+        LoadingManager.getInstance().downloadFile(url, url, BaseApplication.headImgPath, imgName, callback);
     }
 
     @Override
@@ -702,6 +702,36 @@ public class RemoteRepository implements DataSource, ServerHelper {
             jsonObject.put(FileDAO.FILE_TYPE, fileView.getFileType());
             jsonObject.put(FileDAO.FILE_SIZE, fileView.getFileSize());
             jsonObject.put(FileDAO.REMARK, fileView.getRemark());
+            HttpURLPost(url, jsonObject.toString(), callback);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            callback.error(e);
+        }
+    }
+
+    @Override
+    public void downloadFile(String remark, int fid, String fileName, HttpBaseCallback callback) {
+        Log.d(TAG, "下载文件"+fileName);
+        String url = getServerAddress() + "/imchat/file/download.action?fn="+fid;
+        LoadingManager.getInstance().downloadFile(remark, url, BaseApplication.downloadPath, fileName, callback);
+    }
+
+    @Override
+    public void updateDownloadCount(int fid, HttpBaseCallback callback) {
+        Log.d(TAG, "更新下载数量");
+        String url = getServerAddress() + "/imchat/file/downloadCount.action?fn="+fid;
+        HttpURLGet(url, callback);
+    }
+
+    @Override
+    public void deleteFile(int fid, int uid, String verification, HttpBaseCallback callback) {
+        Log.d(TAG, "删除远程文件");
+        String url = getServerAddress() + "/imchat/file/delete.action";
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put(Parm.UID, uid);
+            jsonObject.put(UserDAO.VERIFICATION, verification);
+            jsonObject.put(Parm.FN, fid);
             HttpURLPost(url, jsonObject.toString(), callback);
         } catch (JSONException e) {
             e.printStackTrace();

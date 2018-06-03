@@ -8,17 +8,25 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.PopupMenu;
 import android.widget.Toast;
 
 import com.baige.adapter.FileViewAdapter;
+import com.baige.data.entity.FileInfo;
 import com.baige.data.entity.FileView;
 import com.baige.imchat.R;
 import com.baige.view.IOnMenuItemClickListener;
+import com.baige.view.LocalFileDialog;
+import com.baige.view.ShareFileDialog;
 import com.baige.view.ShareHomeBottomToolBar;
 
+import java.io.File;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -81,6 +89,59 @@ public class FileShareFragment extends Fragment implements FileShareContract.Vie
             }
         });
 
+    }
+
+
+    private void showPopupMenu(View view) {
+        PopupMenu popupMenu = new PopupMenu(getContext(), view);
+        popupMenu.getMenuInflater().inflate(R.menu.file_more_menu, popupMenu.getMenu());
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                List<FileView>fileViews = null;
+                switch (item.getItemId()) {
+                    case R.id.delete_file:
+
+                        fileViews = mAdapter.getSelectItems();
+                        if(fileViews == null || fileViews.isEmpty()){
+                            showTip("未选择文件");
+                        }else{
+                            mPresenter.deleteFiles(fileViews);
+                            mAdapter.notifyDataSetChanged();
+                        }
+                        break;
+                    case R.id.file_information:
+                        fileViews = mAdapter.getSelectItems();
+                        if(fileViews == null || fileViews.isEmpty()){
+                            showTip("未选择文件");
+                        }else{
+                            ShareFileDialog shareFileDialog = new ShareFileDialog(getContext(), fileViews.get(0));
+                            shareFileDialog.show();
+                        }
+                        showTip("详情");
+                        break;
+                }
+                return false;
+            }
+        });
+        setIconEnable(popupMenu.getMenu(), true);
+        popupMenu.show();
+    }
+
+    private void setIconEnable(Menu menu, boolean enable)
+    {
+        try
+        {
+            Class<?> clazz = Class.forName("com.android.internal.view.menu.MenuBuilder");
+            Method m = clazz.getDeclaredMethod("setOptionalIconsVisible", boolean.class);
+            m.setAccessible(true);
+            //传入参数
+            m.invoke(menu, enable);
+
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -172,12 +233,14 @@ public class FileShareFragment extends Fragment implements FileShareContract.Vie
         @Override
         public void onRefresh(View view) {
             super.onRefresh(view);
+            mPresenter.searchFiles();
             Log.d(TAG, "onRefresh()");
         }
 
         @Override
         public void onMore(View view) {
             super.onMore(view);
+            showPopupMenu(view);
             Log.d(TAG, "onMore()");
         }
     };

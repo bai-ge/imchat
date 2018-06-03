@@ -36,8 +36,18 @@
                 android:id="@+id/layout_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
+                android:gravity="center"
                 android:orientation="vertical"
                 android:layout_alignParentEnd="true">
+                <TextView
+                    android:id="@+id/txt_inform"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:layout_gravity="center"
+                    android:textColor="@color/red"
+                    android:paddingRight="8dp"
+                    android:text="好友请求"/>
 
             </LinearLayout>
             <LinearLayout

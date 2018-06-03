@@ -3,6 +3,7 @@ package com.baige.connect;
 
 import android.util.Log;
 
+import com.baige.AppConfigure;
 import com.baige.connect.msg.MessageManager;
 import com.baige.connect.msg.MessageProcess;
 import com.baige.data.entity.Candidate;
@@ -241,28 +242,28 @@ public class NetServerManager {
         String localPort = NetServerManager.getInstance().getUdpPort()+"";
         String msg = MessageManager.udpTest(cacheRepository.getDeviceId(), localIp, localPort);
         ConnectedByUDP connectedByUDP;
-        if (!cacheRepository.getServerIp().equals("120.78.148.180") && !cacheRepository.getServerIp().equals("39.180.74.14")) {
+        if (!cacheRepository.getServerIp().equals(AppConfigure.mainServerIp) && !cacheRepository.getServerIp().equals(AppConfigure.secondaryServerIp)) {
             connectedByUDP = NetServerManager.getInstance().getUDPConnectorByAddress(cacheRepository.getServerIp(), cacheRepository.getServerUdpPort());
             connectedByUDP.sendString(msg);
         }
-        connectedByUDP = NetServerManager.getInstance().getUDPConnectorByAddress("120.78.148.180", 12059);
+        connectedByUDP = NetServerManager.getInstance().getUDPConnectorByAddress(AppConfigure.mainServerIp, 12059);
         connectedByUDP.sendString(msg);
 
-        connectedByUDP = NetServerManager.getInstance().getUDPConnectorByAddress("39.180.74.14", 12059);
+        connectedByUDP = NetServerManager.getInstance().getUDPConnectorByAddress(AppConfigure.secondaryServerIp, 12059);
         connectedByUDP.sendString(msg);
     }
 
     public void tryUdpTest(String msg) {
         CacheRepository cacheRepository = CacheRepository.getInstance();
         ConnectedByUDP connectedByUDP;
-        if (!cacheRepository.getServerIp().equals("120.78.148.180") && !cacheRepository.getServerIp().equals("39.180.74.14")) {
+        if (!cacheRepository.getServerIp().equals(AppConfigure.mainServerIp) && !cacheRepository.getServerIp().equals(AppConfigure.secondaryServerIp)) {
             connectedByUDP = getUDPConnectorByAddress(cacheRepository.getServerIp(), cacheRepository.getServerUdpPort());
             connectedByUDP.sendString(msg);
         }
-        connectedByUDP = getUDPConnectorByAddress("120.78.148.180", 12059);
+        connectedByUDP = getUDPConnectorByAddress(AppConfigure.mainServerIp, 12059);
         connectedByUDP.sendString(msg);
 
-        connectedByUDP = getUDPConnectorByAddress("39.180.74.14", 12059);
+        connectedByUDP = getUDPConnectorByAddress(AppConfigure.secondaryServerIp, 12059);
         connectedByUDP.sendString(msg);
     }
 

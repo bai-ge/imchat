@@ -1,7 +1,5 @@
 package com.baige.imchat;
 
-import android.util.Log;
-
 import com.baige.util.Tools;
 
 import org.junit.Test;
@@ -17,10 +15,13 @@ public class ExampleUnitTest {
     @Test
     public void addition_isCorrect() throws Exception {
         assertEquals(4, 2 + 2);
-        System.out.println(Tools.fromatPercent(0.0f));
-        System.out.println(Tools.fromatPercent(0.1f));
-        System.out.println(Tools.fromatPercent(0.5f));
-        System.out.println(Tools.fromatPercent(1.0f));
-        System.out.println(Tools.fromatPercent(1.2f));
+        System.out.println(Tools.formatPercent(0.0f));
+        System.out.println(Tools.formatPercent(0.1f));
+        System.out.println(Tools.formatPercent(0.5f));
+        System.out.println(Tools.formatPercent(1.0f));
+        System.out.println(Tools.formatPercent(1.2f));
+
+        System.out.println(Tools.formatNumber(123456789));
+
     }
 }

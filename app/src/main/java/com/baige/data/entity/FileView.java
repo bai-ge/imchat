@@ -181,4 +181,10 @@ public class FileView {
                 ", isCheck=" + isCheck +
                 '}';
     }
+
+//    public void update(FileView fileView) {
+//        if(fileView != null){
+//            this.downloadCount = fileView.getDownloadCount();
+//        }
+//    }
 }

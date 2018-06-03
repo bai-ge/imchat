@@ -2,6 +2,7 @@ package com.baige.filelocal;
 
 import android.content.Intent;
 import android.database.DataSetObserver;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -23,13 +24,14 @@ import com.baige.adapter.FileInfoAdapter;
 import com.baige.data.entity.FileInfo;
 import com.baige.data.entity.FileType;
 import com.baige.imchat.R;
-import com.baige.search.SearchActivity;
 import com.baige.util.FileUtils;
+import com.baige.util.SystemOpenType;
 import com.baige.util.Tools;
 import com.baige.view.BottomChooseBar;
 import com.baige.view.FileListBottomOperatorMenu;
 import com.baige.view.FileListBottomToolBar;
 import com.baige.view.IOnMenuItemClickListener;
+import com.baige.view.LocalFileDialog;
 import com.baige.view.ShareDialog;
 import com.baige.view.SortDialog;
 
@@ -224,10 +226,11 @@ public class FileLocalFragment extends Fragment implements FileLocalContract.Vie
         popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
+                List<FileInfo >fileInfos = null;
                 switch (item.getItemId()) {
                     case R.id.delete_file:
 
-                        List<FileInfo >fileInfos = mAdapter.getSelectItems();
+                        fileInfos = mAdapter.getSelectItems();
                         if(fileInfos == null || fileInfos.isEmpty()){
                             showTip("未选择文件");
                         }else{
@@ -241,6 +244,13 @@ public class FileLocalFragment extends Fragment implements FileLocalContract.Vie
                         }
                         break;
                     case R.id.file_information:
+                        fileInfos = mAdapter.getSelectItems();
+                        if(fileInfos == null || fileInfos.isEmpty()){
+                            showTip("未选择文件");
+                        }else{
+                            LocalFileDialog localFileDialog = new LocalFileDialog(getContext(), fileInfos.get(0));
+                            localFileDialog.show();
+                        }
                        showTip("详情");
                         break;
                 }
@@ -267,12 +277,34 @@ public class FileLocalFragment extends Fragment implements FileLocalContract.Vie
         }
     }
 
+    /**
+     * 播放指定名称的歌曲
+     * @param audioPath 指定默认播放的音乐
+     */
+    public  void playAudio(String audioPath){
+        Intent intent = new Intent();
+        intent.setAction(android.content.Intent.ACTION_VIEW);
+        String u = "file://"+audioPath;
+        Log.d(TAG, "uri路径:"+u);
+        Uri uri = Uri.parse(u);//替换成audiopath
+        intent.setDataAndType(uri , "audio/mp3");
+        startActivity(intent);
+    }
+
+
 
     private FileInfoAdapter.OnFileInfoItemListener mOnFileInfoItemListener = new FileInfoAdapter.OnFileInfoItemListener() {
         @Override
         public void onClickItem(FileInfo item) {
             if (item.getFileType() == FileType.TYPE_FOLDER) {
                 mPresenter.loadFileInfo(item.getPath());
+            }else if(item.getFileType() == FileType.TYPE_MP3){
+              playAudio(item.getPath());
+//                Uri uri =Uri.withAppendedPath(MediaStore.Audio.Media.INTERNAL_CONTENT_URI,"1");
+//                Intent it = new Intent(Intent.ACTION_VIEW,uri);
+//                startActivity(it);
+            }else{
+                SystemOpenType.systemOpen(item, getContext());
             }
         }
 

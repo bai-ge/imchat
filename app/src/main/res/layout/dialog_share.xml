@@ -10,12 +10,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:gravity="center"
+        android:layout_margin="@dimen/fab_margin"
         android:orientation="vertical">
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="分享文件"
-            android:textSize="25sp"/>
         <EditText
             android:id="@+id/edit_file_list"
             android:layout_width="wrap_content"

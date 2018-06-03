@@ -131,7 +131,7 @@ public class ImageLoader {
             String url = BaseApplication.headImgPath + File.separator + imgName;
             Bitmap bitmap = ImageLoader.getInstance().getBitmapFromMemoryCache(url);
             if(bitmap == null){
-                bitmap = ImageLoader.decodeSampledBitmapFromResource(url, view.getWidth() <= 50 ? 50 : view.getWidth());
+                bitmap = ImageLoader.decodeSampledBitmapFromResource(url, view.getWidth() <= 120 ? 120 : view.getWidth());
             }
             if(bitmap != null){
                 ImageLoader.getInstance().addBitmapToMemoryCache(url, bitmap);

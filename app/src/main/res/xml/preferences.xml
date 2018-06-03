@@ -27,8 +27,8 @@
     </PreferenceCategory>
     <PreferenceCategory
         android:key="pre_key_alert_settings"
-        android:summary="跌倒警报"
-        android:title="跌倒警报">
+        android:summary="消息提醒"
+        android:title="消息提醒">
         <SwitchPreference
             android:hint="震动开关"
             android:key="key_alert_vibrate"

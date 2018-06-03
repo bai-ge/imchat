@@ -90,7 +90,7 @@
             android:layout_gravity="center"
             android:background="@null"
             android:editable="false"
-            android:maxLines="5"
+            android:maxLines="10"
             android:text=""
             android:textColor="@color/green"
             android:textSize="14dp"/>

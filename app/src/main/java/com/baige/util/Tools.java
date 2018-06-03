@@ -20,6 +20,7 @@ import android.view.inputmethod.InputMethodManager;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -119,10 +120,15 @@ public class Tools {
         return dateFormat.format(new Date(time));
     }
 
-    public static String fromatPercent(float number){
+    public static String formatPercent(float number){
         double db = number;
         DecimalFormat df = new DecimalFormat("#0.0%");
         return df.format(db);
+    }
+
+    public static String formatNumber(long number){
+        NumberFormat numberFormat = NumberFormat.getNumberInstance();
+        return numberFormat.format(number);
     }
 
     public static String getSizeSting(long size) {
@@ -180,6 +186,7 @@ public class Tools {
         }
     }
 
+
     public static long getZeroDataTime(long time){
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         String dateString = dateFormat.format(new Date(time));
@@ -195,6 +202,14 @@ public class Tools {
     public static String getSuitableTimeFormat(long time){
         SimpleDateFormat dateFormat =  new SimpleDateFormat("yyyy-MM-dd HH:mm");
         long now = System.currentTimeMillis();
+        long div = now - time;
+        if(div > 15 * TIME_SIZE_DAY){
+            dateFormat =  new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        }else if(div > 7 * TIME_SIZE_DAY) {
+            dateFormat = new SimpleDateFormat("MM月dd号 HH:mm");
+        } else if(div > 4 * TIME_SIZE_DAY){
+            dateFormat = new SimpleDateFormat("MM月dd号 HH:mm");
+        }
 
         if(isSameDay(now, time)){
             dateFormat = new SimpleDateFormat("HH:mm");
@@ -207,7 +222,6 @@ public class Tools {
         }else if(isSameDay(now + TIME_SIZE_DAY * 2, time)){
             dateFormat = new SimpleDateFormat("后天 HH:mm");
         }
-
         return dateFormat.format(new Date(time));
     }
 

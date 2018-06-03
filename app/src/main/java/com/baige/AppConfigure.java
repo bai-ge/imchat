@@ -10,6 +10,14 @@ import java.io.File;
 
 public class AppConfigure {
 
+
+    public final static String mainServerIp = "120.78.148.180";
+    public final static String secondaryServerIp = "120.79.203.153";
+    public final static String tcp_default_port = "12056";
+    public final static String udp_default_port = "12059";
+    public final static String cmd_default_port = "12058";
+
+
     public final static String APP_HOME = Environment.getExternalStorageDirectory()+ File.separator + "imchat";
     public final static String HEAD_IMG_PATH = APP_HOME + File.separator + "head";
     public final static String LOG_PATH = APP_HOME + File.separator + "log";

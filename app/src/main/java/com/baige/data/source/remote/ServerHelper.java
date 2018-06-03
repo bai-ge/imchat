@@ -132,4 +132,10 @@ public interface ServerHelper {
     void searchAllFile(HttpBaseCallback callback);
 
     void shareFile(int uid, String verification, FileView fileView, HttpBaseCallback callback);
+
+    void downloadFile(String remark, int fid, String fileName, HttpBaseCallback callback);
+
+    void updateDownloadCount(int fid, HttpBaseCallback callback);
+
+    void deleteFile(int fid, int uid, String verification, HttpBaseCallback callback);
 }

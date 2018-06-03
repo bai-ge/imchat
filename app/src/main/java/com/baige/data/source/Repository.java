@@ -469,4 +469,55 @@ public class Repository implements DataSource, ServerHelper{
             callback.fail();
         }
     }
+
+    @Override
+    public void downloadFile(final String remark, final int fid, final String fileName, final HttpBaseCallback callback) {
+        checkNotNull(callback);
+        checkNotNull(remark);
+        checkNotNull(fileName);
+        callback.setResponseBinder(mSimpleResponseBinder);
+        if (fixedThreadPool != null) {
+            fixedThreadPool.submit(new Runnable() {
+                @Override
+                public void run() {
+                    mRemoteRepository.downloadFile(remark, fid, fileName, callback);
+                }
+            });
+        }else{
+            callback.fail();
+        }
+    }
+
+    @Override
+    public void updateDownloadCount(final int fid, final HttpBaseCallback callback) {
+        checkNotNull(callback);
+        callback.setResponseBinder(mFileResponseBinder);
+        if (fixedThreadPool != null) {
+            fixedThreadPool.submit(new Runnable() {
+                @Override
+                public void run() {
+                    mRemoteRepository.updateDownloadCount(fid, callback);
+                }
+            });
+        }else{
+            callback.fail();
+        }
+    }
+
+    @Override
+    public void deleteFile(final int fid, final int uid, final String verification, final HttpBaseCallback callback) {
+        checkNotNull(callback);
+        checkNotNull(verification);
+        callback.setResponseBinder(mSimpleResponseBinder);
+        if (fixedThreadPool != null) {
+            fixedThreadPool.submit(new Runnable() {
+                @Override
+                public void run() {
+                    mRemoteRepository.deleteFile(fid, uid, verification, callback);
+                }
+            });
+        }else{
+            callback.fail();
+        }
+    }
 }

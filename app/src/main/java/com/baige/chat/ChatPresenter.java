@@ -304,7 +304,9 @@ public class ChatPresenter implements ChatContract.Presenter {
 
     @Override
     public void callTo() {
-        TelePhone.getInstance().afxCallTo(mFriendView.getDeviceId(), mFriendView.getSuitableName());
+        if(TelePhone.getInstance().isLeisure()){
+            TelePhone.getInstance().afxCallTo(mFriendView.getDeviceId(), mFriendView.getSuitableName());
+        }
     }
 
     private BaseObserver baseObserver = new BaseObserver(){

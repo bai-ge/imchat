@@ -120,8 +120,8 @@ public class UserAdapter extends BaseAdapter {
             if(bitmap == null){
                 Log.d(TAG, "从文件"+item.getImgName());
                 int size = holder.imgView.getWidth();
-                if(size <= 0){
-                    size = 90;
+                if(size <= 120){
+                    size = 10;
                 }
                 Log.d(TAG, "图片宽度："+size);
                 bitmap = ImageLoader.decodeSampledBitmapFromResource(path, size);
@@ -130,7 +130,7 @@ public class UserAdapter extends BaseAdapter {
                 holder.imgView.setImageResource(R.drawable.head_img);
                 Log.d(TAG, "从网络"+item.getImgName());
                 String url = "http://"+CacheRepository.getInstance().getServerIp() + ":12060/imchat/user/downloadImg.action?imgFileName="+item.getImgName();
-                LoadingManager.getInstance().downloadFile(url, BaseApplication.headImgPath, item.getImgName(), new HttpBaseCallback(){
+                LoadingManager.getInstance().downloadFile(url, url, BaseApplication.headImgPath, item.getImgName(), new HttpBaseCallback(){
                     @Override
                     public void downloadFinish(String remark, String fileName) {
                         super.downloadFinish(remark, fileName);
@@ -138,8 +138,8 @@ public class UserAdapter extends BaseAdapter {
                             @Override
                             public void run() {
                                 int size = holder.imgView.getWidth();
-                                if(size <= 0){
-                                    size = 90;
+                                if(size <= 120){
+                                    size = 120;
                                 }
                                 Bitmap bm = ImageLoader.decodeSampledBitmapFromResource(path, size);
                                 if(bm != null){

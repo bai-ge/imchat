@@ -3,6 +3,7 @@
     <string name="copyright">Copyright © 2018 Baige.All rights reserved.</string>
     <string name="navigation_settings">设置</string>
     <string name="navigation_personal_settings">个人设置</string>
+    <string name="navigation_log">日志</string>
     <string name="navigation_about">关于</string>
     <string name="navigation_home">主页</string>
     <string name="navigation_logout">注销</string>
@@ -35,6 +36,7 @@
 
     <string-array name="server_ip">
         <item>120.78.148.180</item>
+        <item>120.79.203.153</item>
         <item>39.108.74.14</item>
         <item>192.168.1.100</item>
         <item>192.168.1.101</item>

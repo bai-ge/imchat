@@ -180,7 +180,7 @@ public class FileViewAdapter extends BaseAdapter {
 
         if(item.isShowProgress()){
             holder.progressBarLayout.setVisibility(View.VISIBLE);
-            holder.downloadView.setText(Tools.fromatPercent(item.getProgressPercent()));
+            holder.downloadView.setText(Tools.formatPercent(item.getProgressPercent()));
             holder.progressBarView.setProgress((int) (100 * item.getProgressPercent()));
             if(item.getProgressPercent() == 1){
                 mHandler.postDelayed(new Runnable() {
