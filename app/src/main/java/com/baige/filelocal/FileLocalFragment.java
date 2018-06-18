@@ -277,19 +277,19 @@ public class FileLocalFragment extends Fragment implements FileLocalContract.Vie
         }
     }
 
-    /**
-     * 播放指定名称的歌曲
-     * @param audioPath 指定默认播放的音乐
-     */
-    public  void playAudio(String audioPath){
-        Intent intent = new Intent();
-        intent.setAction(android.content.Intent.ACTION_VIEW);
-        String u = "file://"+audioPath;
-        Log.d(TAG, "uri路径:"+u);
-        Uri uri = Uri.parse(u);//替换成audiopath
-        intent.setDataAndType(uri , "audio/mp3");
-        startActivity(intent);
-    }
+//    /**
+//     * 播放指定名称的歌曲
+//     * @param audioPath 指定默认播放的音乐
+//     */
+//    public  void playAudio(String audioPath){
+//        Intent intent = new Intent();
+//        intent.setAction(android.content.Intent.ACTION_VIEW);
+//        String u = "file://"+audioPath;
+//        Log.d(TAG, "uri路径:"+u);
+//        Uri uri = Uri.parse(u);//替换成audiopath
+//        intent.setDataAndType(uri , "audio/mp3");
+//        startActivity(intent);
+//    }
 
 
 
@@ -298,11 +298,6 @@ public class FileLocalFragment extends Fragment implements FileLocalContract.Vie
         public void onClickItem(FileInfo item) {
             if (item.getFileType() == FileType.TYPE_FOLDER) {
                 mPresenter.loadFileInfo(item.getPath());
-            }else if(item.getFileType() == FileType.TYPE_MP3){
-              playAudio(item.getPath());
-//                Uri uri =Uri.withAppendedPath(MediaStore.Audio.Media.INTERNAL_CONTENT_URI,"1");
-//                Intent it = new Intent(Intent.ACTION_VIEW,uri);
-//                startActivity(it);
             }else{
                 SystemOpenType.systemOpen(item, getContext());
             }

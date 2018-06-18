@@ -66,7 +66,7 @@ public class LastChatMessageObservable extends BaseObservable<LastChatMsgInfo> {
             friendId = chat.getSenderId();
         }
         friendView = CacheRepository.getInstance().getFriendViewObservable().get(friendId);
-        if(friendView.isFriend()){
+        if(friendView != null && friendView.isFriend()){
             lastChatMsgInfo = get(friendId);
 
             if (lastChatMsgInfo == null ) {
@@ -105,7 +105,7 @@ public class LastChatMessageObservable extends BaseObservable<LastChatMsgInfo> {
                 friendId = chat.getSenderId();
             }
             friendView = CacheRepository.getInstance().getFriendViewObservable().get(friendId);
-            if(friendView.isFriend()){
+            if(friendView != null && friendView.isFriend()){
                 lastChatMsgInfo = get(friendId);
                 if (lastChatMsgInfo == null ) {
                     lastChatMsgInfo = new LastChatMsgInfo();

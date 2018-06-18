@@ -55,6 +55,7 @@ public class FileSenderSession {
         fileFullSize = cacheFile.getFileSize();
         cacheFile.setFullsize(fileFullSize);
         sendWindow = new SlipWindow().setUUID(uuid).setWindowCount(slipWindowCount).buildSendWindow(mPacketReader);
+        sendWindow.setMaxPacketNum((fileFullSize + (packetSize - 1)) / packetSize );
     }
 
     public void startSend() {

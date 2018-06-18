@@ -27,6 +27,8 @@ public class SlipWindow {
 
     private long sendNum;
 
+    private long maxPacketNum;
+
     private Object windowLock = new Object();
 
     private SendWindow mSendWindow;
@@ -199,6 +201,14 @@ public class SlipWindow {
                         int realPosition = (int) ((num - currentPosition + startIndex) % windowCount);
                         if (realNum[realPosition] == num) {
                             mPacketReader.sendSocketPacket(socketPackets[realPosition]);
+                            if(num > (getMaxPacketNum() - getWindowCount())){ // 最后几个数据包，发送端已经不会自动发送新的数据包了
+                                for (int i = 0; i < windowCount; i++) {
+                                    if (realNum[i] > num) {
+                                        mPacketReader.sendSocketPacket(socketPackets[i]);
+                                        break;
+                                    }
+                                }
+                            }
                             res = true;
                         } else {
                             Log.e(TAG, "请求数据包" + num + ",realPosition 计算不准确，当前位置" + currentPosition + ", realNum[realPosition]=" + realNum[realPosition]);
@@ -277,6 +287,17 @@ public class SlipWindow {
 
         public String getUUID() {
             return uuid;
+        }
+
+        public long getMaxPacketNum(){
+            return maxPacketNum;
+        }
+
+        public void setMaxPacketNum(long max){
+            if(max < 0){
+                max = 0;
+            }
+            maxPacketNum = max;
         }
 
     }

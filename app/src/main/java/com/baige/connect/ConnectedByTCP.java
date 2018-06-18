@@ -220,7 +220,7 @@ public class ConnectedByTCP extends BaseConnector {
         return this.socketInputStream;
     }
     
-    public void read(int res){
+ /*   public void read(int res){
     	if(isConnected()){
     		try {
 				getRunningSocket().getOutputStream().write(Tools.toByte(res));
@@ -229,7 +229,7 @@ public class ConnectedByTCP extends BaseConnector {
 				e.printStackTrace();
 			}
     	}
-    }
+    }*/
 
     public boolean isConnected() {
         return getState() == State.Connected;
@@ -861,6 +861,7 @@ public class ConnectedByTCP extends BaseConnector {
                     }else if((h & 0xFF) == SocketPacket.SIGN_END){
                         byte [] remainBuf = new byte[3];
                         int size = self.getSocketInputStream().read(remainBuf);
+
                         if (remainBuf[0] == SocketPacket.SIGN_END
                                 && remainBuf[1] == SocketPacket.SIGN_END
                                 && remainBuf[2] == SocketPacket.SIGN_END) {
